@@ -19,6 +19,7 @@ class Context extends Composite {
 		this._rule = Rule
 		this._manager = Manager
 		this._state = ContextState.STANDBY
+		this._nextState = null
 		this._results = new ResultSet()
 		this._data = null
 		this._buffer = Buffer.alloc(0)
@@ -51,8 +52,15 @@ class Context extends Composite {
 		return this._state
 	}
 
-	set state(State) {
-		this._state = State
+	/**
+	 * @type {Symbol}
+	 */
+	get nextState() {
+		return this._nextState || this._state
+	}
+
+	set nextState(State) {
+		this._nextState = State
 	}
 
 	/**
@@ -71,18 +79,6 @@ class Context extends Composite {
 
 	set data(Value) {
 		this._data = Value
-	}
-
-	get killsChild() {
-		let r = this._rule.killsChild
-		if (r) return r
-		// Check whether the all of active children's `endsWithParent`
-		for (let item of this._children) {
-			if (item.state != ContextState.ACTIVE) continue
-			if (item.state != ContextState.BACKGROUND) continue
-			if (!item.rule.endsWithParent) return false
-		}
-		return true
 	}
 
 	/**
@@ -106,11 +102,60 @@ class Context extends Composite {
 	}
 
 	/**
+	 * Updates the state
+	 */
+	updateState() {
+		for (let item of this._children) item.updateState()
+		if (this._nextState) {
+			this._state = this._nextState
+			this._nextState = null
+
+			let manager = this.manager
+			if (manager && this.state == ContextState.ACTIVE)
+				manager.current = this
+		}
+	}
+
+	/**
 	 * @param {Buffer} Byte
 	 * @return {boolean|string} `false` or chunk
 	 */
 	step(Byte) {
-		for (let item of this._children) item.step(Byte)
+		switch (this.state) {
+		case ContextState.STANDBY:
+			return this._step(Byte)
+		case ContextState.ACTIVE:
+			if (
+				this._rule.endsWithParent &&
+				this.hasParent &&
+				this.parent.step(Byte) &&
+				this.parent.nextState == ContextState.FINISHED
+			) return true // End with the parent
+			// Find a child to activate
+			for (let item of this._children) {
+				if (
+					item.step(Byte) &&
+					item.nextState == ContextState.ACTIVE
+				) return true // Found
+			}
+			return this._step(Byte)
+		case ContextState.BACKGROUND:
+			if (
+				this._rule.endsWithParent &&
+				this.hasParent &&
+				this.parent.step(Byte) &&
+				this.parent.nextState == ContextState.FINISHED
+			) return true // End with the parent
+			return this._step(Byte)
+		}
+		return false
+	}
+
+	/**
+	 * @private
+	 * @return {boolean}
+	 */
+	_step(Byte) {
 		this._buffer = Buffer.concat([this._buffer, Byte])
 		let chunks = this._buffer.toString(this._rule.encoding)
 			.split(this._rule.splitter)
@@ -118,6 +163,7 @@ class Context extends Composite {
 		if (chunks.length > 2) throw new Error(`Something is going wrong..`)
 		this.parseChunk(chunks[0])
 		this._buffer = Buffer.alloc(0) // Clear buffer
+		return true
 	}
 
 	/**
@@ -128,43 +174,25 @@ class Context extends Composite {
 
 		switch (this._state) {
 		case ContextState.STANDBY:
-			let starts = this._rule.startsWith(Chunk)
+			var starts = this._rule.startsWith(Chunk)
 			if (starts || starts === 0) { // Starts
 				if (!this.start(Chunk, starts)) manager.buffer = this._buffer
-				break
 			}
-			break
+			return
 		case ContextState.ACTIVE:
-			let ends = this._rule.endsWith(Chunk)
+			var ends = this._rule.endsWith(Chunk)
 			if (ends || ends === 0) { // Ends
 				if (!this.end(Chunk, ends)) manager.buffer = this._buffer
-				break
+				return
 			}
 			if (!this._rule.parse(this, Chunk)) manager.buffer = this._buffer
-			break
+			return
 		case ContextState.BACKGROUND:
-			let noActiveChild = true
-			for (let item of this._children) {
-				if (
-					item.state == ContextState.ACTIVE ||
-					item.state == ContextState.BACKGROUND
-				) {
-					noActiveChild = false
-					break
-				}
+			var ends = this._rule.endsWith(Chunk)
+			if (ends || ends === 0) { // Ends
+				if (!this.end(Chunk, ends)) manager.buffer = this._buffer
 			}
-			// If there is no active child, comes back to active
-			if (noActiveChild) {
-				this.state = ContextState.ACTIVE
-				break
-			}
-			if (this.killsChild) {
-				let ends = this._rule.endsWith(Chunk)
-				if (ends || ends === 0) { // End
-					if (!this.end(Chunk, ends)) manager.buffer = this._buffer
-					break
-				}
-			}
+			return
 		}
 	}
 
@@ -173,9 +201,9 @@ class Context extends Composite {
 			console.warn('Already active')
 			return false
 		}
-		this.state = ContextState.ACTIVE
-		// Set the parent context as background
-		if (this.hasParent) this.parent.state = ContextState.BACKGROUND
+		this.nextState = ContextState.ACTIVE
+		// Make the parent background
+		if (this.hasParent) this.parent.nextState = ContextState.BACKGROUND
 		// Populate sub-contexts
 		for (let item of this._rule) this.addChild(new Context(item))
 		return this._rule.init(this, Chunk, Arg)
@@ -186,21 +214,24 @@ class Context extends Composite {
 			console.warn('Already finished')
 			return false
 		}
-		if (this._state == ContextState.STANDBY) {
-			this.state = ContextState.FINISHED
-			return false
+		// End all the sub-contexts
+		for (let item of this._children) {
+			if (item.state == ContextState.FINISHED) continue
+			item.end()
 		}
-		this.state = ContextState.FINISHED
-		if (this.killsChild) {
-			for (let item of this._children) {
-				if (item.state == ContextState.FINISHED) continue
-				item.end()
+		this.nextState = ContextState.FINISHED
+		switch (this._state) {
+		case ContextState.ACTIVE:
+		case ContextState.BACKGROUND:
+			if (this.hasParent) {
+				// Make the parent active
+				this.parent.nextState = ContextState.ACTIVE
+				// Clone itself
+				this.parent.addChild(new Context(this._rule))
 			}
+			return this._rule.fin(this, Chunk, Arg)
 		}
-		// Create a sibling that has the same DNA as itself
-		if (this.hasParent && this.parent.state != ContextState.FINISHED)
-			this.parent.addChild(new Context(this._rule))
-		return this._rule.fin(this, Chunk, Arg)
+		return false
 	}
 }
 

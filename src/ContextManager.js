@@ -12,6 +12,7 @@ class ContextManager {
 	constructor(Cx) {
 		Cx.manager = this
 		this._root = Cx
+		this._current = null
 		this._buffer = null
 	}
 
@@ -20,6 +21,17 @@ class ContextManager {
 	 */
 	get root() {
 		return this._root
+	}
+
+	/**
+	 * @type {Context} The current context
+	 */
+	get current() {
+		return this._current
+	}
+
+	set current(Cx) {
+		this._current = Cx
 	}
 
 	set buffer(Bf) {
@@ -37,10 +49,11 @@ class ContextManager {
 			this.feed(bf)
 		}
 		if (Bf.length == 1) {
-			this._root.step(Bf)
+			this._root.updateState()
+			this._current.step(Bf)
 			return
 		}
-		if (!Bf.length) return //throw new Error(`Empty buffer`)
+		if (!Bf.length) throw new Error(`Empty buffer`)
 		for (let byte of Bf) {
 			let hx = byte.toString(16)
 			if (hx.length == 1) hx = '0' + hx // Zero padding

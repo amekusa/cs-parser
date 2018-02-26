@@ -30,7 +30,6 @@ class Rule extends Composite {
 		this._fin = Df.fin || null
 		this._parse = Df.parse || null
 		this._endsWithParent = Df.endsWithParent || false
-		this._killsChild = Df.killsChild || false
 		this._splitter = Df.splitter || '\n'
 		this._encoding = Df.encoding || ''
 
@@ -64,13 +63,6 @@ class Rule extends Composite {
 	 */
 	get endsWithParent() {
 		return this._endsWithParent
-	}
-
-	/**
-	 * @type {boolean}
-	 */
-	get killsChild() {
-		return this._killsChild
 	}
 
 	/**
