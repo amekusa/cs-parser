@@ -20,7 +20,7 @@ class Context extends Composite {
 		this._manager = Manager
 		this._state = ContextState.STANDBY
 		this._nextState = null
-		this._results = new ResultSet()
+		this._results = null
 		this._data = null
 		this._buffer = Buffer.alloc(0)
 	}
@@ -88,17 +88,6 @@ class Context extends Composite {
 		if (Cx._manager && Cx._manager !== this.manager)
 			throw new Error(`Multiple managers conflicted`)
 		return true
-	}
-
-	/**
-	 * @override
-	 * @param {Context} Cx
-	 * @return {Context} This
-	 */
-	addChild(Cx) {
-		super.addChild(Cx)
-		this._results.add(Cx.results)
-		return this
 	}
 
 	/**
@@ -202,8 +191,11 @@ class Context extends Composite {
 			return false
 		}
 		this.nextState = ContextState.ACTIVE
-		// Make the parent background
-		if (this.hasParent) this.parent.nextState = ContextState.BACKGROUND
+		this._results = new ResultSet()
+		if (this.hasParent) {
+			this.parent.nextState = ContextState.BACKGROUND
+			this.parent.results.add(this._results)
+		}
 		// Populate sub-contexts
 		for (let item of this._rule) this.addChild(new Context(item))
 		return this._rule.init(this, Chunk, Arg)
