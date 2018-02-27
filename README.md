@@ -136,7 +136,7 @@ doc
 
 Let's demonstrate parsing actual JavaScript code with the example rules.
 
-`example/GameObject.js`
+`examples/GameObject.js`:
 <pre><code class="lang-js">
 /**
  * Represents an object in the game
@@ -192,7 +192,7 @@ There are two doc blocks in this code as you can see.
 To start parsing, pass the file URL to `parseFile()` like below:
 
 ```js
-parser.parseFile(__dirname +'/example/GameObject.js') // This returns a Promise object
+parser.parseFile(__dirname +'/examples/GameObject.js') // This returns a Promise object
 .then(cx => {
 	// 'cx' is the root context that contains all the sub-contexts
 	// which are generated through the parsing process
