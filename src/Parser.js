@@ -18,10 +18,15 @@ class Parser {
 	}
 
 	/**
-	 * @param string Tx Text to be parsed
+	 * @param {string|Buffer} Tx Text to be parsed
+	 * @return {Context} The root context
 	 */
 	parse(Tx) {
-		// TODO Implement
+		let cx = new Context(this._rule)
+		this._cm = new ContextManager(cx)
+		cx.start()
+		this._cm.feed(Tx instanceof Buffer ? Tx : Buffer.from(Tx))
+		return cx
 	}
 
 	/**
