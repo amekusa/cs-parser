@@ -204,7 +204,18 @@ parser.parseFile(__dirname +'/examples/GameObject.js') // This returns a Promise
 
 So the reading & parsing runs asynchronously, `parseFile()` returns a `Promise` object. This `Promise` resolves when the parsing completed.
 
-Here is the output:
+If this way is not comfortable for you, there is the synchronous version here:
+
+```js
+var content = fs.readFileSync(__dirname +'/examples/GameObject.js')
+var cx = parser.parse(content)
+cx.results.traverse(result => {
+	console.log(result)
+})
+```
+
+And here is the output:
+
 ```html
 <section class="docblock">
   Represents an object in the game
