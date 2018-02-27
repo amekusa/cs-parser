@@ -5,6 +5,8 @@ You can write the best parser that exactly matches your need even in 120 lines o
 And it will also be clean, semantic, and completely readable like this example:
 
 ```js
+const Parser = require('cs-parser')
+
 let parser = new Parser({
 	// The rule of doc block
 	$doc: {
@@ -136,7 +138,7 @@ doc
 
 Let's demonstrate parsing actual JavaScript code with the example rules.
 
-`example/GameObject.js`
+`examples/GameObject.js`:
 <pre><code class="lang-js">
 /**
  * Represents an object in the game
@@ -192,7 +194,7 @@ There are two doc blocks in this code as you can see.
 To start parsing, pass the file URL to `parseFile()` like below:
 
 ```js
-parser.parseFile(__dirname +'/example/GameObject.js') // This returns a Promise object
+parser.parseFile(__dirname +'/examples/GameObject.js') // This returns a Promise object
 .then(cx => {
 	// 'cx' is the root context that contains all the sub-contexts
 	// which are generated through the parsing process
@@ -204,7 +206,18 @@ parser.parseFile(__dirname +'/example/GameObject.js') // This returns a Promise 
 
 So the reading & parsing runs asynchronously, `parseFile()` returns a `Promise` object. This `Promise` resolves when the parsing completed.
 
-Here is the output:
+If this way is not comfortable for you, there is the synchronous version here:
+
+```js
+let content = fs.readFileSync(__dirname +'/examples/GameObject.js')
+let cx = parser.parse(content)
+cx.results.traverse(result => {
+	console.log(result)
+})
+```
+
+And here is the output:
+
 ```html
 <section class="docblock">
   Represents an object in the game
