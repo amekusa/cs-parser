@@ -267,7 +267,7 @@ Here is the output:
 You can run this example in your console with:
 
 ```sh
-$ npm test
+$ npm run test:examples
 ```
 
 ---
