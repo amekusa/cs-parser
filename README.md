@@ -209,8 +209,8 @@ So the reading & parsing runs asynchronously, `parseFile()` returns a `Promise` 
 If this way is not comfortable for you, there is the synchronous version here:
 
 ```js
-var content = fs.readFileSync(__dirname +'/examples/GameObject.js')
-var cx = parser.parse(content)
+let content = fs.readFileSync(__dirname +'/examples/GameObject.js')
+let cx = parser.parse(content)
 cx.results.traverse(result => {
 	console.log(result)
 })
