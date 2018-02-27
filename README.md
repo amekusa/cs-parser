@@ -269,3 +269,8 @@ You can run this example in your console with:
 ```sh
 $ npm test
 ```
+
+---
+
+&copy; 2018 Satoshi Soma ([amekusa.com](https://amekusa.com))  
+CS Parser is licensed under the Apache License, Version 2.0  
