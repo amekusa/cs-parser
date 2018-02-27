@@ -1,11 +1,7 @@
-# Write your own parser like a boss
-CS Parser provides you the power to write parser for your code, data, or anything in any language, any format without hardcore coding.  
+var Parser = require('../lib')
+var fs = require('fs')
 
-You can write the best parser that exactly matches your need even in 120 lines or less.
-And it will also be clean, semantic, and completely readable like this example:
-
-```js
-let parser = new Parser({
+var parser = new Parser({
 	// The rule of doc block
 	$doc: {
 		start: /\/\*\*$/, // Starts with '/**'
@@ -120,157 +116,13 @@ let parser = new Parser({
 		}
 	}
 })
-```
 
-This example illustrates how to define rules for formatting doc blocks.  
-As you can see, you can pass nested rule definitions along with the structure of the language you want to parse.  
-
-In this case, the outline of the structure can be described like this:
-
-```
-doc
- ├─ param
- └─ example
-     └─ code
-```
-
-Let's demonstrate parsing actual JavaScript code with the example rules.
-
-`example/GameObject.js`
-<pre><code class="lang-js">
-/**
- * Represents an object in the game
- */
-class GameObject {
-
-	/**
-	 * Creates an instance with specific name and health
-	 * @param {string} name
-	 *   The name of the object
-	 * @param {number} health
-	 *   The health of the object
-	 */
-	constructor(name, health) {
-		this.name = name
-		this.health = health
-		this.state = 'alive'
-	}
-
-	/**
-	 * Takes specific amount of damage
-	 * @param {number} amount
-	 *   Amount of damage to take
-	 * @example Attack a kobold
-	 * ```js
-	 * var enemy = new GameObject('Kobold', 10)
-	 * enemy.takeDamage(5)
-	 * console.log(`Health lefts ${this.health}`)
-	 * ```
-	 * @example Attack a rat and kill it
-	 * ```js
-	 * var enemy = new GameObject('Rat', 3)
-	 * enemy.takeDamage(5)
-	 * console.log(`${this.name} must be dead`)
-	 * ```
-	 */
-	takeDamage(amount) {
-		this.health -= amount
-		console.log(`${this.name} took ${amount} damage`)
-		if (this.health < 0) this.die()
-	}
-
-	die() {
-		this.state = 'dead'
-		console.log(`${this.name} is killed`)
-	}
-}
-</code></pre>
-
-This is the example code to be parsed.
-There are two doc blocks in this code as you can see.
-
-To start parsing, pass the file URL to `parseFile()` like below:
-
-```js
-parser.parseFile(__dirname +'/example/GameObject.js') // This returns a Promise object
-.then(cx => {
+// Read and parse a file asynchronously.
+parser.parseFile(__dirname + '/GameObject.js') // This returns a Promise object
+.then(function (cx) {
 	// 'cx' is the root context that contains all the sub-contexts
 	// which are generated through the parsing process
 	cx.results.traverse(result => {
-		console.log(result) // Output the result
+		console.log(result)
 	})
 })
-```
-
-So the reading & parsing runs asynchronously, `parseFile()` returns a `Promise` object. This `Promise` resolves when the parsing completed.
-
-Here is the output:
-```html
-<section class="docblock">
-  Represents an object in the game
-</section>
-<section class="docblock">
-  Creates an instance with specific name and health
-  <div class="param">
-    The name of the object
-    <dl class="specs">
-      <dt>Type</dt>
-      <dd>string</dd>
-      <dt>Name</dt>
-      <dd>name</dd>
-    </dl>
-  </div>
-  <div class="param">
-    The health of the object
-    <dl class="specs">
-      <dt>Type</dt>
-      <dd>number</dd>
-      <dt>Name</dt>
-      <dd>health</dd>
-    </dl>
-  </div>
-</section>
-<section class="docblock">
-  Takes specific amount of damage
-  <div class="param">
-    Amount of damage to take
-    <dl class="specs">
-      <dt>Type</dt>
-      <dd>number</dd>
-      <dt>Name</dt>
-      <dd>amount</dd>
-    </dl>
-  </div>
-  <section class="example">
-    <h1>Attack a kobold</h1>
-    <pre>
-      <code class="lang-js">
-        var enemy = new GameObject('Kobold', 10)
-        enemy.takeDamage(5)
-        console.log(`Health lefts ${this.health}`)
-      </code>
-    </pre>
-  </section>
-  <section class="example">
-    <h1>Attack a rat and kill it</h1>
-    <pre>
-      <code class="lang-js">
-        var enemy = new GameObject('Rat', 3)
-        enemy.takeDamage(5)
-        console.log(`${this.name} must be dead`)
-      </code>
-    </pre>
-  </section>
-</section>
-```
-
-You can run this example in your console with:
-
-```sh
-$ npm run test:examples
-```
-
----
-
-&copy; 2018 Satoshi Soma ([amekusa.com](https://amekusa.com))  
-CS Parser is licensed under the Apache License, Version 2.0  
