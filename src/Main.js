@@ -5,10 +5,9 @@ import Rule from './Rule'
  * The main module that the user can get with `require('cs-parser')`
  */
 class Main {
-
 	/**
 	 * Creates a Parser instance
-	 * @param {Rule} Rl The parser rule
+	 * @param {object|Rule} Rl The parser rule definition
 	 * @return {Parser} A new Parser instance
 	 */
 	create(Rl) {
