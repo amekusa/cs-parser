@@ -1,2 +1,2 @@
-import Main from './Main'
-module.exports = Main
+import main from './Main'
+module.exports = main

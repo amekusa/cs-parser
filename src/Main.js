@@ -24,4 +24,4 @@ class Main {
 	}
 }
 
-export default new Main
+export default new Main()
