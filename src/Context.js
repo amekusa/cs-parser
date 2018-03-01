@@ -97,6 +97,15 @@ class Context extends Composite {
 		this._buffer = Buffer.alloc(0)
 	}
 
+	/**
+	 * @protected
+	 * Populates sub-contexts
+	 */
+	populate() {
+		for (let item of this._rule) this.addChild(new Context(item))
+	}
+
+	/**
 	 * Updates the state
 	 */
 	updateState() {
@@ -202,8 +211,7 @@ class Context extends Composite {
 			this.parent.nextState = ContextState.BACKGROUND
 			this.parent.results.add(this._results)
 		}
-		// Populate sub-contexts
-		for (let item of this._rule) this.addChild(new Context(item))
+		this.populate()
 		return this._rule.init(this, Chunk, Arg)
 	}
 
