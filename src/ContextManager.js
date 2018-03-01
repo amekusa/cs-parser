@@ -49,7 +49,7 @@ class ContextManager {
 			this.feed(bf)
 		}
 		if (Bf.length == 1) {
-			this._root.updateState()
+			this._root.updateState(true)
 			this._current.step(Bf)
 			return
 		}

@@ -107,9 +107,12 @@ class Context extends Composite {
 
 	/**
 	 * Updates the state
+	 * @param {boolean} Recursive=false Whether or not to perform recursively
 	 */
-	updateState() {
-		for (let item of this._children) item.updateState()
+	updateState(Recursive = false) {
+		if (Recursive) {
+			for (let item of this._children) item.updateState(Recursive)
+		}
 		if (this._nextState) {
 			this._state = this._nextState
 			this._nextState = null
