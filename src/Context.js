@@ -91,6 +91,12 @@ class Context extends Composite {
 	}
 
 	/**
+	 * @protected
+	 */
+	clearBuffer() {
+		this._buffer = Buffer.alloc(0)
+	}
+
 	 * Updates the state
 	 */
 	updateState() {
@@ -151,7 +157,7 @@ class Context extends Composite {
 		if (chunks.length < 2) return false
 		if (chunks.length > 2) throw new Error(`Something is going wrong..`)
 		this.parseChunk(chunks[0])
-		this._buffer = Buffer.alloc(0) // Clear buffer
+		this.clearBuffer()
 		return true
 	}
 
