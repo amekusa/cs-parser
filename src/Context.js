@@ -124,6 +124,28 @@ class Context extends Composite {
 	}
 
 	/**
+	 * Removes all the unnecessary children
+	 * @param {boolean} Recursive=false Whether or not to perform recursively
+	 * @return {Context[]} An array of removed contexts
+	 */
+	cleanupChildren(Recursive = false) {
+		if (!this.hasChild) return
+		let children = []
+		let wasted = []
+		for (let item of this._children) {
+			if (item.state == ContextState.WASTED) {
+				wasted.push(item)
+				continue
+			}
+			if (Recursive)
+				wasted = wasted.concat(item.cleanupChildren(Recursive))
+			children.push(item)
+		}
+		if (children.length) this._children = children
+		return wasted
+	}
+
+	/**
 	 * @param {Buffer} Byte
 	 * @return {boolean|string} `false` or chunk
 	 */
@@ -238,12 +260,15 @@ class Context extends Composite {
 			if (item.state == ContextState.FINISHED) continue
 			item.end()
 		}
-		this.nextState = ContextState.FINISHED
 		switch (this._state) {
+		case ContextState.STANDBY:
+			this.nextState = ContextState.WASTED
+			break
 		case ContextState.ACTIVE:
 		case ContextState.BACKGROUND:
+			this.nextState = ContextState.FINISHED
 			if (this.hasParent) {
-				// Make the parent active
+				// The parent comes back to active
 				this.parent.nextState = ContextState.ACTIVE
 				// Clone itself
 				this.parent.addChild(new Context(this._rule))

@@ -26,6 +26,7 @@ class Parser {
 		this._cm = new ContextManager(cx)
 		cx.start()
 		this._cm.feed(Tx instanceof Buffer ? Tx : Buffer.from(Tx))
+		cx.cleanupChildren(true)
 		return cx
 	}
 
@@ -59,6 +60,8 @@ class Parser {
 		return new Promise((resolve, reject) => {
 			io.on('end', () => {
 				console.log('Parsing Completed!')
+				let wasted = cx.cleanupChildren(true)
+				console.log(wasted.length + ` wasted contexts`)
 				resolve(cx)
 			})
 			io.on('error', function (e) {
