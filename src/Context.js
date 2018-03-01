@@ -135,12 +135,22 @@ class Context extends Composite {
 				this.parent.step(Byte) &&
 				this.parent.nextState == ContextState.FINISHED
 			) return true // End with the parent
-			// Find a child to activate
+			// Search a child to activate
+			var found = null
 			for (let item of this._children) {
 				if (
+					!found &&
 					item.step(Byte) &&
 					item.nextState == ContextState.ACTIVE
-				) return true // Found
+				) {
+					found = item
+					break // Stop searching
+				}
+			}
+			if (found) {
+				this.clearBuffer()
+				for (let item of this._children) item.clearBuffer()
+				return true
 			}
 			return this._step(Byte)
 		case ContextState.BACKGROUND:
