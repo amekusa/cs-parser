@@ -4,14 +4,15 @@
   "description": "Context-sensitive parser framework",
   "main": "./lib/index.js",
   "scripts": {
-    "clean": "rimraf lib",
+    "clean": "rimraf lib docs",
     "test": "cross-env BABEL_ENV=commonjs mocha --require babel-core/register --recursive",
     "test:watch": "npm test -- --watch",
     "test:examples": "node examples/",
     "cover": "cross-env BABEL_ENV=commonjs istanbul cover _mocha -- --require babel-core/register --recursive",
     "lint": "eslint src test",
+    "docs": "jsdoc -c .jsdoc.json",
     "build": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
-    "prepublish": "npm run clean && npm run lint && npm run test && npm run build"
+    "prepublish": "npm run clean && npm run lint && npm run test && npm run docs && npm run build"
   },
   "files": [
     "lib",
