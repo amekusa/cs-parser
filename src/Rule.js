@@ -4,22 +4,27 @@ import Context from './Context'
 /**
  * Parsing rule
  * @extends Composite
- * @todo Support function as the type of start|end
  */
 class Rule extends Composite {
 	/**
-	 * @param {object} Df=null Rule definition
-	 * Format: {
-	 *   start:    RegExp,
-	 *   end:      RegExp,
-	 *   init:     function (context, chunk, start's matches or start's return),
-	 *   fin:      function (context, chunk, end's matches or end's return),
-	 *   parse:    function (context, chunk),
-	 *   endsWithParent: boolean
-	 *   splitter: string|RegExp,
-	 *   encoding: string,
-	 *   $xxx:     object
+	 * @param {object} Df=null
+	 * Rule definition.<br>
+	 * Format:
+	 * ```js
+	 * {
+	 *   start: RegExp, // The pattern where this rule starts from
+	 *   end:   RegExp, // The pattern where this rule ends at
+	 *   init:  function (context, chunk, matches), // Called when this rule starts
+	 *   fin:   function (context, chunk, matches), // Called when this rule ends
+	 *   parse: function (context, chunk), // Called for every chunk from 'start' to 'end'
+	 *   endsWithParent: boolean, // If true, the parent rule can end even when this rule is active (default: false)
+	 *   splitter: string|RegExp, // The chunk splitter (default: '\n')
+	 *   encoding: string, // The encoding to decode buffers (default: 'utf8')
 	 * }
+	 * ```
+	 * Definition objects can be nested.
+	 * A nested definition is interpreted as a sub-rule.<br>
+	 * The property name for a nested definition must start from '$'
 	 */
 	constructor(Df = null) {
 		super()
@@ -43,7 +48,8 @@ class Rule extends Composite {
 	}
 
 	/**
-	 * @type {RegExp} Start pattern
+	 * The start pattern
+	 * @type {RegExp}
 	 * @default null
 	 */
 	get start() {
@@ -51,7 +57,8 @@ class Rule extends Composite {
 	}
 
 	/**
-	 * @type {RegExp} End pattern
+	 * The end pattern
+	 * @type {RegExp}
 	 * @default null
 	 */
 	get end() {
@@ -59,14 +66,17 @@ class Rule extends Composite {
 	}
 
 	/**
+	 * Whether the current context can also be ended by the parent context rule
 	 * @type {boolean}
+	 * @default false
 	 */
 	get endsWithParent() {
 		return this._endsWithParent
 	}
 
 	/**
-	 * @type {string|RegExp} Chunk splitter
+	 * The chunk splitter
+	 * @type {string|RegExp}
 	 * @default '\n'
 	 */
 	get splitter() {
@@ -74,7 +84,8 @@ class Rule extends Composite {
 	}
 
 	/**
-	 * @type {string} Text encoding. If it wasn't specified, inherits parent's value
+	 * The encoding to decode buffers
+	 * @type {string}
 	 * @default 'utf8'
 	 */
 	get encoding() {
@@ -84,16 +95,18 @@ class Rule extends Composite {
 	}
 
 	/**
-	 * @param {string} Chunk
-	 * @return {mixed}
+	 * Performs matching the specified chunk with the start pattern
+	 * @param {string} Chunk The chunk to match
+	 * @return {mixed} The matching result
 	 */
 	startsWith(Chunk) {
 		return Rule.checkEnclosure(Chunk, this._start)
 	}
 
 	/**
-	 * @param {string} Chunk
-	 * @return {mixed}
+	 * Performs matching the specified chunk with the end pattern
+	 * @param {string} Chunk The chunk to match
+	 * @return {mixed} The matching result
 	 */
 	endsWith(Chunk) {
 		return Rule.checkEnclosure(Chunk, this._end)
@@ -127,13 +140,13 @@ class Rule extends Composite {
 	}
 
 	/**
-	 * @param {Context} Cx Context to initialize
-	 * @param {string} Chunk The chunk which is matched with `start` condition
-	 * @param {string[]} MatchResult=null
-	 * Match result of `start` regex pattern
+	 * Initializes a context
+	 * @param {Context} Cx The context to initialize
+	 * @param {string} Chunk='' The chunk that matched with the `start` condition
+	 * @param {string[]} MatchResult=null The matching result of the `start` condition
 	 * @return {boolean}
-	 * Result of `init` function specified in constructor.
-	 * If `init` is not specified, `true` is returned
+	 * The result of `init` callback.
+	 * If `init` is not specified, `true` will be returned
 	 */
 	init(Cx, Chunk = '', MatchResult = null) {
 		let r = true // Goes next chunk
@@ -145,13 +158,13 @@ class Rule extends Composite {
 	}
 
 	/**
-	 * @param {Context} Cx Context to finalize
-	 * @param {string} Chunk The chunk which is matched with `end` condition
-	 * @param {string[]} MatchResult=null
-	 * Match result of `end` regex pattern
+	 * Finalizes a context
+	 * @param {Context} Cx The context to finalize
+	 * @param {string} Chunk='' The chunk that matched with the `end` condition
+	 * @param {string[]} MatchResult=null The maching result of the `end` condition
 	 * @return {boolean}
-	 * Result of `fin` function specified in constructor.
-	 * If `fin` is not specified, `true` is returned
+	 * Result of `fin` callback.
+	 * If `fin` is not specified, `true` will be returned
 	 */
 	fin(Cx, Chunk = '', MatchResult = null) {
 		let r = true // Goes next chunk
@@ -163,11 +176,12 @@ class Rule extends Composite {
 	}
 
 	/**
+	 * Parses a chunk
 	 * @param {Context} Cx The current context
-	 * @param {string} Chunk The chunk to parse
+	 * @param {string} Chunk='' The chunk to parse
 	 * @return {boolean}
-	 * Result of `parse` function specified in constructor.
-	 * If `parse` is not specified, `true` is returned
+	 * The result of `parse` callback.
+	 * If `parse` is not specified, `true` will be returned
 	 */
 	parse(Cx, Chunk = '') {
 		let r = true // Goes next chunk

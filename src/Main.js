@@ -2,12 +2,12 @@ import Parser from './Parser'
 import Rule from './Rule'
 
 /**
- * The main module that the user can get with `require('cs-parser')`
+ * The main API provider that the user can get with `require('cs-parser')`
  */
 class Main {
 	/**
 	 * Creates a Parser instance
-	 * @param {object|Rule} Rl The parser rule definition
+	 * @param {object|Rule} Rl The parsing rule definition
 	 * @return {Parser} A new Parser instance
 	 */
 	create(Rl) {

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Rule.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Composite.html">Composite</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Composite.html#addChild">addChild</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Composite.html#addChildren">addChildren</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Composite.html#traverse">traverse</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Composite.html#verifyChild">verifyChild</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Context.html">Context</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#addChild">addChild</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#addChildren">addChildren</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#cleanupChildren">cleanupChildren</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#clearBuffer">clearBuffer</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#end">end</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#parseChunk">parseChunk</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#populate">populate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#start">start</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#step">step</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#traverse">traverse</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#updateState">updateState</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#verifyChild">verifyChild</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ContextManager.html">ContextManager</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ContextManager.html#feed">feed</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Main.html">Main</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Main.html#create">create</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Main.html#newRule">newRule</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Parser.html">Parser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Parser.html#onComplete">onComplete</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Parser.html#parse">parse</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Parser.html#parseFile">parseFile</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ResultSet.html">ResultSet</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ResultSet.html#add">add</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ResultSet.html#traverse">traverse</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Rule.html">Rule</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#addChild">addChild</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#addChildren">addChildren</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#endsWith">endsWith</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#fin">fin</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#init">init</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#parse">parse</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#startsWith">startsWith</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#traverse">traverse</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#verifyChild">verifyChild</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Rule.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import Composite from './Composite'
+import Context from './Context'
+
+/**
+ * Parsing rule
+ * @extends Composite
+ */
+class Rule extends Composite {
+	/**
+	 * @param {object} Df=null
+	 * Rule definition.&lt;br>
+	 * Format:
+	 * ```js
+	 * {
+	 *   start: RegExp, // The pattern where this rule starts from
+	 *   end:   RegExp, // The pattern where this rule ends at
+	 *   init:  function (context, chunk, matches), // Called when this rule starts
+	 *   fin:   function (context, chunk, matches), // Called when this rule ends
+	 *   parse: function (context, chunk), // Called for every chunk from 'start' to 'end'
+	 *   endsWithParent: boolean, // If true, the parent rule can end even when this rule is active (default: false)
+	 *   splitter: string|RegExp, // The chunk splitter (default: '\n')
+	 *   encoding: string, // The encoding to decode buffers (default: 'utf8')
+	 * }
+	 * ```
+	 * Definition objects can be nested.
+	 * A nested definition is interpreted as a sub-rule.&lt;br>
+	 * The property name for a nested definition must start from '$'
+	 */
+	constructor(Df = null) {
+		super()
+		if (!Df) Df = {}
+		this._start = Df.start || null
+		this._end = Df.end || null
+		this._init = Df.init || null
+		this._fin = Df.fin || null
+		this._parse = Df.parse || null
+		this._endsWithParent = Df.endsWithParent || false
+		this._splitter = Df.splitter || '\n'
+		this._encoding = Df.encoding || ''
+
+		// Sub rules
+		for (let i in Df) {
+			let m = i.match(/^\$/)
+			if (!m) continue
+			if (!Df[i]) continue
+			this.addChild(new Rule(Df[i]))
+		}
+	}
+
+	/**
+	 * The start pattern
+	 * @type {RegExp}
+	 * @default null
+	 */
+	get start() {
+		return this._start
+	}
+
+	/**
+	 * The end pattern
+	 * @type {RegExp}
+	 * @default null
+	 */
+	get end() {
+		return this._end
+	}
+
+	/**
+	 * Whether the current context can also be ended by the parent context rule
+	 * @type {boolean}
+	 * @default false
+	 */
+	get endsWithParent() {
+		return this._endsWithParent
+	}
+
+	/**
+	 * The chunk splitter
+	 * @type {string|RegExp}
+	 * @default '\n'
+	 */
+	get splitter() {
+		return this._splitter
+	}
+
+	/**
+	 * The encoding to decode buffers
+	 * @type {string}
+	 * @default 'utf8'
+	 */
+	get encoding() {
+		return this._encoding || (
+			this.hasParent ? this._parent.encoding : 'utf8'
+		)
+	}
+
+	/**
+	 * Performs matching the specified chunk with the start pattern
+	 * @param {string} Chunk The chunk to match
+	 * @return {mixed} The matching result
+	 */
+	startsWith(Chunk) {
+		return Rule.checkEnclosure(Chunk, this._start)
+	}
+
+	/**
+	 * Performs matching the specified chunk with the end pattern
+	 * @param {string} Chunk The chunk to match
+	 * @return {mixed} The matching result
+	 */
+	endsWith(Chunk) {
+		return Rule.checkEnclosure(Chunk, this._end)
+	}
+
+	/**
+	 * @private
+	 * @param {string} Chunk
+	 * @param {boolean|string|function|RegExp|mixed[]} Cond Condition
+	 * @return {mixed}
+	 */
+	static checkEnclosure(Chunk, Cond) {
+		if (!Cond) return false
+		switch (typeof Cond) {
+		case 'boolean':
+			return true
+		case 'string':
+			let idx = Chunk.indexOf(Cond)
+			return idx &lt; 0 ? false : idx
+		case 'function':
+			return Cond(Chunk)
+		}
+		if (Cond instanceof RegExp) return Chunk.match(Cond)
+		if (Array.isArray(Cond)) {
+			for (let item of Cond) {
+				let r = Rule.checkEnclosure(Chunk, item)
+				if (r) return r
+			}
+		}
+		return false
+	}
+
+	/**
+	 * Initializes a context
+	 * @param {Context} Cx The context to initialize
+	 * @param {string} Chunk='' The chunk that matched with the `start` condition
+	 * @param {string[]} MatchResult=null The matching result of the `start` condition
+	 * @return {boolean}
+	 * The result of `init` callback.
+	 * If `init` is not specified, `true` will be returned
+	 */
+	init(Cx, Chunk = '', MatchResult = null) {
+		let r = true // Goes next chunk
+		if (this._init) {
+			r = this._init(Cx, Chunk, MatchResult)
+			if (typeof r == 'undefined') r = true
+		}
+		return r
+	}
+
+	/**
+	 * Finalizes a context
+	 * @param {Context} Cx The context to finalize
+	 * @param {string} Chunk='' The chunk that matched with the `end` condition
+	 * @param {string[]} MatchResult=null The maching result of the `end` condition
+	 * @return {boolean}
+	 * Result of `fin` callback.
+	 * If `fin` is not specified, `true` will be returned
+	 */
+	fin(Cx, Chunk = '', MatchResult = null) {
+		let r = true // Goes next chunk
+		if (this._fin) {
+			r = this._fin(Cx, Chunk, MatchResult)
+			if (typeof r == 'undefined') r = true
+		}
+		return r
+	}
+
+	/**
+	 * Parses a chunk
+	 * @param {Context} Cx The current context
+	 * @param {string} Chunk='' The chunk to parse
+	 * @return {boolean}
+	 * The result of `parse` callback.
+	 * If `parse` is not specified, `true` will be returned
+	 */
+	parse(Cx, Chunk = '') {
+		let r = true // Goes next chunk
+		if (this._parse) {
+			r = this._parse(Cx, Chunk)
+			if (typeof r == 'undefined') r = true
+		}
+		return r
+	}
+}
+
+export default Rule
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Mar 03 2018 02:37:55 GMT+0900 (JST) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

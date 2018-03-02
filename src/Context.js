@@ -5,18 +5,18 @@ import ResultSet from './ResultSet'
 import Rule from './Rule'
 
 /**
- * A parsing context which holds a rule and state
+ * A parsing context
  * @extends Composite
  */
 class Context extends Composite {
 	/**
 	 * @override
-	 * @param {Rule} Rule
-	 * @param {ContextManager} Manager=null
+	 * @param {Rule} Rl The rule that determines the behavior of this context
+	 * @param {ContextManager} Manager=null The manager that controls this context
 	 */
-	constructor(Rule, Manager = null) {
+	constructor(Rl, Manager = null) {
 		super()
-		this._rule = Rule
+		this._rule = Rl
 		this._manager = Manager
 		this._state = ContextState.STANDBY
 		this._nextState = null
@@ -26,6 +26,7 @@ class Context extends Composite {
 	}
 
 	/**
+	 * The rule that determines the behavior of this context
 	 * @type {Rule}
 	 */
 	get rule() {
@@ -33,6 +34,7 @@ class Context extends Composite {
 	}
 
 	/**
+	 * The manager that is controlling this context
 	 * @type {ContextManager}
 	 */
 	get manager() {
@@ -46,6 +48,7 @@ class Context extends Composite {
 	}
 
 	/**
+	 * The current state
 	 * @type {Symbol}
 	 */
 	get state() {
@@ -53,6 +56,7 @@ class Context extends Composite {
 	}
 
 	/**
+	 * The next state which this context is about to change to
 	 * @type {Symbol}
 	 */
 	get nextState() {
@@ -64,6 +68,7 @@ class Context extends Composite {
 	}
 
 	/**
+	 * The parsing results
 	 * @type {ResultSet}
 	 */
 	get results() {
@@ -71,6 +76,7 @@ class Context extends Composite {
 	}
 
 	/**
+	 * The data object
 	 * @type {mixed}
 	 */
 	get data() {
@@ -83,6 +89,7 @@ class Context extends Composite {
 
 	/**
 	 * @override
+	 * @param {Context} Cx The context to verify
 	 */
 	verifyChild(Cx) {
 		if (Cx._manager && Cx._manager !== this.manager)
@@ -92,6 +99,7 @@ class Context extends Composite {
 
 	/**
 	 * @protected
+	 * Clears internal reading buffer
 	 */
 	clearBuffer() {
 		this._buffer = Buffer.alloc(0)
@@ -146,8 +154,13 @@ class Context extends Composite {
 	}
 
 	/**
-	 * @param {Buffer} Byte
-	 * @return {boolean|string} `false` or chunk
+	 * Pushes a single byte into the internal reading buffer.
+	 * And if the buffer reached at the chunk splitter (default: '\n'),
+	 * passes the buffer to `parseChunk()`.
+	 * @param {Buffer} Byte The byte to push into the buffer
+	 * @return {boolean}
+	 * `true` if the buffer reached at the chunk splitter.
+	 * Otherwise `false`
 	 */
 	step(Byte) {
 		switch (this.state) {
@@ -206,6 +219,7 @@ class Context extends Composite {
 	}
 
 	/**
+	 * Applies the rule to a chunk
 	 * @param {string} Chunk Chunk to apply the rule
 	 */
 	parseChunk(Chunk) {
@@ -235,6 +249,9 @@ class Context extends Composite {
 		}
 	}
 
+	/**
+	 * Activates this context
+	 */
 	start(Chunk = null, Arg = null) {
 		if (this._state == ContextState.ACTIVE) {
 			console.warn('Already active')
@@ -250,6 +267,9 @@ class Context extends Composite {
 		return this._rule.init(this, Chunk, Arg)
 	}
 
+	/**
+	 * Deactivates this context
+	 */
 	end(Chunk = null, Arg = null) {
 		if (this._state == ContextState.FINISHED) {
 			console.warn('Already finished')

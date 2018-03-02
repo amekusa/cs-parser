@@ -2,8 +2,7 @@ import Context from './Context'
 import {ContextState} from './ContextState'
 
 /**
- * ContextManager can hold a context tree
- * and handle the composition as a stack of states
+ * A ContextManager can control multiple contexts through the entire parsing
  */
 class ContextManager {
 	/**
@@ -17,14 +16,16 @@ class ContextManager {
 	}
 
 	/**
-	 * @type {Context} The root context
+	 * The root context
+	 * @type {Context}
 	 */
 	get root() {
 		return this._root
 	}
 
 	/**
-	 * @type {Context} The current context
+	 * The current context
+	 * @type {Context}
 	 */
 	get current() {
 		return this._current
@@ -39,7 +40,8 @@ class ContextManager {
 	}
 
 	/**
-	 * Feeds bytes to contexts
+	 * Feeds a buffer to all the appropriate contexts
+	 * depending on the current context
 	 * @param {Buffer} Bf
 	 */
 	feed(Bf) {
