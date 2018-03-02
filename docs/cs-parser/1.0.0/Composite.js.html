@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Context.js - Documentation</title>
+    <title>Composite.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Context.js</h1>
+    <h1 class="page-title">Composite.js</h1>
     
 
     
@@ -39,308 +39,143 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import Composite from './Composite'
-import ContextManager from './ContextManager'
-import {ContextState} from './ContextState'
-import ResultSet from './ResultSet'
-import Rule from './Rule'
-
-/**
- * A parsing context
- * @extends Composite
+            <pre class="prettyprint source linenums"><code>/**
+ * The base class which provides the implementation of the Composite design pattern.
+ * A composite object can form a tree-like structure, the nodes or leaves of which are also composites
  */
-class Context extends Composite {
-	/**
-	 * @override
-	 * @param {Rule} Rl The rule that determines the behavior of this context
-	 * @param {ContextManager} Manager=null The manager that controls this context
-	 */
-	constructor(Rl, Manager = null) {
-		super()
-		this._rule = Rl
-		this._manager = Manager
-		this._state = ContextState.STANDBY
-		this._nextState = null
-		this._results = null
-		this._data = null
-		this._buffer = Buffer.alloc(0)
+class Composite {
+	constructor() {
+		this._parent = null
+		this._children = []
 	}
 
 	/**
-	 * The rule that determines the behavior of this context
-	 * @type {Rule}
+	 * Whether this has parent
+	 * @type {boolean}
 	 */
-	get rule() {
-		return this._rule
+	get hasParent() {
+		return this._parent != null
 	}
 
 	/**
-	 * The manager that is controlling this context
-	 * @type {ContextManager}
+	 * Whether this has one or more children
+	 * @type {boolean}
 	 */
-	get manager() {
-		return this._manager || (this.hasParent ? this.parent.manager : null)
-	}
-
-	set manager(Manager) {
-		if (this.hasParent) throw new Error(`Manager of a non-root context cannot be changed`)
-		if (this._manager) throw new Error(`Another manager is already set`)
-		this._manager = Manager
+	get hasChild() {
+		return this._children.length > 0
 	}
 
 	/**
-	 * The current state
-	 * @type {Symbol}
+	 * The parent node
+	 * @type {Composite}
 	 */
-	get state() {
-		return this._state
+	get parent() {
+		return this._parent
 	}
 
 	/**
-	 * The next state which this context is about to change to
-	 * @type {Symbol}
+	 * The ancestors ordered by closest to furthest
+	 * @type {Composite[]}
 	 */
-	get nextState() {
-		return this._nextState || this._state
-	}
-
-	set nextState(State) {
-		this._nextState = State
+	get ancestors() {
+		let r = []
+		let item = this
+		while (item.hasParent) {
+			item = item._parent
+			r.push(item)
+		}
+		return r
 	}
 
 	/**
-	 * The parsing results
-	 * @type {ResultSet}
+	 * The root of composition
+	 * @type {Composite}
 	 */
-	get results() {
-		return this._results
+	get root() {
+		let r = this
+		while (r.hasParent) r = r._parent
+		return r
 	}
 
 	/**
-	 * The data object
-	 * @type {mixed}
+	 * The number of children
+	 * @type {number}
 	 */
-	get data() {
-		return this._data
-	}
-
-	set data(Value) {
-		this._data = Value
+	get length() {
+		return this._children.length
 	}
 
 	/**
-	 * @override
-	 * @param {Context} Cx The context to verify
+	 * Determines whether the specified composite can be added as a child
+	 * @param {Composite} Cp The composite which is about to be added
+	 * @return {boolean|string}
+	 * `true` if `Cp` is valid. Any type other than `true` means invalid.
+	 * If a string is returned, it is shown as an error message in the debug console
 	 */
-	verifyChild(Cx) {
-		if (Cx._manager &amp;&amp; Cx._manager !== this.manager)
-			throw new Error(`Multiple managers conflicted`)
+	verifyChild(Cp) {
 		return true
 	}
 
 	/**
-	 * @protected
-	 * Clears internal reading buffer
+	 * Adds a child composite
+	 * @param {Composite} Cp The composite to add as a child
+	 * @return {Composite} This
 	 */
-	clearBuffer() {
-		this._buffer = Buffer.alloc(0)
-	}
-
-	/**
-	 * @protected
-	 * Populates sub-contexts
-	 */
-	populate() {
-		for (let item of this._rule) this.addChild(new Context(item))
-	}
-
-	/**
-	 * Updates the state
-	 * @param {boolean} Recursive=false Whether or not to perform recursively
-	 */
-	updateState(Recursive = false) {
-		if (Recursive) {
-			for (let item of this._children) item.updateState(Recursive)
+	addChild(Cp) {
+		if (Cp.hasParent) throw new Error('Parent already exists')
+		let verified = this.verifyChild(Cp)
+		if (verified !== true) {
+			console.error(typeof verified == 'string' ? verified : 'Invalid child')
+			return this
 		}
-		if (this._nextState) {
-			this._state = this._nextState
-			this._nextState = null
-
-			let manager = this.manager
-			if (manager &amp;&amp; this.state == ContextState.ACTIVE)
-				manager.current = this
-		}
+		Cp._parent = this
+		this._children.push(Cp)
+		return this
 	}
 
 	/**
-	 * Removes all the unnecessary children
-	 * @param {boolean} Recursive=false Whether or not to perform recursively
-	 * @return {Context[]} An array of removed contexts
+	 * Adds multiple child composites
+	 * @param {Composite[]} Cps The array of the composites to add
+	 * @return {Composite} This
 	 */
-	cleanupChildren(Recursive = false) {
-		if (!this.hasChild) return
-		let children = []
-		let wasted = []
-		for (let item of this._children) {
-			if (item.state == ContextState.WASTED) {
-				wasted.push(item)
-				continue
-			}
-			if (Recursive)
-				wasted = wasted.concat(item.cleanupChildren(Recursive))
-			children.push(item)
-		}
-		if (children.length) this._children = children
-		return wasted
+	addChildren(Cps) {
+		for (let item of Cps) this.addChild(item)
+		return this
 	}
 
 	/**
-	 * Pushes a single byte into the internal reading buffer.
-	 * And if the buffer reached at the chunk splitter (default: '\n'),
-	 * passes the buffer to `parseChunk()`.
-	 * @param {Buffer} Byte The byte to push into the buffer
+	 * Performs tree traversal
+	 * @param {function} Fn
+	 * The callback that receives every descendant composite as the 1st parameter.
+	 * If `false` is returned, the traversal will be aborted.
+	 * The returned value other than `false` will be passed to the next traversal call of `Fn` as the 2nd parameter
+	 * @param {number} Depth=-1
+	 * The limit of traversal depth. Negative number means no-limit
+	 * @param {mixed} Arg=null
+	 * Additinal argument to pass to `Fn` as the 2nd parameter.
 	 * @return {boolean}
-	 * `true` if the buffer reached at the chunk splitter.
-	 * Otherwise `false`
+	 * `true` if the traversal is successfully completed.
+	 * `false` if the traversal is aborted
 	 */
-	step(Byte) {
-		switch (this.state) {
-		case ContextState.STANDBY:
-			return this._step(Byte)
-		case ContextState.ACTIVE:
-			if (
-				this._rule.endsWithParent &amp;&amp;
-				this.hasParent &amp;&amp;
-				this.parent.step(Byte) &amp;&amp;
-				this.parent.nextState == ContextState.FINISHED
-			) return true // End with the parent
-			// Search a child to activate
-			var found = null
-			for (let item of this._children) {
-				if (
-					!found &amp;&amp;
-					item.step(Byte) &amp;&amp;
-					item.nextState == ContextState.ACTIVE
-				) {
-					found = item
-					break // Stop searching
-				}
-			}
-			if (found) {
-				this.clearBuffer()
-				for (let item of this._children) item.clearBuffer()
-				return true
-			}
-			return this._step(Byte)
-		case ContextState.BACKGROUND:
-			if (
-				this._rule.endsWithParent &amp;&amp;
-				this.hasParent &amp;&amp;
-				this.parent.step(Byte) &amp;&amp;
-				this.parent.nextState == ContextState.FINISHED
-			) return true // End with the parent
-			return this._step(Byte)
-		}
-		return false
-	}
-
-	/**
-	 * @private
-	 * @return {boolean}
-	 */
-	_step(Byte) {
-		this._buffer = Buffer.concat([this._buffer, Byte])
-		let chunks = this._buffer.toString(this._rule.encoding)
-			.split(this._rule.splitter)
-		if (chunks.length &lt; 2) return false
-		if (chunks.length > 2) throw new Error(`Something is going wrong..`)
-		this.parseChunk(chunks[0])
-		this.clearBuffer()
-		return true
-	}
-
-	/**
-	 * Applies the rule to a chunk
-	 * @param {string} Chunk Chunk to apply the rule
-	 */
-	parseChunk(Chunk) {
-		let manager = this.manager
-
-		switch (this._state) {
-		case ContextState.STANDBY:
-			var starts = this._rule.startsWith(Chunk)
-			if (starts || starts === 0) { // Starts
-				if (!this.start(Chunk, starts)) manager.buffer = this._buffer
-			}
-			return
-		case ContextState.ACTIVE:
-			var ends = this._rule.endsWith(Chunk)
-			if (ends || ends === 0) { // Ends
-				if (!this.end(Chunk, ends)) manager.buffer = this._buffer
-				return
-			}
-			if (!this._rule.parse(this, Chunk)) manager.buffer = this._buffer
-			return
-		case ContextState.BACKGROUND:
-			var ends = this._rule.endsWith(Chunk)
-			if (ends || ends === 0) { // Ends
-				if (!this.end(Chunk, ends)) manager.buffer = this._buffer
-			}
-			return
-		}
-	}
-
-	/**
-	 * Activates this context
-	 */
-	start(Chunk = null, Arg = null) {
-		if (this._state == ContextState.ACTIVE) {
-			console.warn('Already active')
-			return false
-		}
-		this.nextState = ContextState.ACTIVE
-		this._results = new ResultSet()
-		if (this.hasParent) {
-			this.parent.nextState = ContextState.BACKGROUND
-			this.parent.results.add(this._results)
-		}
-		this.populate()
-		return this._rule.init(this, Chunk, Arg)
-	}
-
-	/**
-	 * Deactivates this context
-	 */
-	end(Chunk = null, Arg = null) {
-		if (this._state == ContextState.FINISHED) {
-			console.warn('Already finished')
-			return false
-		}
-		// End all the sub-contexts
+	traverse(Fn, Depth = -1, Arg = null) {
+		let r = true
+		let result = Fn(this, Arg)
+		if (result === false || Depth == 0) return !this.hasChild
 		for (let item of this._children) {
-			if (item.state == ContextState.FINISHED) continue
-			item.end()
+			if (!item.traverse(Fn, Depth - 1, result) &amp;&amp; r) r = false
 		}
-		switch (this._state) {
-		case ContextState.STANDBY:
-			this.nextState = ContextState.WASTED
-			break
-		case ContextState.ACTIVE:
-		case ContextState.BACKGROUND:
-			this.nextState = ContextState.FINISHED
-			if (this.hasParent) {
-				// The parent comes back to active
-				this.parent.nextState = ContextState.ACTIVE
-				// Clone itself
-				this.parent.addChild(new Context(this._rule))
-			}
-			return this._rule.fin(this, Chunk, Arg)
-		}
-		return false
+		return r
+	}
+
+	/**
+	 * @ignore
+	 */
+	[Symbol.iterator]() {
+		return this._children[Symbol.iterator]()
 	}
 }
 
-export default Context
+export default Composite
 </code></pre>
         </article>
     </section>
@@ -353,7 +188,7 @@ export default Context
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Mar 03 2018 02:37:55 GMT+0900 (JST) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Mar 03 2018 02:46:16 GMT+0900 (JST) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
