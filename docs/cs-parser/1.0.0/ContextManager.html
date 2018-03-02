@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Parser.js - Documentation</title>
+    <title>ContextManager - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,110 +29,477 @@
 
 <div id="main">
     
-    <h1 class="page-title">Parser.js</h1>
+    <h1 class="page-title">ContextManager</h1>
     
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>import ContextManager from './ContextManager'
-import Context from './Context'
-import {ContextState} from './ContextState'
-import Rule from './Rule'
-const fs = require('fs')
+        <h2>
+        ContextManager
+        </h2>
+        
+            <div class="class-description"><p>A ContextManager can control multiple contexts through the entire parsing</p></div>
+        
+    
+</header>
 
-/**
- * Context sensitive parser
- */
-class Parser {
-	/**
-	 * @param {object|Rule} Rl Rule definition
-	 */
-	constructor(Rl) {
-		let rule = Rl instanceof Rule ? Rl : new Rule(Rl)
-		this._rule = rule.start ? new Rule().addChild(rule) : rule
-		this._cm = null
-	}
+<article>
+    <div class="container-overview">
+    
+        
+<div class="section-method">
 
-	/**
-	 * Parses the data specified as a string or Buffer.
-	 * After the parsing completed, returns the root context which contains
-	 * all the generated sub-contexts through the entire parsing.
-	 * @param {string|Buffer} Data The data to be parsed
-	 * @return {Context} The root context
-	 */
-	parse(Data) {
-		let cx = new Context(this._rule)
-		this._cm = new ContextManager(cx)
-		cx.start()
-		this._cm.feed(Data instanceof Buffer ? Data : Buffer.from(Data))
-		this.onComplete(cx)
-		return cx
-	}
+    
+    <h2>Constructor</h2>
+    
 
-	/**
-	 * Parses a file asynchronously
-	 * @param {string} Url The file URL
-	 * @param {object} Opt Streaming options
-	 * @see https://nodejs.org/api/fs.html#fs_fs_createreadstream_path_options
-	 * @return {Promise}
-	 * A Promise that resolves when the parsing complete.
-	 * You can get the root context as the 1st parameter of a callback
-	 * which you can pass to `.then()`
-	 */
-	parseFile(Url, Opt = null) {
-		let cx = null
-		let io = fs.createReadStream(Url, Object.assign(Opt || {}, {
-			highWaterMark: 1
-		}))
-		io.on('open', () => {
-			try {
-				cx = new Context(this._rule)
-				this._cm = new ContextManager(cx)
-				cx.start()
-			} catch (e) {
-				io.emit('error', e)
-			}
-		})
-		io.on('data', byte => {
-			try {
-				this._cm.feed(byte)
-			} catch (e) {
-				io.emit('error', e)
-			}
-		})
-		return new Promise((resolve, reject) => {
-			io.on('end', () => {
-				this.onComplete(cx)
-				resolve(cx)
-			})
-			io.on('error', function (e) {
-				console.error(e)
-				io.destroy()
-				reject(e)
-			})
-		})
-	}
+    <h4 class="name" id="ContextManager"><span class="type-signature"></span>new ContextManager<span class="signature">(Cx)</span><span class="type-signature"></span></h4>
 
-	/**
-	 * @protected
-	 * @param {Context} Cx The finished context
-	 */
-	onComplete(Cx) {
-		console.log('Parsing Completed!')
-		let wasted = Cx.cleanupChildren(true)
-		console.log(wasted.length + ` wasted contexts`)
-	}
-}
+    
 
-export default Parser
-</code></pre>
-        </article>
-    </section>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ContextManager.js.html">ContextManager.js</a>, <a href="ContextManager.js.html#line7">line 7</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>Cx</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code><a href="Context.html">Context</a></code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>The root context to manage</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="current"><span class="type-signature"></span>current<span class="type-signature"> :<a href="Context.html">Context</a></span></h4>
+
+
+
+
+<div class="description">
+    <p>The current context</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ContextManager.js.html">ContextManager.js</a>, <a href="ContextManager.js.html#line30">line 30</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><code><a href="Context.html">Context</a></code></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</div>
+
+        
+            
+<div class="section-members">
+<h4 class="name" id="root"><span class="type-signature"></span>root<span class="type-signature"> :<a href="Context.html">Context</a></span></h4>
+
+
+
+
+<div class="description">
+    <p>The root context</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ContextManager.js.html">ContextManager.js</a>, <a href="ContextManager.js.html#line22">line 22</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><code><a href="Context.html">Context</a></code></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+</div>
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="feed"><span class="type-signature"></span>feed<span class="signature">(Bf)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Feeds a buffer to all the appropriate contexts
+depending on the current context</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="ContextManager.js.html">ContextManager.js</a>, <a href="ContextManager.js.html#line47">line 47</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>Bf</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>Buffer</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+        
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
@@ -142,7 +509,7 @@ export default Parser
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Mar 03 2018 02:37:55 GMT+0900 (JST) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Mar 03 2018 02:46:16 GMT+0900 (JST) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
