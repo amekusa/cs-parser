@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>ContextManager - Documentation</title>
+    <title>Parser - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,7 +29,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">ContextManager</h1>
+    <h1 class="page-title">Parser</h1>
     
 
     
@@ -42,10 +42,10 @@
 <header>
     
         <h2>
-        ContextManager
+        Parser
         </h2>
         
-            <div class="class-description"><p>A ContextManager can control multiple contexts through the entire parsing</p></div>
+            <div class="class-description"><p>Context sensitive parser</p></div>
         
     
 </header>
@@ -60,7 +60,7 @@
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="ContextManager"><span class="type-signature"></span>new ContextManager<span class="signature">(Cx)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Parser"><span class="type-signature"></span>new Parser<span class="signature">(Rl)</span><span class="type-signature"></span></h4>
 
     
 
@@ -99,7 +99,159 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ContextManager.js.html">ContextManager.js</a>, <a href="ContextManager.js.html#line7">line 7</a>
+        <a href="Parser.js.html">Parser.js</a>, <a href="Parser.js.html#line10">line 10</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>Rl</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+|
+
+<span class="param-type"><code><a href="Rule.html">Rule</a></code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>Rule definition</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="onComplete"><span class="type-signature">(protected) </span>onComplete<span class="signature">(Cx)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Parser.js.html">Parser.js</a>, <a href="Parser.js.html#line84">line 84</a>
     </li></ul></dd>
     
 
@@ -160,7 +312,7 @@
             
 
             <td class="description last">
-                <p>The root context to manage</p>
+                <p>The finished context</p>
                 
             </td>
         </tr>
@@ -185,191 +337,22 @@
 
 
 </div>
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="current"><span class="type-signature"></span>current<span class="type-signature"> :<a href="Context.html">Context</a></span></h4>
-
-
-
-
-<div class="description">
-    <p>The current context</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ContextManager.js.html">ContextManager.js</a>, <a href="ContextManager.js.html#line30">line 30</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code><a href="Context.html">Context</a></code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-            
-<div class="section-members">
-<h4 class="name" id="root"><span class="type-signature"></span>root<span class="type-signature"> :<a href="Context.html">Context</a></span></h4>
-
-
-
-
-<div class="description">
-    <p>The root context</p>
-</div>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ContextManager.js.html">ContextManager.js</a>, <a href="ContextManager.js.html#line22">line 22</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><code><a href="Context.html">Context</a></code></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-</div>
-
-        
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
         
             
 <div class="section-method">
 
     
 
-    <h4 class="name" id="feed"><span class="type-signature"></span>feed<span class="signature">(Bf)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="parse"><span class="type-signature"></span>parse<span class="signature">(Data)</span><span class="type-signature"> &rarr; {<a href="Context.html">Context</a>}</span></h4>
 
     
 
 
 
 <div class="description">
-    <p>Feeds a buffer to all the appropriate contexts
-depending on the current context</p>
+    <p>Parses the data specified as a string or Buffer.
+After the parsing completed, returns the root context which contains
+all the generated sub-contexts through the entire parsing.</p>
 </div>
 
 
@@ -405,7 +388,7 @@ depending on the current context</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="ContextManager.js.html">ContextManager.js</a>, <a href="ContextManager.js.html#line47">line 47</a>
+        <a href="Parser.js.html">Parser.js</a>, <a href="Parser.js.html#line27">line 27</a>
     </li></ul></dd>
     
 
@@ -449,12 +432,15 @@ depending on the current context</p>
 
         <tr>
             
-                <td class="name"><code>Bf</code></td>
+                <td class="name"><code>Data</code></td>
             
 
             <td class="type">
             
                 
+<span class="param-type"><code>string</code></span>
+|
+
 <span class="param-type"><code>Buffer</code></span>
 
 
@@ -466,7 +452,7 @@ depending on the current context</p>
             
 
             <td class="description last">
-                
+                <p>The data to be parsed</p>
                 
             </td>
         </tr>
@@ -487,6 +473,238 @@ depending on the current context</p>
 
 
 
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code><a href="Context.html">Context</a></code></span>
+
+
+    </dd>
+</dl>
+
+
+<div class="param-desc">
+    <p>The root context</p>
+</div>
+
+    
+</div>
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="parseFile"><span class="type-signature"></span>parseFile<span class="signature">(Url, Opt)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Parses a file asynchronously</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Parser.js.html">Parser.js</a>, <a href="Parser.js.html#line46">line 46</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="https://nodejs.org/api/fs.html#fs_fs_createreadstream_path_options">https://nodejs.org/api/fs.html#fs_fs_createreadstream_path_options</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>Url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">
+                <p>The file URL</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>Opt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last">
+                <p>Streaming options</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>Promise</code></span>
+
+
+    </dd>
+</dl>
+
+
+<div class="param-desc">
+    <p>A Promise that resolves when the parsing complete.
+You can get the root context as the 1st parameter of a callback
+which you can pass to <code>.then()</code></p>
+</div>
+
+    
+</div>
 
 
 
@@ -509,7 +727,7 @@ depending on the current context</p>
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Mar 03 2018 02:37:55 GMT+0900 (JST) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Mar 03 2018 02:46:16 GMT+0900 (JST) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
