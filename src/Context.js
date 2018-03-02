@@ -5,18 +5,18 @@ import ResultSet from './ResultSet'
 import Rule from './Rule'
 
 /**
- * A parsing context which holds a rule and state
+ * A parsing context
  * @extends Composite
  */
 class Context extends Composite {
 	/**
 	 * @override
-	 * @param {Rule} Rule
-	 * @param {ContextManager} Manager=null
+	 * @param {Rule} Rl The rule that determines the behavior of this context
+	 * @param {ContextManager} Manager=null The manager that controls this context
 	 */
-	constructor(Rule, Manager = null) {
+	constructor(Rl, Manager = null) {
 		super()
-		this._rule = Rule
+		this._rule = Rl
 		this._manager = Manager
 		this._state = ContextState.STANDBY
 		this._nextState = null
@@ -26,6 +26,7 @@ class Context extends Composite {
 	}
 
 	/**
+	 * The rule that determines the behavior of this context
 	 * @type {Rule}
 	 */
 	get rule() {
@@ -33,6 +34,7 @@ class Context extends Composite {
 	}
 
 	/**
+	 * The manager that is controlling this context
 	 * @type {ContextManager}
 	 */
 	get manager() {
@@ -46,6 +48,7 @@ class Context extends Composite {
 	}
 
 	/**
+	 * The current state
 	 * @type {Symbol}
 	 */
 	get state() {
@@ -53,6 +56,7 @@ class Context extends Composite {
 	}
 
 	/**
+	 * The next state which this context is about to change to
 	 * @type {Symbol}
 	 */
 	get nextState() {
@@ -64,6 +68,7 @@ class Context extends Composite {
 	}
 
 	/**
+	 * The parsing results
 	 * @type {ResultSet}
 	 */
 	get results() {
@@ -71,6 +76,7 @@ class Context extends Composite {
 	}
 
 	/**
+	 * The data object
 	 * @type {mixed}
 	 */
 	get data() {
@@ -83,6 +89,7 @@ class Context extends Composite {
 
 	/**
 	 * @override
+	 * @param {Context} Cx The context to verify
 	 */
 	verifyChild(Cx) {
 		if (Cx._manager && Cx._manager !== this.manager)
@@ -91,10 +98,29 @@ class Context extends Composite {
 	}
 
 	/**
-	 * Updates the state
+	 * @protected
+	 * Clears internal reading buffer
 	 */
-	updateState() {
-		for (let item of this._children) item.updateState()
+	clearBuffer() {
+		this._buffer = Buffer.alloc(0)
+	}
+
+	/**
+	 * @protected
+	 * Populates sub-contexts
+	 */
+	populate() {
+		for (let item of this._rule) this.addChild(new Context(item))
+	}
+
+	/**
+	 * Updates the state
+	 * @param {boolean} Recursive=false Whether or not to perform recursively
+	 */
+	updateState(Recursive = false) {
+		if (Recursive) {
+			for (let item of this._children) item.updateState(Recursive)
+		}
 		if (this._nextState) {
 			this._state = this._nextState
 			this._nextState = null
@@ -106,8 +132,35 @@ class Context extends Composite {
 	}
 
 	/**
-	 * @param {Buffer} Byte
-	 * @return {boolean|string} `false` or chunk
+	 * Removes all the unnecessary children
+	 * @param {boolean} Recursive=false Whether or not to perform recursively
+	 * @return {Context[]} An array of removed contexts
+	 */
+	cleanupChildren(Recursive = false) {
+		if (!this.hasChild) return
+		let children = []
+		let wasted = []
+		for (let item of this._children) {
+			if (item.state == ContextState.WASTED) {
+				wasted.push(item)
+				continue
+			}
+			if (Recursive)
+				wasted = wasted.concat(item.cleanupChildren(Recursive))
+			children.push(item)
+		}
+		if (children.length) this._children = children
+		return wasted
+	}
+
+	/**
+	 * Pushes a single byte into the internal reading buffer.
+	 * And if the buffer reached at the chunk splitter (default: '\n'),
+	 * passes the buffer to `parseChunk()`.
+	 * @param {Buffer} Byte The byte to push into the buffer
+	 * @return {boolean}
+	 * `true` if the buffer reached at the chunk splitter.
+	 * Otherwise `false`
 	 */
 	step(Byte) {
 		switch (this.state) {
@@ -120,12 +173,22 @@ class Context extends Composite {
 				this.parent.step(Byte) &&
 				this.parent.nextState == ContextState.FINISHED
 			) return true // End with the parent
-			// Find a child to activate
+			// Search a child to activate
+			var found = null
 			for (let item of this._children) {
 				if (
+					!found &&
 					item.step(Byte) &&
 					item.nextState == ContextState.ACTIVE
-				) return true // Found
+				) {
+					found = item
+					break // Stop searching
+				}
+			}
+			if (found) {
+				this.clearBuffer()
+				for (let item of this._children) item.clearBuffer()
+				return true
 			}
 			return this._step(Byte)
 		case ContextState.BACKGROUND:
@@ -151,11 +214,12 @@ class Context extends Composite {
 		if (chunks.length < 2) return false
 		if (chunks.length > 2) throw new Error(`Something is going wrong..`)
 		this.parseChunk(chunks[0])
-		this._buffer = Buffer.alloc(0) // Clear buffer
+		this.clearBuffer()
 		return true
 	}
 
 	/**
+	 * Applies the rule to a chunk
 	 * @param {string} Chunk Chunk to apply the rule
 	 */
 	parseChunk(Chunk) {
@@ -185,6 +249,9 @@ class Context extends Composite {
 		}
 	}
 
+	/**
+	 * Activates this context
+	 */
 	start(Chunk = null, Arg = null) {
 		if (this._state == ContextState.ACTIVE) {
 			console.warn('Already active')
@@ -196,11 +263,13 @@ class Context extends Composite {
 			this.parent.nextState = ContextState.BACKGROUND
 			this.parent.results.add(this._results)
 		}
-		// Populate sub-contexts
-		for (let item of this._rule) this.addChild(new Context(item))
+		this.populate()
 		return this._rule.init(this, Chunk, Arg)
 	}
 
+	/**
+	 * Deactivates this context
+	 */
 	end(Chunk = null, Arg = null) {
 		if (this._state == ContextState.FINISHED) {
 			console.warn('Already finished')
@@ -211,12 +280,15 @@ class Context extends Composite {
 			if (item.state == ContextState.FINISHED) continue
 			item.end()
 		}
-		this.nextState = ContextState.FINISHED
 		switch (this._state) {
+		case ContextState.STANDBY:
+			this.nextState = ContextState.WASTED
+			break
 		case ContextState.ACTIVE:
 		case ContextState.BACKGROUND:
+			this.nextState = ContextState.FINISHED
 			if (this.hasParent) {
-				// Make the parent active
+				// The parent comes back to active
 				this.parent.nextState = ContextState.ACTIVE
 				// Clone itself
 				this.parent.addChild(new Context(this._rule))

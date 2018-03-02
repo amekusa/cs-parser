@@ -1,2 +1,2 @@
-import Parser from './Parser'
-module.exports = Parser
+import main from './Main'
+module.exports = main

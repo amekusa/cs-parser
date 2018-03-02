@@ -1,7 +1,7 @@
-const Parser = require('../lib')
+const csp = require('../lib')
 const fs = require('fs')
 
-let parser = new Parser({
+let parser = csp.create({
 	// The rule of doc block
 	$doc: {
 		start: /\/\*\*$/, // Starts with '/**'

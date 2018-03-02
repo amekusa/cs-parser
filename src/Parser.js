@@ -18,22 +18,30 @@ class Parser {
 	}
 
 	/**
-	 * @param {string|Buffer} Tx Text to be parsed
+	 * Parses the data specified as a string or Buffer.
+	 * After the parsing completed, returns the root context which contains
+	 * all the generated sub-contexts through the entire parsing.
+	 * @param {string|Buffer} Data The data to be parsed
 	 * @return {Context} The root context
 	 */
-	parse(Tx) {
+	parse(Data) {
 		let cx = new Context(this._rule)
 		this._cm = new ContextManager(cx)
 		cx.start()
-		this._cm.feed(Tx instanceof Buffer ? Tx : Buffer.from(Tx))
+		this._cm.feed(Data instanceof Buffer ? Data : Buffer.from(Data))
+		this.onComplete(cx)
 		return cx
 	}
 
 	/**
-	 * @param {string} Url File URL
+	 * Parses a file asynchronously
+	 * @param {string} Url The file URL
 	 * @param {object} Opt Streaming options
 	 * @see https://nodejs.org/api/fs.html#fs_fs_createreadstream_path_options
 	 * @return {Promise}
+	 * A Promise that resolves when the parsing complete.
+	 * You can get the root context as the 1st parameter of a callback
+	 * which you can pass to `.then()`
 	 */
 	parseFile(Url, Opt = null) {
 		let cx = null
@@ -58,7 +66,7 @@ class Parser {
 		})
 		return new Promise((resolve, reject) => {
 			io.on('end', () => {
-				console.log('Parsing Completed!')
+				this.onComplete(cx)
 				resolve(cx)
 			})
 			io.on('error', function (e) {
@@ -67,6 +75,16 @@ class Parser {
 				reject(e)
 			})
 		})
+	}
+
+	/**
+	 * @protected
+	 * @param {Context} Cx The finished context
+	 */
+	onComplete(Cx) {
+		console.log('Parsing Completed!')
+		let wasted = Cx.cleanupChildren(true)
+		console.log(wasted.length + ` wasted contexts`)
 	}
 }
 

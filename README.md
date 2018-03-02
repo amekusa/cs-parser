@@ -5,9 +5,9 @@ You can write the best parser that exactly matches your need even in 120 lines o
 And it will also be clean, semantic, and completely readable like this example:
 
 ```js
-const Parser = require('cs-parser')
+const csp = require('cs-parser')
 
-let parser = new Parser({
+let parser = csp.create({
 	// The rule of doc block
 	$doc: {
 		start: /\/\*\*$/, // Starts with '/**'

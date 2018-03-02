@@ -1,5 +1,6 @@
 /**
- * The base class which represents a composite structure
+ * The base class which provides the implementation of the Composite design pattern.
+ * A composite object can form a tree-like structure, the nodes or leaves of which are also composites
  */
 class Composite {
 	constructor() {
@@ -8,28 +9,32 @@ class Composite {
 	}
 
 	/**
-	 * @type {boolean} Whether this has parent
+	 * Whether this has parent
+	 * @type {boolean}
 	 */
 	get hasParent() {
 		return this._parent != null
 	}
 
 	/**
-	 * @type {boolean} Whether this has any child
+	 * Whether this has one or more children
+	 * @type {boolean}
 	 */
 	get hasChild() {
 		return this._children.length > 0
 	}
 
 	/**
-	 * @type {Composite} The parent composite object
+	 * The parent node
+	 * @type {Composite}
 	 */
 	get parent() {
 		return this._parent
 	}
 
 	/**
-	 * @type {Composite[]} The ancestors. The order is closest to furthest
+	 * The ancestors ordered by closest to furthest
+	 * @type {Composite[]}
 	 */
 	get ancestors() {
 		let r = []
@@ -42,7 +47,8 @@ class Composite {
 	}
 
 	/**
-	 * @type {Composite} The root of composition
+	 * The root of composition
+	 * @type {Composite}
 	 */
 	get root() {
 		let r = this
@@ -51,15 +57,16 @@ class Composite {
 	}
 
 	/**
-	 * @type {int} The number of children
+	 * The number of children
+	 * @type {number}
 	 */
 	get length() {
 		return this._children.length
 	}
 
 	/**
-	 * Determines whether the specified composite object can be added as a child
-	 * @param {Composite} Cp
+	 * Determines whether the specified composite can be added as a child
+	 * @param {Composite} Cp The composite which is about to be added
 	 * @return {boolean|string}
 	 * `true` if `Cp` is valid. Any type other than `true` means invalid.
 	 * If a string is returned, it is shown as an error message in the debug console
@@ -69,8 +76,8 @@ class Composite {
 	}
 
 	/**
-	 * Adds a child composite object
-	 * @param {Composite} Cp
+	 * Adds a child composite
+	 * @param {Composite} Cp The composite to add as a child
 	 * @return {Composite} This
 	 */
 	addChild(Cp) {
@@ -86,28 +93,28 @@ class Composite {
 	}
 
 	/**
-	 * Adds multiple child composite objects
-	 * @param {Composite[]} Cs
+	 * Adds multiple child composites
+	 * @param {Composite[]} Cps The array of the composites to add
 	 * @return {Composite} This
 	 */
-	addChildren(Cs) {
-		for (let item of Cs) this.addChild(item)
+	addChildren(Cps) {
+		for (let item of Cps) this.addChild(item)
 		return this
 	}
 
 	/**
 	 * Performs tree traversal
 	 * @param {function} Fn
-	 * Function that gets every descendant composite element as the 1st parameter.
-	 * If false is returned, the traversal is aborted.
-	 * The returned value other than false is passed to descent traversal call of 'Fn' as the 2nd parameter
+	 * The callback that receives every descendant composite as the 1st parameter.
+	 * If `false` is returned, the traversal will be aborted.
+	 * The returned value other than `false` will be passed to the next traversal call of `Fn` as the 2nd parameter
 	 * @param {number} Depth=-1
-	 * Limit of traversal depth. Negative number means no limit
+	 * The limit of traversal depth. Negative number means no-limit
 	 * @param {mixed} Arg=null
-	 * Additinal argument to pass to 'Fn' as the 2nd parameter.
+	 * Additinal argument to pass to `Fn` as the 2nd parameter.
 	 * @return {boolean}
-	 * True if the traversal is successfully completed.
-	 * False if the traversal is aborted
+	 * `true` if the traversal is successfully completed.
+	 * `false` if the traversal is aborted
 	 */
 	traverse(Fn, Depth = -1, Arg = null) {
 		let r = true
@@ -119,6 +126,9 @@ class Composite {
 		return r
 	}
 
+	/**
+	 * @ignore
+	 */
 	[Symbol.iterator]() {
 		return this._children[Symbol.iterator]()
 	}
