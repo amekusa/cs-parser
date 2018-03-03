@@ -1,4 +1,6 @@
-# Write your own parser like a boss
+# Write your own parser LIKE A BOSS
+[![npm version](https://badge.fury.io/js/cs-parser.svg)](https://badge.fury.io/js/cs-parser) [![dependencies Status](https://david-dm.org/amekusa/cs-parser/status.svg)](https://david-dm.org/amekusa/cs-parser) [![Apache License 2.0](http://img.shields.io/badge/license-Apache_2.0-blue.svg?style=flat)](LICENSE)
+
 CS Parser provides you the power to write parser for your code, data, or anything in any language, any format without hardcore coding.  
 
 You can write the best parser that exactly matches your need even in 120 lines or less.
@@ -280,8 +282,75 @@ And here is the output:
 You can run this example in your console with:
 
 ```sh
-$ npm run test:examples
+npm run test:examples
 ```
+
+## Usage & APIs
+At first, you need to install CS Parser via NPM in your console.
+
+```sh
+npm i cs-parser --save
+```
+
+Then, you can access the APIs of CS Parser by `require()`.
+
+```js
+const csp = require('cs-parser')
+```
+
+The `csp` is the [Main](https://amekusa.github.io/cs-parser/1.0.0/Main.html) object that provides few basic methods.
+
+`create()` method creates a [Parser](https://amekusa.github.io/cs-parser/1.0.0/Parser.html) object which performs parsing along the rules provided for the parameter.
+
+```js
+let parser = csp.create({
+  // Rules
+  ...
+})
+```
+
+`newRule()` method creates a [Rule](https://amekusa.github.io/cs-parser/1.0.0/Rule.html) object.
+
+```js
+let rule = csp.newRule({
+  // Rule definition
+  ...
+})
+```
+
+The format of the object for the parameter is the same as `create()` explained in the first example.
+
+But you can also pass the Rule object to `create()`.
+
+```js
+let rule = csp.newRule({ ... })
+csp.create(rule)
+```
+
+### The ES6 way
+You can get the [Main](https://amekusa.github.io/cs-parser/1.0.0/Main.html) object with `import`.
+
+```js
+import CSParser from 'cs-parser'
+let rule = CSParser.newRule({ ... })
+let parser = CSParser.create(rule)
+```
+
+Or you can also import [Parser](https://amekusa.github.io/cs-parser/1.0.0/Parser.html) and [Rule](https://amekusa.github.io/cs-parser/1.0.0/Rule.html) classes directly.
+
+```js
+import Parser from 'cs-parser/lib/Parser'
+import Rule   from 'cs-parser/lib/Rule'
+let rule = new Rule({ ... })
+let parser = new Parser(rule)
+```
+
+## Links
++ [Documentations](https://amekusa.github.io/cs-parser/1.0.0/)
++ [GitHub](https://github.com/amekusa/cs-parser)
+
+Pull requests, issue reports, or any other feedbacks are very helpful for further development! :joy:
+
 
 ---
 
