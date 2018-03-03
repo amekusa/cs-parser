@@ -4,7 +4,7 @@
 	"description": "Context-sensitive parser framework",
 	"main": "./lib/index.js",
 	"scripts": {
-		"clean": "rimraf lib docs",
+		"clean": "rimraf lib",
 		"test": "cross-env BABEL_ENV=commonjs mocha --require babel-core/register --recursive",
 		"test:watch": "npm test -- --watch",
 		"test:examples": "node examples/",
