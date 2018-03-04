@@ -34,9 +34,9 @@ class Rule extends Composite {
 		this._init = Df.init || null
 		this._fin = Df.fin || null
 		this._parse = Df.parse || null
-		this._endsWithParent = Df.endsWithParent || false
-		this._splitter = Df.splitter || '\n'
-		this._encoding = Df.encoding || ''
+		this._endsWithParent = Df.endsWithParent || null
+		this._splitter = Df.splitter || null
+		this._encoding = Df.encoding || null
 
 		// Sub rules
 		for (let i in Df) {
@@ -56,6 +56,12 @@ class Rule extends Composite {
 		return this._start
 	}
 
+	set start(X) {
+		if (this._start != null)
+			throw new Error(`The property cannot be changed`)
+		this._start = X
+	}
+
 	/**
 	 * The end pattern
 	 * @type {RegExp}
@@ -65,13 +71,25 @@ class Rule extends Composite {
 		return this._end
 	}
 
+	set end(X) {
+		if (this._end != null)
+			throw new Error(`The property cannot be changed`)
+		this._end = X
+	}
+
 	/**
 	 * Whether the current context can also be ended by the parent context rule
 	 * @type {boolean}
 	 * @default false
 	 */
 	get endsWithParent() {
-		return this._endsWithParent
+		return this._endsWithParent == null ? false : this._endsWithParent
+	}
+
+	set endsWithParent(X) {
+		if (this._endsWithParent != null)
+			throw new Error(`The property cannot be changed`)
+		this._endsWithParent = X
 	}
 
 	/**
@@ -80,7 +98,14 @@ class Rule extends Composite {
 	 * @default '\n'
 	 */
 	get splitter() {
-		return this._splitter
+		return this._splitter || (
+			this.hasParent ? this._parent.splitter : '\n'
+		)
+	}
+
+	set splitter(X) {
+		if (this._splitter) throw new Error(`The property cannot be changed`)
+		this._splitter = X
 	}
 
 	/**
@@ -92,6 +117,11 @@ class Rule extends Composite {
 		return this._encoding || (
 			this.hasParent ? this._parent.encoding : 'utf8'
 		)
+	}
+
+	set encoding(X) {
+		if (this._encoding) throw new Error(`The property cannot be changed`)
+		this._encoding = X
 	}
 
 	/**
