@@ -9,9 +9,9 @@ const fs = require('fs')
  */
 class Parser {
 	/**
-	 * @param {object|Rule} Rl Rule definition
+	 * @param {object|Rule} Rl=null The root rule
 	 */
-	constructor(Rl) {
+	constructor(Rl = null) {
 		let rule = Rl instanceof Rule ? Rl : new Rule(Rl)
 		this._rule = rule.start ? new Rule().addChild(rule) : rule
 		this._cm = null
