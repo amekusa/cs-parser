@@ -9,12 +9,34 @@ const fs = require('fs')
  */
 class Parser {
 	/**
-	 * @param {object|Rule} Rl Rule definition
+	 * @param {object|Rule} Rl=null The root rule
 	 */
-	constructor(Rl) {
+	constructor(Rl = null) {
 		let rule = Rl instanceof Rule ? Rl : new Rule(Rl)
 		this._rule = rule.start ? new Rule().addChild(rule) : rule
 		this._cm = null
+	}
+
+	/**
+	 * Adds a new rule
+	 * @param {object|Rule} Rl The rule to add
+	 * @return {Rule} The `Rule` object which has peen added
+	 */
+	addRule(Rl) {
+		let rule = Rl instanceof Rule ? Rl : new Rule(Rl)
+		this._rule.addChild(rule)
+		return rule
+	}
+
+	/**
+	 * Adds multiple new rules
+	 * @param {object[]|Rule[]} Rls An array of the rules to add
+	 * @return {Rule[]} An array of `Rule` objects which have been added
+	 */
+	addRules(Rls) {
+		let rules = []
+		for (let item of Rls) rules.push(this.addRule(item))
+		return rules
 	}
 
 	/**

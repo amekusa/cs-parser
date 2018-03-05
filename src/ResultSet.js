@@ -7,11 +7,19 @@ class ResultSet {
 	}
 
 	/**
-	 * Saves specified data as a parsing result
-	 * @param {mixed|ResultSet} Result The data to add
+	 * Saves the provided data as a parsing result.
+	 * You can pass an array as multiple results
+	 * @param {mixed|mixed[]|ResultSet} Result The data to add
+	 * @param {boolean} KeepsArray=false
+	 * If `true`, stores the result as a single result even if it is an array
+	 * @return {ResultSet} This
+	 * @chainable
 	 */
-	add(Result) {
-		this._results.push(Result)
+	add(Result, KeepsArray = false) {
+		if (Array.isArray(Result) && !KeepsArray) {
+			for (let item of Result) this._results.push(item)
+		} else this._results.push(Result)
+		return this
 	}
 
 	/**
