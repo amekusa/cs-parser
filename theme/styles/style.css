@@ -26,6 +26,16 @@ h1 + section > header > h2 {
 	display: none;
 }
 
+#sidebar > *:first-child {
+	margin-top: 0;
+}
+#sidebar > *:last-child {
+	margin-bottom: 0;
+}
+#sidebar > ul {
+	padding-left: 0;
+}
+
 .description {
 	margin-top: 0;
 }
