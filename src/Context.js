@@ -28,6 +28,7 @@ class Context extends Composite {
 	/**
 	 * The rule that determines the behavior of this context
 	 * @type {Rule}
+	 * @readonly
 	 */
 	get rule() {
 		return this._rule
@@ -50,6 +51,8 @@ class Context extends Composite {
 	/**
 	 * The current state
 	 * @type {Symbol}
+	 * @default ContextState.STANDBY
+	 * @readonly
 	 */
 	get state() {
 		return this._state
@@ -70,6 +73,7 @@ class Context extends Composite {
 	/**
 	 * The parsing results
 	 * @type {ResultSet}
+	 * @readonly
 	 */
 	get results() {
 		return this._results
