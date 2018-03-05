@@ -18,6 +18,7 @@ class ContextManager {
 	/**
 	 * The root context
 	 * @type {Context}
+	 * @readonly
 	 */
 	get root() {
 		return this._root
