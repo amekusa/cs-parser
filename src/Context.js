@@ -21,7 +21,7 @@ class Context extends Composite {
 		this._state = ContextState.STANDBY
 		this._nextState = null
 		this._results = null
-		this._data = null
+		this._data = {}
 		this._buffer = Buffer.alloc(0)
 	}
 
@@ -82,6 +82,7 @@ class Context extends Composite {
 	/**
 	 * The data object
 	 * @type {mixed}
+	 * @default {}
 	 */
 	get data() {
 		return this._data
