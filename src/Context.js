@@ -103,16 +103,16 @@ class Context extends Composite {
 	}
 
 	/**
-	 * @protected
 	 * Clears internal reading buffer
+	 * @protected
 	 */
 	clearBuffer() {
 		this._buffer = Buffer.alloc(0)
 	}
 
 	/**
-	 * @protected
 	 * Populates sub-contexts
+	 * @protected
 	 */
 	populate() {
 		for (let item of this._rule) this.addChild(new Context(item))
