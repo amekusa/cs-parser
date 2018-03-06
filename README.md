@@ -61,13 +61,15 @@ let parser = csp.create({
       },
       // Finalize Callback
       fin(cx, chunk, matches) {
-        cx.results.add(`    <dl class="specs">`)
-        cx.results.add(`      <dt>Type</dt>`)
-        cx.results.add(`      <dd>${cx.data.type}</dd>`)
-        cx.results.add(`      <dt>Name</dt>`)
-        cx.results.add(`      <dd>${cx.data.name}</dd>`)
-        cx.results.add(`    </dl>`)
-        cx.results.add(`  </div>`)
+        cx.results.add([
+          `    <dl class="specs">`,
+          `      <dt>Type</dt>`,
+          `      <dd>${cx.data.type}</dd>`,
+          `      <dt>Name</dt>`,
+          `      <dd>${cx.data.name}</dd>`,
+          `    </dl>`,
+          `  </div>`
+        ])
         return false // Returning false makes the parser read the same chunk twice
       }
     },
@@ -83,8 +85,9 @@ let parser = csp.create({
         cx.data = {
           title: matches[1]
         }
-        cx.results.add(`  <section class="example">`)
-        cx.results.add(`    <h1>${cx.data.title}</h1>`)
+        cx.results
+          .add(`  <section class="example">`)
+          .add(`    <h1>${cx.data.title}</h1>`)
       },
       // Parse Callback
       parse(cx, chunk) {
@@ -109,8 +112,9 @@ let parser = csp.create({
           cx.data = {
             lang: matches[1] || 'unknown'
           }
-          cx.results.add(`    <pre>`)
-          cx.results.add(`      <code class="lang-${cx.data.lang}">`)
+          cx.results
+            .add(`    <pre>`)
+            .add(`      <code class="lang-${cx.data.lang}">`)
         },
         // Parse Callback
         parse(cx, chunk) {
@@ -119,8 +123,9 @@ let parser = csp.create({
         },
         // Finalize Callback
         fin(cx, chunk, matches) {
-          cx.results.add(`      </code>`)
-          cx.results.add(`    </pre>`)
+          cx.results
+            .add(`      </code>`)
+            .add(`    </pre>`)
         }
       }
     }
