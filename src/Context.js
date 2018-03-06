@@ -21,13 +21,14 @@ class Context extends Composite {
 		this._state = ContextState.STANDBY
 		this._nextState = null
 		this._results = null
-		this._data = null
+		this._data = {}
 		this._buffer = Buffer.alloc(0)
 	}
 
 	/**
 	 * The rule that determines the behavior of this context
 	 * @type {Rule}
+	 * @readonly
 	 */
 	get rule() {
 		return this._rule
@@ -50,6 +51,8 @@ class Context extends Composite {
 	/**
 	 * The current state
 	 * @type {Symbol}
+	 * @default ContextState.STANDBY
+	 * @readonly
 	 */
 	get state() {
 		return this._state
@@ -70,6 +73,7 @@ class Context extends Composite {
 	/**
 	 * The parsing results
 	 * @type {ResultSet}
+	 * @readonly
 	 */
 	get results() {
 		return this._results
@@ -78,6 +82,7 @@ class Context extends Composite {
 	/**
 	 * The data object
 	 * @type {mixed}
+	 * @default {}
 	 */
 	get data() {
 		return this._data
@@ -98,16 +103,16 @@ class Context extends Composite {
 	}
 
 	/**
-	 * @protected
 	 * Clears internal reading buffer
+	 * @protected
 	 */
 	clearBuffer() {
 		this._buffer = Buffer.alloc(0)
 	}
 
 	/**
-	 * @protected
 	 * Populates sub-contexts
+	 * @protected
 	 */
 	populate() {
 		for (let item of this._rule) this.addChild(new Context(item))

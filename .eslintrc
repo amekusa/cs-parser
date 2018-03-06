@@ -1,9 +1,9 @@
 {
-  "parser": "babel-eslint",
-  "env": {
-    "mocha": true
-  },
-  "rules": {
-    "import/prefer-default-export": 0
-  }
+	"parser": "babel-eslint",
+	"env": {
+		"mocha": true
+	},
+	"rules": {
+		"import/prefer-default-export": 0
+	}
 }

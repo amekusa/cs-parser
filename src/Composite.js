@@ -9,32 +9,36 @@ class Composite {
 	}
 
 	/**
-	 * Whether this has parent
+	 * Whether this has parent composite
 	 * @type {boolean}
+	 * @readonly
 	 */
 	get hasParent() {
 		return this._parent != null
 	}
 
 	/**
-	 * Whether this has one or more children
+	 * Whether this has one or more child composites
 	 * @type {boolean}
+	 * @readonly
 	 */
 	get hasChild() {
 		return this._children.length > 0
 	}
 
 	/**
-	 * The parent node
+	 * The parent composite
 	 * @type {Composite}
+	 * @readonly
 	 */
 	get parent() {
 		return this._parent
 	}
 
 	/**
-	 * The ancestors ordered by closest to furthest
+	 * The ancestor composites ordered by closest to furthest
 	 * @type {Composite[]}
+	 * @readonly
 	 */
 	get ancestors() {
 		let r = []
@@ -49,6 +53,7 @@ class Composite {
 	/**
 	 * The root of composition
 	 * @type {Composite}
+	 * @readonly
 	 */
 	get root() {
 		let r = this
@@ -57,8 +62,9 @@ class Composite {
 	}
 
 	/**
-	 * The number of children
+	 * The number of child composites
 	 * @type {number}
+	 * @readonly
 	 */
 	get length() {
 		return this._children.length
