@@ -26,14 +26,40 @@ h1 + section > header > h2 {
 	display: none;
 }
 
+#main {
+  padding-bottom: 30px;
+}
+
+#sidebar {
+	padding: 0;
+}
 #sidebar > *:first-child {
 	margin-top: 0;
 }
 #sidebar > *:last-child {
 	margin-bottom: 0;
 }
+#sidebar > ul,
+#sidebar > .brand {
+	margin: 0;
+	padding: 10px;
+}
 #sidebar > ul {
-	padding-left: 0;
+	padding-top: 0;
+	border-top: 1px solid #eee;
+}
+#sidebar .brand {
+	position: sticky;
+	top: 0;
+	background-color: rgba(255, 255, 255, .75);
+}
+#sidebar .brand a,
+#sidebar .brand img {
+	display: block;
+	width: 100%;
+}
+#sidebar .nav-home-link {
+	display: none;
 }
 
 .description {
