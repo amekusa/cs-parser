@@ -17,6 +17,7 @@ class Rule extends Composite {
 	 *   init:  function (context, chunk, matches), // Called when this rule starts
 	 *   fin:   function (context, chunk, matches), // Called when this rule ends
 	 *   parse: function (context, chunk), // Called for every chunk from 'start' to 'end'
+	 *   isRecursive:    boolean, // Whether this rule is recursive (default: false)
 	 *   endsWithParent: boolean, // If true, the parent rule can end even when this rule is active (default: false)
 	 *   splitter: string|RegExp, // The chunk splitter (default: '\n')
 	 *   encoding: string, // The encoding to decode buffers (default: 'utf8')
@@ -34,6 +35,7 @@ class Rule extends Composite {
 		this._init = Df.init || null
 		this._fin = Df.fin || null
 		this._parse = Df.parse || null
+		this._isRecursive = Df.isRecursive || Df.recursive || Df.recurse || null
 		this._endsWithParent = Df.endsWithParent || null
 		this._splitter = Df.splitter || null
 		this._encoding = Df.encoding || null
@@ -75,6 +77,21 @@ class Rule extends Composite {
 		if (this._end != null)
 			throw new Error(`The property cannot be changed`)
 		this._end = X
+	}
+
+	/**
+	 * Whether this rule is recursive
+	 * @type {boolean}
+	 * @default false
+	 */
+	get isRecursive() {
+		return this._isRecursive == null ? false : this._isRecursive
+	}
+
+	set isRecursive(X) {
+		if (this._isRecursive != null)
+			throw new Error(`The property cannot be changed`)
+		this._isRecursive = X
 	}
 
 	/**
