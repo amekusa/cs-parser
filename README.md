@@ -1,4 +1,4 @@
-# [![Context Sensitive Parser](https://amekusa.github.io/cs-parser/1.1.0/images/cs-parser-logo@3x.png "Context Sensitive Parser")](https://github.com/amekusa/cs-parser)
+# [![Context Sensitive Parser](https://amekusa.github.io/cs-parser/1.1.0/images/logo-cs-parser@3x.png "Context Sensitive Parser")](https://github.com/amekusa/cs-parser)
 
 [![npm version](https://badge.fury.io/js/cs-parser.svg)](https://badge.fury.io/js/cs-parser) [![dependencies Status](https://david-dm.org/amekusa/cs-parser/status.svg)](https://david-dm.org/amekusa/cs-parser) [![Apache License 2.0](http://img.shields.io/badge/license-Apache_2.0-blue.svg?style=flat)](LICENSE)
 
