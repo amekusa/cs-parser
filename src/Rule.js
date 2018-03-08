@@ -2,30 +2,79 @@ import Composite from './Composite'
 import Context from './Context'
 
 /**
- * Parsing rule
+ * A nestable parsing rule
  * @extends Composite
  */
 class Rule extends Composite {
 	/**
+	 * Creates a rule instance with the options in the specified object.
 	 * @param {object} Df=null
-	 * Rule definition.<br>
-	 * Format:
-	 * ```js
-	 * {
-	 *   from: RegExp, // The pattern where this rule starts from
-	 *   to:   RegExp, // The pattern where this rule ends at
-	 *   init:  function (context, chunk, matches), // Called when this rule starts
-	 *   fin:   function (context, chunk, matches), // Called when this rule ends
-	 *   parse: function (context, chunk), // Called for every chunk while active
-	 *   isRecursive:    boolean, // Whether this rule is recursive (default: false)
-	 *   endsWithParent: boolean, // If true, the parent rule can end even when this rule is active (default: false)
-	 *   splitter: string|RegExp, // The chunk splitter (default: '\n')
-	 *   encoding: string, // The encoding to decode buffers (default: 'utf8')
-	 * }
-	 * ```
-	 * Definition objects can be nested.
-	 * A nested definition is interpreted as a sub-rule.<br>
-	 * The property name for a nested definition must start from '$'
+	 * The rule definition object that contains the options as its properties.
+	 * Definition objects can be **nested**.
+	 * A nested definition is interpreted as a **sub-rule**.
+	 * The property name for a nested definition must start with `$`
+	 *
+	 * ###### Available Options:
+	 * @param {string|RegExp} Df.from
+	 * The pattern that indicates the begining point of this rule.
+	 * If the current chunk matched with this pattern,
+	 * this rule will be activated, and the new context will start parsing
+	 * from the next chunk.<br>
+	 * **Aliases:** `start`
+	 * @param {string|RegExp} Df.to
+	 * The pattern that indicates the end point of this rule.
+	 * If the current chunk matched with this pattern,
+	 * this rule will be deactivated, and the current context will be finalized.
+	 * <br>
+	 * **Aliases:** `end`
+	 *
+	 * @param {function} Df.init
+	 * The callback which is called when this rule gets activated.<br>
+	 * If this returns `false`, the {@link Parser} will read the current chunk
+	 * again<br>
+	 * **Parameters:**
+	 * @param {Context} Df.init.cx The current context
+	 * @param {string} Df.init.chunk
+	 * The current chunk which has matched with `from`
+	 * @param {number|string[]} Df.init.matches
+	 * If the `from` pattern is a string, the index of the matched string
+	 * in the chunk.<br>
+	 * If the `from` pattern is a RegExp, the regex matching results array
+	 *
+	 * @param {function} Df.parse
+	 * The callback which is called for every single chunk.<br>
+	 * If this returns `false`, the {@link Parser} will read the current chunk
+	 * again<br>
+	 * **Parameters:**
+	 * @param {Context} Df.parse.cx The current context
+	 * @param {string} Df.parse.chunk The current chunk
+	 *
+	 * @param {function} Df.fin
+	 * The callback which is called when this rule gets deactivated.
+	 * If this returns `false`, the {@link Parser} will read the current chunk
+	 * again<br>
+	 * **Parameters:**
+	 * @param {Context} Df.fin.cx The current context
+	 * @param {string} Df.fin.chunk
+	 * The current chunk which has matched with `to`
+	 * @param {number|string[]} Df.fin.matches
+	 * If the `to` pattern is a string, the index of the matched string
+	 * in the chunk.<br>
+	 * If the `to` pattern is a RegExp, the regex matching results array
+	 *
+	 * @param {boolean} Df.isRecursive=false Whether this rule is recursive<br>
+	 * **Aliases:** `recursive`, `recurse`
+	 * @param {boolean} Df.endsWithParent=false
+	 * If `true`, the parent rule can end even when this rule is active
+	 * @param {string|RegExp} Df.splitter='\n'
+	 * The chunk splitter. When the {@link Parser} reached at
+	 * the chunk splitter, the substring from the previous chunk splitter
+	 * is passed to the rule as a chunk. The default splitter is line-breaks
+	 * @param {string} Df.encoding='utf8'
+	 * The encoding to use for converting the buffer to a chunk string
+	 * @param {object} Df.$*
+	 * A sub-rule definition. The property name can be any string
+	 * but must start with `$` (dollar sign)
 	 */
 	constructor(Df = null) {
 		super()
