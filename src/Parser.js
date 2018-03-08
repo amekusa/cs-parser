@@ -13,7 +13,7 @@ class Parser {
 	 */
 	constructor(Rl = null) {
 		let rule = Rl instanceof Rule ? Rl : new Rule(Rl)
-		this._rule = rule.start ? new Rule().addChild(rule) : rule
+		this._rule = rule.from ? new Rule().addChild(rule) : rule
 		this._cm = null
 	}
 

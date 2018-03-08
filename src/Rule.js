@@ -12,11 +12,11 @@ class Rule extends Composite {
 	 * Format:
 	 * ```js
 	 * {
-	 *   start: RegExp, // The pattern where this rule starts from
-	 *   end:   RegExp, // The pattern where this rule ends at
+	 *   from: RegExp, // The pattern where this rule starts from
+	 *   to:   RegExp, // The pattern where this rule ends at
 	 *   init:  function (context, chunk, matches), // Called when this rule starts
 	 *   fin:   function (context, chunk, matches), // Called when this rule ends
-	 *   parse: function (context, chunk), // Called for every chunk from 'start' to 'end'
+	 *   parse: function (context, chunk), // Called for every chunk while active
 	 *   isRecursive:    boolean, // Whether this rule is recursive (default: false)
 	 *   endsWithParent: boolean, // If true, the parent rule can end even when this rule is active (default: false)
 	 *   splitter: string|RegExp, // The chunk splitter (default: '\n')
@@ -30,8 +30,8 @@ class Rule extends Composite {
 	constructor(Df = null) {
 		super()
 		if (!Df) Df = {}
-		this._start = Df.start || null
-		this._end = Df.end || null
+		this._from = Df.from || Df.start || null
+		this._to = Df.to || Df.end || null
 		this._init = Df.init || null
 		this._fin = Df.fin || null
 		this._parse = Df.parse || null
@@ -54,14 +54,30 @@ class Rule extends Composite {
 	 * @type {RegExp}
 	 * @default null
 	 */
+	get from() {
+		return this._from
+	}
+
+	set from(X) {
+		if (this._from != null)
+			throw new Error(`The property cannot be changed`)
+		this._from = X
+	}
+
+	/**
+	 * The start pattern
+	 * @deprecated Use {@link Rule#from} instead
+	 * @type {RegExp}
+	 * @default null
+	 */
 	get start() {
-		return this._start
+		console.warn(`rule.start is deprecated. Use rule.from instead`)
+		return this.from
 	}
 
 	set start(X) {
-		if (this._start != null)
-			throw new Error(`The property cannot be changed`)
-		this._start = X
+		console.warn(`rule.start is deprecated. Use rule.from instead`)
+		this.from = X
 	}
 
 	/**
@@ -69,14 +85,30 @@ class Rule extends Composite {
 	 * @type {RegExp}
 	 * @default null
 	 */
+	get to() {
+		return this._to
+	}
+
+	set to(X) {
+		if (this._to != null)
+			throw new Error(`The property cannot be changed`)
+		this._to = X
+	}
+
+	/**
+	 * The end pattern
+	 * @deprecated Use {@link Rule#to} instead
+	 * @type {RegExp}
+	 * @default null
+	 */
 	get end() {
-		return this._end
+		console.warn(`rule.end is deprecated. Use rule.to instead`)
+		return this.to
 	}
 
 	set end(X) {
-		if (this._end != null)
-			throw new Error(`The property cannot be changed`)
-		this._end = X
+		console.warn(`rule.end is deprecated. Use rule.to instead`)
+		this.to = X
 	}
 
 	/**
@@ -147,7 +179,7 @@ class Rule extends Composite {
 	 * @return {mixed} The matching result
 	 */
 	startsWith(Chunk) {
-		return Rule.checkEnclosure(Chunk, this._start)
+		return Rule.checkEnclosure(Chunk, this._from)
 	}
 
 	/**
@@ -156,7 +188,7 @@ class Rule extends Composite {
 	 * @return {mixed} The matching result
 	 */
 	endsWith(Chunk) {
-		return Rule.checkEnclosure(Chunk, this._end)
+		return Rule.checkEnclosure(Chunk, this._to)
 	}
 
 	/**
