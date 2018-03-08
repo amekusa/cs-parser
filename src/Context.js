@@ -115,6 +115,7 @@ class Context extends Composite {
 	 * @protected
 	 */
 	populate() {
+		if (this._rule.isRecursive) this.addChild(new Context(this._rule))
 		for (let item of this._rule) this.addChild(new Context(item))
 	}
 
