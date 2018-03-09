@@ -1,6 +1,8 @@
 import Composite from './Composite'
 import Context from './Context'
 
+const INHERIT = Symbol('INHERIT')
+
 /**
  * A nestable parsing rule
  * @extends Composite
@@ -69,9 +71,10 @@ class Rule extends Composite {
 	 * @param {string|RegExp} Df.splitter='\n'
 	 * The chunk splitter. When the {@link Parser} reached at
 	 * the chunk splitter, the substring from the previous chunk splitter
-	 * is passed to the rule as a chunk. The default splitter is line-breaks
-	 * @param {string} Df.encoding='utf8'
-	 * The encoding to use for converting the buffer to a chunk string
+	 * is passed to the rule as a chunk. The default splitter is a line-break
+	 * @param {string} Df.encoding=Rule.INHERIT
+	 * The encoding to use for converting the buffer to a chunk string<br>
+	 * **Fallback:** `'utf8'`
 	 * @param {object} Df.$*
 	 * A sub-rule definition. The property name can be any string
 	 * but must start with `$` (dollar sign)
@@ -87,7 +90,7 @@ class Rule extends Composite {
 		this._isRecursive = Df.isRecursive || Df.recursive || Df.recurse || null
 		this._endsWithParent = Df.endsWithParent || null
 		this._splitter = Df.splitter || null
-		this._encoding = Df.encoding || null
+		this._encoding = Df.encoding || INHERIT
 
 		// Sub rules
 		for (let i in Df) {
@@ -99,18 +102,26 @@ class Rule extends Composite {
 	}
 
 	/**
+	 * The enum for rule properties,
+	 * which means the actual property value inherits from the parent rule
+	 * @type {Symbol}
+	 * @const
+	 */
+	static get INHERIT() {
+		return INHERIT
+	}
+
+	/**
 	 * The start pattern
 	 * @type {RegExp}
 	 * @default null
 	 */
 	get from() {
-		return this._from
+		return this.get('_from', null)
 	}
 
 	set from(X) {
-		if (this._from != null)
-			throw new Error(`The property cannot be changed`)
-		this._from = X
+		this.set('_from', X)
 	}
 
 	/**
@@ -135,13 +146,11 @@ class Rule extends Composite {
 	 * @default null
 	 */
 	get to() {
-		return this._to
+		return this.get('_to', null)
 	}
 
 	set to(X) {
-		if (this._to != null)
-			throw new Error(`The property cannot be changed`)
-		this._to = X
+		this.set('_to', X)
 	}
 
 	/**
@@ -166,13 +175,11 @@ class Rule extends Composite {
 	 * @default false
 	 */
 	get isRecursive() {
-		return this._isRecursive == null ? false : this._isRecursive
+		return this.get('_isRecursive', false)
 	}
 
 	set isRecursive(X) {
-		if (this._isRecursive != null)
-			throw new Error(`The property cannot be changed`)
-		this._isRecursive = X
+		this.set('_isRecursive', X)
 	}
 
 	/**
@@ -181,13 +188,11 @@ class Rule extends Composite {
 	 * @default false
 	 */
 	get endsWithParent() {
-		return this._endsWithParent == null ? false : this._endsWithParent
+		return this.get('_endsWithParent', false)
 	}
 
 	set endsWithParent(X) {
-		if (this._endsWithParent != null)
-			throw new Error(`The property cannot be changed`)
-		this._endsWithParent = X
+		this.set('_endsWithParent', X)
 	}
 
 	/**
@@ -196,30 +201,50 @@ class Rule extends Composite {
 	 * @default '\n'
 	 */
 	get splitter() {
-		return this._splitter || (
-			this.hasParent ? this._parent.splitter : '\n'
-		)
+		return this.get('_splitter', '\n')
 	}
 
 	set splitter(X) {
-		if (this._splitter) throw new Error(`The property cannot be changed`)
-		this._splitter = X
+		this.set('_splitter', X)
 	}
 
 	/**
-	 * The encoding to decode buffers
+	 * The encoding to decode buffers. Falls back to `'utf8'`
 	 * @type {string}
-	 * @default 'utf8'
+	 * @default Rule.INHERIT
 	 */
 	get encoding() {
-		return this._encoding || (
-			this.hasParent ? this._parent.encoding : 'utf8'
-		)
+		return this.get('_encoding', 'utf8')
 	}
 
 	set encoding(X) {
-		if (this._encoding) throw new Error(`The property cannot be changed`)
-		this._encoding = X
+		this.set('_encoding', X)
+	}
+
+	/**
+	 * @param {string} Name The name of the property to get
+	 * @param {mixed} Fallback The value which the property falls back to
+	 * @param {boolean} Inherits=true Whether or not to inherit the parent's value
+	 * @return {mixed}
+	 * @private
+	 */
+	get(Name, Fallback, Inherits = true) {
+		let prop = this[Name]
+		return Inherits && prop == INHERIT ? (
+			this.hasParent ?
+			this.parent.get(Name, Fallback, Inherits) : Fallback
+		) : (prop == null ? Fallback : prop)
+	}
+
+	/**
+	 * @param {string} Name The name of the property to set
+	 * @param {mixed} Value The value to set to the property
+	 * @private
+	 */
+	set(Name, Value) {
+		if (this[Name] != null)
+			throw new Error(`The property cannot be changed`)
+		this[Name] = Value
 	}
 
 	/**
@@ -228,7 +253,7 @@ class Rule extends Composite {
 	 * @return {mixed} The matching result
 	 */
 	startsWith(Chunk) {
-		return Rule.checkEnclosure(Chunk, this._from)
+		return Rule.checkEnclosure(Chunk, this.from)
 	}
 
 	/**
@@ -237,7 +262,7 @@ class Rule extends Composite {
 	 * @return {mixed} The matching result
 	 */
 	endsWith(Chunk) {
-		return Rule.checkEnclosure(Chunk, this._to)
+		return Rule.checkEnclosure(Chunk, this.to)
 	}
 
 	/**
