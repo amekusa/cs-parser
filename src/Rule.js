@@ -14,58 +14,69 @@ class Rule extends Composite {
 	 * The rule definition object that contains the options as its properties.
 	 * Definition objects can be **nested**.
 	 * A nested definition is interpreted as a **sub-rule**.
-	 * The property name for a nested definition must start with `$`
+	 * The property name for a nested definition must start with `$` (dollar sign)
 	 *
 	 * ###### Available Options:
 	 * @param {string|RegExp} Df.from
 	 * The pattern that indicates the begining point of this rule.
 	 * If the current chunk matched with this pattern,
 	 * this rule will be activated, and the new context will start parsing
-	 * from the next chunk.<br>
-	 * **Aliases:** `start`
+	 * from the next chunk
+	 * @param Df.start
+	 * Alias of `from`
 	 * @param {string|RegExp} Df.to
 	 * The pattern that indicates the end point of this rule.
 	 * If the current chunk matched with this pattern,
-	 * this rule will be deactivated, and the current context will be finalized.
-	 * <br>
-	 * **Aliases:** `end`
+	 * this rule will be deactivated, and the current context will be finalized
+	 * @param Df.end Alias of `to`
 	 *
-	 * @param {function} Df.init
+	 * @param {function} Df.onStart
 	 * The callback which is called when this rule gets activated.<br>
 	 * If this returns `false`, the {@link Parser} will read the current chunk
-	 * again<br>
-	 * **Parameters:**
-	 * @param {Context} Df.init.cx The current context
-	 * @param {string} Df.init.chunk
+	 * again
+	 * ###### Parameters:
+	 * @param {Context} Df.onStart.cx The current context
+	 * @param {string} Df.onStart.chunk
 	 * The current chunk which has matched with `from`
-	 * @param {number|string[]} Df.init.matches
+	 * @param {number|string[]} Df.onStart.matches
 	 * If the `from` pattern is a string, the index of the matched string
 	 * in the chunk.<br>
 	 * If the `from` pattern is a RegExp, the regex matching results array
+	 * @param Df.init Alias of `onStart`
 	 *
-	 * @param {function} Df.parse
+	 * @param {function} Df.onActive
 	 * The callback which is called for every single chunk.<br>
 	 * If this returns `false`, the {@link Parser} will read the current chunk
-	 * again<br>
-	 * **Parameters:**
-	 * @param {Context} Df.parse.cx The current context
-	 * @param {string} Df.parse.chunk The current chunk
+	 * again
+	 * ###### Parameters:
+	 * @param {Context} Df.onActive.cx The current context
+	 * @param {string} Df.onActive.chunk The current chunk
+	 * @param Df.parse Alias of `onActive`
 	 *
-	 * @param {function} Df.fin
+	 * @param {function} Df.onEnd
 	 * The callback which is called when this rule gets deactivated.
 	 * If this returns `false`, the {@link Parser} will read the current chunk
-	 * again<br>
-	 * **Parameters:**
-	 * @param {Context} Df.fin.cx The current context
-	 * @param {string} Df.fin.chunk
+	 * again
+	 * ###### Parameters:
+	 * @param {Context} Df.onEnd.cx The current context
+	 * @param {string} Df.onEnd.chunk
 	 * The current chunk which has matched with `to`
-	 * @param {number|string[]} Df.fin.matches
+	 * @param {number|string[]} Df.onEnd.matches
 	 * If the `to` pattern is a string, the index of the matched string
 	 * in the chunk.<br>
 	 * If the `to` pattern is a RegExp, the regex matching results array
+	 * @param Df.fin Alias of `onEnd`
 	 *
-	 * @param {boolean} Df.isRecursive=false Whether this rule is recursive<br>
-	 * **Aliases:** `recursive`, `recurse`
+	 * @param {object} Df.on
+	 * The container for the another aliases of `onStart`, `onActive`, `onEnd`
+	 * ###### Properties:
+	 * @param {function} Df.on.start Alias of `onStart`
+	 * @param {function} Df.on.active Alias of `onActive`
+	 * @param {function} Df.on.end Alias of `onEnd`
+	 *
+	 * @param {boolean} Df.isRecursive=false Whether this rule is recursive
+	 * @param Df.recursive Alias of `isRecursive`
+	 * @param Df.recurse Alias of `isRecursive`
 	 * @param {boolean} Df.endsWithParent=false
 	 * If `true`, the parent rule can end even when this rule is active
 	 * @param {string|RegExp} Df.splitter='\n'
@@ -73,8 +84,8 @@ class Rule extends Composite {
 	 * the chunk splitter, the substring from the previous chunk splitter
 	 * is passed to the rule as a chunk. The default splitter is a line-break
 	 * @param {string} Df.encoding=Rule.INHERIT
-	 * The encoding to use for converting the buffer to a chunk string<br>
-	 * **Fallback:** `'utf8'`
+	 * The encoding to use for converting the buffer to a chunk string.
+	 * Falls back to `'utf8'`
 	 * @param {object} Df.$*
 	 * A sub-rule definition. The property name can be any string
 	 * but must start with `$` (dollar sign)
@@ -84,13 +95,14 @@ class Rule extends Composite {
 		if (!Df) Df = {}
 		this._from = Df.from || Df.start || null
 		this._to = Df.to || Df.end || null
-		this._init = Df.init || null
-		this._fin = Df.fin || null
-		this._parse = Df.parse || null
 		this._isRecursive = Df.isRecursive || Df.recursive || Df.recurse || null
 		this._endsWithParent = Df.endsWithParent || null
 		this._splitter = Df.splitter || null
 		this._encoding = Df.encoding || INHERIT
+
+		this._onStart  = Df.onStart  || (Df.on && Df.on.start)  || Df.init  || null
+		this._onActive = Df.onActive || (Df.on && Df.on.active) || Df.parse || null
+		this._onEnd    = Df.onEnd    || (Df.on && Df.on.end)    || Df.fin   || null
 
 		// Sub rules
 		for (let i in Df) {
@@ -167,6 +179,45 @@ class Rule extends Composite {
 	set end(X) {
 		console.warn(`rule.end is deprecated. Use rule.to instead`)
 		this.to = X
+	}
+
+	/**
+	 * The event handler which is called when this rule is activated
+	 * @type {function}
+	 * @default null
+	 */
+	get onStart() {
+		return this.get('_onStart', null)
+	}
+
+	set onStart(X) {
+		this.set('_onStart', X)
+	}
+
+	/**
+	 * The event handler which is called every time
+	 * the parser reached at {@link Rule#splitter}
+	 * @type {function}
+	 * @default null
+	 */
+	get onActive() {
+		return this.get('_onActive', null)
+	}
+
+	set onActive(X) {
+		this.set('_onActive', X)
+	}
+	/**
+	 * The event handler which is called when this rule is deactivated
+	 * @type {function}
+	 * @default null
+	 */
+	get onEnd() {
+		return this.get('_onEnd', null)
+	}
+
+	set onEnd(X) {
+		this.set('_onEnd', X)
 	}
 
 	/**
@@ -303,8 +354,8 @@ class Rule extends Composite {
 	 */
 	init(Cx, Chunk = '', MatchResult = null) {
 		let r = true // Goes next chunk
-		if (this._init) {
-			r = this._init(Cx, Chunk, MatchResult)
+		if (this.onStart) {
+			r = this.onStart(Cx, Chunk, MatchResult)
 			if (typeof r == 'undefined') r = true
 		}
 		return r
@@ -321,8 +372,8 @@ class Rule extends Composite {
 	 */
 	fin(Cx, Chunk = '', MatchResult = null) {
 		let r = true // Goes next chunk
-		if (this._fin) {
-			r = this._fin(Cx, Chunk, MatchResult)
+		if (this.onEnd) {
+			r = this.onEnd(Cx, Chunk, MatchResult)
 			if (typeof r == 'undefined') r = true
 		}
 		return r
@@ -338,8 +389,8 @@ class Rule extends Composite {
 	 */
 	parse(Cx, Chunk = '') {
 		let r = true // Goes next chunk
-		if (this._parse) {
-			r = this._parse(Cx, Chunk)
+		if (this.onActive) {
+			r = this.onActive(Cx, Chunk)
 			if (typeof r == 'undefined') r = true
 		}
 		return r
