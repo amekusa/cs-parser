@@ -104,9 +104,7 @@ class Parser {
 	 * @param {Context} Cx The finished context
 	 */
 	onComplete(Cx) {
-		console.log('Parsing Completed!')
-		let wasted = Cx.cleanupChildren(true)
-		console.log(wasted.length + ` wasted contexts`)
+		Cx.cleanupChildren(true)
 	}
 }
 
