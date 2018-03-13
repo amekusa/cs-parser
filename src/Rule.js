@@ -344,6 +344,37 @@ class Rule extends Composite {
 	}
 
 	/**
+	 * Sets an event handler
+	 * @param {string} Ev
+	 * The event identifier
+	 * ###### Available Events:
+	 * + `'start'`: Occurs when the current chunk matched with {@link Rule#from}
+	 * + `'active'`: While this rule is active, occurs every time the parser reached at {@link Rule#splitter}
+	 * + `'end'`: Occurs when the current chunk matched with {@link Rule#to}
+
+	 * @param {function} Fn
+	 * The event handler.
+	 * Returning `false` makes the parser read the current chunk again
+	 * ###### Parameters:
+	 * @param {Context} Fn.cx The current context
+	 * @param {string} Fn.chunk The current chunk
+	 * @param {number|string[]} Fn.matches
+	 * The matching result of {@link Rule#from}/{@link Rule#to}.<br>
+	 * **Only for `start` and `end` events**.
+	 */
+	on(Ev, Fn) {
+		switch (Ev) {
+		case 'start':
+		case 'active':
+		case 'end':
+			this.set('_on' + Ev[0].toUpperCase() + Ev.slice(1), Fn)
+			break
+		default:
+			throw new Error('No such event')
+		}
+	}
+
+	/**
 	 * Initializes a context
 	 * @param {Context} Cx The context to initialize
 	 * @param {string} Chunk='' The chunk that matched with the `start` condition
