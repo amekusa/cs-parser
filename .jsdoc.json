@@ -28,7 +28,8 @@
 				"exclude": [
 					"./theme/layout.tmpl"
 				]
-			}
+			},
+			"includeDate": false
 		}
 	}
 }
