@@ -48,8 +48,7 @@ class Parser {
 	 */
 	parse(Data) {
 		let cx = new Context(this._rule)
-		this._cm = new ContextManager(cx)
-		cx.start()
+		this.onStart(cx)
 		this._cm.feed(Data instanceof Buffer ? Data : Buffer.from(Data))
 		this.onComplete(cx)
 		return cx
@@ -73,8 +72,7 @@ class Parser {
 		io.on('open', () => {
 			try {
 				cx = new Context(this._rule)
-				this._cm = new ContextManager(cx)
-				cx.start()
+				this.onStart(cx)
 			} catch (e) {
 				io.emit('error', e)
 			}
@@ -100,10 +98,22 @@ class Parser {
 	}
 
 	/**
+	 * @param {Context} Cx The root context
 	 * @protected
+	 */
+	onStart(Cx) {
+		this._cm = new ContextManager(Cx)
+		Cx.start()
+		Cx.updateState(true)
+	}
+
+	/**
 	 * @param {Context} Cx The finished context
+	 * @protected
 	 */
 	onComplete(Cx) {
+		Cx.end()
+		Cx.updateState(true)
 		Cx.cleanupChildren(true)
 	}
 }
