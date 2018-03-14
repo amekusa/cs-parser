@@ -1,5 +1,7 @@
-const ex1 = require('./example1')
+const members = require('./members')
+const docs = require('./docs')
 
 module.exports = {
-	ex1: ex1,
+	members: members,
+	docs: docs
 }

@@ -52,8 +52,8 @@ class ContextManager {
 			this.feed(bf)
 		}
 		if (Bf.length == 1) {
-			this._root.updateState(true)
 			this._current.step(Bf)
+			this._root.updateState(true)
 			return
 		}
 		if (!Bf.length) throw new Error(`Empty buffer`)

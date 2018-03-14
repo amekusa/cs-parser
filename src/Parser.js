@@ -13,7 +13,7 @@ class Parser {
 	 */
 	constructor(Rl = null) {
 		let rule = Rl instanceof Rule ? Rl : new Rule(Rl)
-		this._rule = rule.start ? new Rule().addChild(rule) : rule
+		this._rule = rule.from ? new Rule().addChild(rule) : rule
 		this._cm = null
 	}
 
@@ -42,14 +42,13 @@ class Parser {
 	/**
 	 * Parses the data specified as a string or Buffer.
 	 * After the parsing completed, returns the root context which contains
-	 * all the generated sub-contexts through the entire parsing.
+	 * all the generated sub-contexts through the entire parsing
 	 * @param {string|Buffer} Data The data to be parsed
 	 * @return {Context} The root context
 	 */
 	parse(Data) {
 		let cx = new Context(this._rule)
-		this._cm = new ContextManager(cx)
-		cx.start()
+		this.onStart(cx)
 		this._cm.feed(Data instanceof Buffer ? Data : Buffer.from(Data))
 		this.onComplete(cx)
 		return cx
@@ -61,7 +60,7 @@ class Parser {
 	 * @param {object} Opt Streaming options
 	 * @see https://nodejs.org/api/fs.html#fs_fs_createreadstream_path_options
 	 * @return {Promise}
-	 * A Promise that resolves when the parsing complete.
+	 * A Promise that will resolve when the parsing completes.
 	 * You can get the root context as the 1st parameter of a callback
 	 * which you can pass to `.then()`
 	 */
@@ -73,8 +72,7 @@ class Parser {
 		io.on('open', () => {
 			try {
 				cx = new Context(this._rule)
-				this._cm = new ContextManager(cx)
-				cx.start()
+				this.onStart(cx)
 			} catch (e) {
 				io.emit('error', e)
 			}
@@ -100,13 +98,23 @@ class Parser {
 	}
 
 	/**
+	 * @param {Context} Cx The root context
 	 * @protected
+	 */
+	onStart(Cx) {
+		this._cm = new ContextManager(Cx)
+		Cx.start()
+		Cx.updateState(true)
+	}
+
+	/**
 	 * @param {Context} Cx The finished context
+	 * @protected
 	 */
 	onComplete(Cx) {
-		console.log('Parsing Completed!')
-		let wasted = Cx.cleanupChildren(true)
-		console.log(wasted.length + ` wasted contexts`)
+		Cx.end()
+		Cx.updateState(true)
+		Cx.cleanupChildren(true)
 	}
 }
 
