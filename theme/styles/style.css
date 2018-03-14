@@ -1,5 +1,10 @@
 @charset "utf-8";
 
+/**
+ * The JSDoc style addon for the Minami theme (https://github.com/nijikokun/minami)
+ * @author Satoshi Soma (https://amekusa.com)
+ */
+
 p:first-child {
 	margin-top: 0;
 }
@@ -22,15 +27,37 @@ pre > code {
 	color: #4d4d4c;
 }
 
-h1 + section > header > h2 {
+h1.page-title {
+	position: sticky;
+	z-index: 1;
+	top: 0px;
+	padding-top: 13px;
+	padding-bottom: 13px;
+	background-color: rgba(255, 255, 255, .8);
+	font-size: 43px;
+	font-family:
+		"American Typewriter",
+		"Courier New",
+		Courier,
+		"Source Code Pro",
+		monospace;
+	font-weight: bold;
+	font-stretch: condensed;
+}
+h1.page-title + section > header > h2 {
 	display: none;
 }
 
 #main {
-  padding-bottom: 30px;
+	float: left;
+	width: auto;
+	padding-bottom: 30px;
+	margin-left: 250px;
 }
 
 #sidebar {
+	position: fixed;
+	z-index: 3;
 	padding: 0;
 }
 #sidebar > *:first-child {
@@ -46,12 +73,12 @@ h1 + section > header > h2 {
 }
 #sidebar > ul {
 	padding-top: 0;
-	border-top: 1px solid #eee;
 }
 #sidebar .brand {
 	position: sticky;
+	z-index: 1;
 	top: 0;
-	background-color: rgba(255, 255, 255, .75);
+	background-color: white;
 }
 #sidebar .brand a,
 #sidebar .brand img {
@@ -60,6 +87,13 @@ h1 + section > header > h2 {
 }
 #sidebar .nav-home-link {
 	display: none;
+}
+#sidebar .nav-home-link + .nav-heading ~ .nav-heading {
+	position: sticky;
+	z-index: 0;
+	top: 52px;
+	border-bottom: 1px solid #eee;
+	background-color: white;
 }
 
 .description {
@@ -70,15 +104,18 @@ h1 + section > header > h2 {
 	margin-top: 60px;
 }
 
-.name > .type-signature > a {
+h4.name {
+	color: hotpink;
+	/* Anchor offset */
+	padding-top: 60px;
+	margin-top: -60px;
+}
+h4.name > .type-signature > a {
 	opacity: .5;
 }
 
 .section-members + .section-members {
 	margin-top: 30px
-}
-.section-members > .name {
-	color: hotpink;
 }
 .section-members > h5,
 .section-members > h5 + ul {
@@ -93,10 +130,30 @@ h1 + section > header > h2 {
 .section-method + .section-method {
 	margin-top: 60px;
 }
-.section-method > .name {
-	color: hotpink;
-}
-.section-method > .name > .signature {
+.section-method > h4.name > .signature {
 	margin-left: .5em;
 	color: lightpink;
+}
+
+@media only screen and (min-width: 320px) and (max-width: 680px) {
+	body {
+		overflow: auto;
+	}
+	#main {
+		margin-left: 0;
+		padding-left: 15px;
+		padding-right: 15px;
+	}
+	#main h1.page-title {
+		margin-top: 0;
+		margin-bottom: 0;
+	}
+	.navicon-button {
+		z-index: 4;
+		top: 0;
+		padding: 24px 15px;
+	}
+	.overlay {
+		z-index: 2;
+	}
 }
