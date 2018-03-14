@@ -6,336 +6,280 @@
 CS Parser provides you the power to write parser for your code, data, or anything in any language, any format without hardcore coding.  
 
 You can write the best parser that exactly matches your need even in 120 lines or less.
-And it will also be clean, semantic, and completely readable like this example:
+And it will also be clean, semantic, and completely readable! Let's take a short tour.
 
-```js
-const csp = require('cs-parser')
-
-let parser = csp.create({
-  // The rule of doc block
-  $doc: {
-    start: /\/\*\*$/, // Starts with '/**'
-    end:   /\*\/$/,   //   Ends with '*/'
-    // Initialize Callback
-    // This is called when the parser reached at '/**'
-    init(cx, chunk, matches) {
-      cx.results.add(`<section class="docblock">`)
-    },
-    // Parse Callback
-    // This is called for every line after init() untill fin().
-    // The current line is passed as 'chunk'
-    parse(cx, chunk) {
-      let strip = chunk.match(/(\w.*)$/) // Strip indents
-      cx.results.add('  ' + strip[1])
-    },
-    // Finalize Callback
-    // This is called when the parser reached at '*/'
-    fin(cx, chunk, matches) {  // Finalize
-      cx.results.add(`</section>`)
-    },
-
-    // The rule of @param
-    // This is so a sub-rule of doc block in the above
-    //   that it only be applied in doc blocks.
-    // The name of sub-rule must start with '$'
-    $param: {
-      start: /@param {(\w+)} (\w+)/, // Starts with '@param {type} name'
-      end:   /@\w+/,                 // Ends with any other keyword that starts with '@'
-      endsWithParent: true, // This means that this rule also ends with doc block
-      // Initialize Callback
-      // 'cx' is the context object that can hold any data
-      //   during the period of this rule working.
-      // 'matches' is the result of regex matching of the 'start' specified in the above
-      init(cx, chunk, matches) {
-        cx.data = {
-          type: matches[1], // Save the parameter type
-          name: matches[2]  // Save the parameter name
-        }
-        cx.results.add(`  <div class="param">`)
-      },
-      // Parse Callback
-      // 'cx' is the same instance as the one which has been passed to 'init()'
-      parse(cx, chunk) {
-        let strip = chunk.match(/(\w.*)$/) // Strip indents
-        cx.results.add('    ' + strip[1])
-      },
-      // Finalize Callback
-      fin(cx, chunk, matches) {
-        cx.results.add([
-          `    <dl class="specs">`,
-          `      <dt>Type</dt>`,
-          `      <dd>${cx.data.type}</dd>`,
-          `      <dt>Name</dt>`,
-          `      <dd>${cx.data.name}</dd>`,
-          `    </dl>`,
-          `  </div>`
-        ])
-        return false // Returning false makes the parser read the same chunk twice
-      }
-    },
-
-    // The rule of @example
-    // This is another sub-rule of doc block
-    $example: {
-      start: /@example (.+)/, // Starts with '* @example title'
-      end:   /@\w+/,          //   Ends with any other keyword that starts with '@'
-      endsWithParent: true, // This means that this rule also ends with doc block
-      // Initialize Callback
-      init(cx, chunk, matches) {
-        cx.data = {
-          title: matches[1]
-        }
-        cx.results
-          .add(`  <section class="example">`)
-          .add(`    <h1>${cx.data.title}</h1>`)
-      },
-      // Parse Callback
-      parse(cx, chunk) {
-        let strip = chunk.match(/(\w.*)$/) // Strip indents
-        cx.results.add('    ' + strip[1])
-      },
-      // Finalize Callback
-      fin(cx, chunk, matches) {
-        cx.results.add(`  </section>`)
-        return false
-      },
-
-      // The rule of code example
-      // This rule formats a fenced code block as <pre><code>...</pre></code>
-      // This is a sub-rule of @example
-      $code: {
-        start: /`{3}(\w+)?/, // Starts with '```' (triple backticks)
-                             // Also supports language notation like '```js'
-        end:   /`{3}$/,      // Ends with '```'
-        // Initialize Callback
-        init(cx, chunk, matches) {
-          cx.data = {
-            lang: matches[1] || 'unknown'
-          }
-          cx.results
-            .add(`    <pre>`)
-            .add(`      <code class="lang-${cx.data.lang}">`)
-        },
-        // Parse Callback
-        parse(cx, chunk) {
-          let strip = chunk.match(/(\w.*)$/) // Strip indents
-          cx.results.add('        ' + strip[1])
-        },
-        // Finalize Callback
-        fin(cx, chunk, matches) {
-          cx.results
-            .add(`      </code>`)
-            .add(`    </pre>`)
-        }
-      }
-    }
-  }
-})
-```
-
-This example illustrates how to define rules for formatting doc blocks.  
-As you can see, you can pass nested rule definitions along with the structure of the language you want to parse.  
-
-In this case, the outline of the structure can be described like this:
-
-```
-doc
- ├─ param
- └─ example
-     └─ code
-```
-
-Let's demonstrate parsing actual JavaScript code with the example rules.
-
-`examples/GameObject.js`:
-<pre><code class="lang-js">
-/**
- * Represents an object in the game
- */
-class GameObject {
-
-  /**
-   * Creates an instance with specific name and health
-   * @param {string} name
-   *   The name of the object
-   * @param {number} health
-   *   The health of the object
-   */
-  constructor(name, health) {
-    this.name = name
-    this.health = health
-    this.state = 'alive'
-  }
-
-  /**
-   * Takes specific amount of damage
-   * @param {number} amount
-   *   Amount of damage to take
-   * @example Attack a kobold
-   * ```js
-   * var enemy = new GameObject('Kobold', 10)
-   * enemy.takeDamage(5)
-   * console.log(`Health lefts ${this.health}`)
-   * ```
-   * @example Attack a rat and kill it
-   * ```js
-   * var enemy = new GameObject('Rat', 3)
-   * enemy.takeDamage(5)
-   * console.log(`${this.name} must be dead`)
-   * ```
-   */
-  takeDamage(amount) {
-    this.health -= amount
-    console.log(`${this.name} took ${amount} damage`)
-    if (this.health < 0) this.die()
-  }
-
-  die() {
-    this.state = 'dead'
-    console.log(`${this.name} is killed`)
-  }
-}
-</code></pre>
-
-This is the example code to be parsed.
-There are two doc blocks in this code as you can see.
-
-To start parsing, pass the file URL to `parseFile()` like below:
-
-```js
-parser.parseFile(__dirname +'/examples/GameObject.js') // This returns a Promise object
-.then(cx => {
-  // 'cx' is the root context that contains all the sub-contexts
-  // which are generated through the parsing process
-  cx.results.traverse(result => {
-    console.log(result) // Output the result
-  })
-})
-```
-
-So the reading & parsing runs asynchronously, `parseFile()` returns a `Promise` object. This `Promise` resolves when the parsing completed.
-
-If this way is not comfortable for you, there is the synchronous version here:
-
-```js
-let content = fs.readFileSync(__dirname +'/examples/GameObject.js')
-let cx = parser.parse(content)
-cx.results.traverse(result => {
-  console.log(result)
-})
-```
-
-And here is the output:
-
-```html
-<section class="docblock">
-  Represents an object in the game
-</section>
-<section class="docblock">
-  Creates an instance with specific name and health
-  <div class="param">
-    The name of the object
-    <dl class="specs">
-      <dt>Type</dt>
-      <dd>string</dd>
-      <dt>Name</dt>
-      <dd>name</dd>
-    </dl>
-  </div>
-  <div class="param">
-    The health of the object
-    <dl class="specs">
-      <dt>Type</dt>
-      <dd>number</dd>
-      <dt>Name</dt>
-      <dd>health</dd>
-    </dl>
-  </div>
-</section>
-<section class="docblock">
-  Takes specific amount of damage
-  <div class="param">
-    Amount of damage to take
-    <dl class="specs">
-      <dt>Type</dt>
-      <dd>number</dd>
-      <dt>Name</dt>
-      <dd>amount</dd>
-    </dl>
-  </div>
-  <section class="example">
-    <h1>Attack a kobold</h1>
-    <pre>
-      <code class="lang-js">
-        var enemy = new GameObject('Kobold', 10)
-        enemy.takeDamage(5)
-        console.log(`Health lefts ${this.health}`)
-      </code>
-    </pre>
-  </section>
-  <section class="example">
-    <h1>Attack a rat and kill it</h1>
-    <pre>
-      <code class="lang-js">
-        var enemy = new GameObject('Rat', 3)
-        enemy.takeDamage(5)
-        console.log(`${this.name} must be dead`)
-      </code>
-    </pre>
-  </section>
-</section>
-```
-
-You can run this example in your console with:
-
-```sh
-npm run test:examples
-```
-
-## Usage & APIs
-At first, you need to install CS Parser via NPM in your console.
+At first, you need to install CS Parser via NPM.
 
 ```sh
 npm i cs-parser --save
 ```
 
-Then, you can access the APIs of CS Parser by `require()`.
+Now you can access the APIs of CS Parser with `require()`.
 
 ```js
 const csp = require('cs-parser')
 ```
 
-The `csp` is the [Main](https://amekusa.github.io/cs-parser/1.1.0/Main.html) object that provides few basic methods.
-
-`create()` method creates a [Parser](https://amekusa.github.io/cs-parser/1.1.0/Parser.html) object which performs parsing along the rules provided for the parameter.
+The `csp` is the [Main](https://amekusa.github.io/cs-parser/1.1.0/Main.html) object that provides a few basic methods.  
+Use `create` method to get a [Parser](https://amekusa.github.io/cs-parser/1.1.0/Parser.html) object.
 
 ```js
-let parser = csp.create({
-  // Rules
-  ...
+let parser = csp.create()
+```
+
+Next, add some parsing rules to the parser with `parser.addRule`.
+Off course you can add any number of rules as you want.
+
+```js
+parser.addRule({ /* A rule definition */ })
+parser.addRule({ /* Another rule definition */ })
+```
+
+### Defining a rule
+A rule definition is an object contains some specific properties.
+I will show you only a few essential ones here.  
+(If you want to see the full specs, see the [doc](https://amekusa.github.io/cs-parser/1.1.0/Rule.html#Rule).)
+
+```js
+parser.addRule({
+  from: '{',
+  to:   '}'
 })
 ```
 
-`newRule()` method creates a [Rule](https://amekusa.github.io/cs-parser/1.1.0/Rule.html) object.
+The options `from` & `to` determines **where the rule applies to**.
+So the rule in the above will be activated when the parser reaches at `{`,  
+and will be deactivated when the parser reaches at `}`.
+
+You can also use **regex** like this:
 
 ```js
-let rule = csp.newRule({
-  // Rule definition
-  ...
+parser.addRule({
+  from: /(\w).* {/,
+  to:   '}'
 })
 ```
 
-The format of the object for the parameter is the same as `create()` explained in the first example.
+This rule will be activated when the current reading buffer matches with
+the pattern like `something {`. Simple isn' it?
 
-But you can also pass the Rule object to `create()`.
+Now's the time to define how the rule actually works while it is active.  
+Let us introduce `init`, `parse`, `fin` callbacks.
 
 ```js
-let rule = csp.newRule({ ... })
-csp.create(rule)
+parser.addRule({
+  from: /(\w).* {/,
+  to:   '}',
+  init(cx, chunk, matches) { ... },
+  parse(cx, chunk) { ... },
+  fin(cx, chunk, matches) { ... }
+})
 ```
 
-### The ES6 way
-You can get the [Main](https://amekusa.github.io/cs-parser/1.1.0/Main.html) object with `import`.
+In short:
++ `init` will be called once when the rule is activated.
++ `parse` will be called for **every chunk** while the rule is active
++ `fin`  will be called once when the rule is deactivated.
+
+The **3rd** parameter: `matches` is optional that is passed an array of **matching results** of `from`/`to` if these are regex.
+
+#### What is “chunk”?
+For the default, every rule processes the data **line-by-line**, And each line will be passed as a “chunk” to the **2nd** parameter.
+(This behavior is determined with `splitter` option. The default value is `\n`.)  
+
+So in other words, the `parse` callback will be executed **every time the parser reaches at a line-break**.
+
+#### Context?
+The **1st** parameter: `cx` is a “**context**” object which will be generated when the rule is activated.  
+With a context, you can store any data into `data` property like this:
+
+```js
+init(cx, chunk, matches) {
+  // cx.data is a plain object
+  cx.data.name  = matches[1]
+  cx.data.lines = []
+  // You can also set another object
+  cx.data = {
+    name:  matches[1],
+    lines: []
+  }
+},
+```
+
+`cx` through `init`, `parse`, `fin` callbacks is guaranteed to be **the same instance**,
+so that you can use the data you stored into `data` property in another callback like this:
+
+```js
+parse(cx, chunk) {
+  cx.data.lines.push(chunk)
+},
+fin(cx) {
+  console.log('Block: ' + cx.data.name)
+  console.log('Body:')
+  for (let line of cx.data.lines) console.log(line)
+  console.log('Total Lines: ' + cx.data.lines.length)
+}
+```
+
+### Let's parse!
+After you defined rules, start parsing with `parse` method of the parser object.
+
+```js
+let data = ' ... ' // Data to be parsed
+let cx = parser.parse(data)
+```
+
+You can pass a string or a `Buffer` object for the parameter.
+`parse` method processes the data synchronously
+and returns **the “root” context** (explained later) when the process completes.
+
+There is another option: `parseFile` which parses another file content **asynchronously**.
+
+```js
+let url = ' ... '     // The URL of the file to be parsed
+parser.parseFile(url) // This returns a Promise object
+.then(cx => {         // cx is the root context
+  console.log('Parsing Completed!')
+})
+```
+
+`parseFile` returns a `Promise` object which will resolve when the process completes.
+
+#### Working around the root context
+As the final result of parsing, the root context contains
+**all the contexts** which were generated through the entire process.
+
+To access to each context individually, pass a callback to `traverse` method of the root context.
+
+```js
+let cx = parser.parse(data)
+cx.traverse(each => {
+  console.log('Block: ' + each.data.name)
+})
+```
+
+Every generated context is passed to the 1st parameter of the callback which you passed to `traverse`.
+
+### Demonstration
+Congraturations! You've learned the basics.
+Now I'll show you a small demonstration.
+
+Here is the sample data to be parsed.
+
+```js
+let data = `
+*** Sample Data ***
+Alice {
+  gender > female
+  age    > 24
+}
+Bill {
+  gender > male
+  age    > 32
+}
+Chase {
+  gender > male
+}
+Domon {
+  gender  > male
+  species > dormouse
+}
+`
+```
+
+The parser and the rule:
+
+```js
+const csp = require('cs-parser')
+let parser = csp.create()
+
+parser.addRule({
+  from: /(\w+) {/,
+  to:   '}',
+  init(cx, chunk, matches) {
+    // Prepare the data container
+    cx.data = {
+      name:   matches[1],
+      gender: 'unknown',
+      age:    'unknown',
+      errors: []
+    }
+  },
+  parse(cx, chunk) {
+    // Store properties
+    let matches = chunk.match(/(\w+) +> +(\w+)/)
+    if (matches) {
+      let prop  = matches[1]
+      let value = matches[2]
+      if (cx.data[prop]) cx.data[prop] = value
+      else cx.data.errors.push('Invalid Data: ' + prop)
+    }
+  },
+  fin(cx) {
+    // Print errors
+    let errors = cx.data.errors
+    if (errors.length) {
+      console.error(errors.length + ' errors in ' + cx.data.name)
+      for (let error of errors) console.error(error)
+    }
+  }
+})
+```
+
+Do parsing and print the results.
+
+```js
+let cx = parser.parse(data)
+let i = 0
+cx.traverse(each => {
+  if (!each.data.name) return
+  i++
+  console.log('\nMember #' + i + ': ' + each.data.name)
+  console.log('--------------------')
+  console.log('   Gender: ' + each.data.gender)
+  console.log('      Age: ' + each.data.age)
+})
+```
+
+The whole output:
+
+```
+1 errors in Domon
+Invalid Data: species
+
+Member #1: Alice
+--------------------
+   Gender: female
+      Age: 24
+
+Member #2: Bill
+--------------------
+   Gender: male
+      Age: 32
+
+Member #3: Chase
+--------------------
+   Gender: male
+      Age: unknown
+
+Member #4: Domon
+--------------------
+   Gender: male
+      Age: unknown
+```
+
+Thats's it!  
+You can run this demonstration on your console by this command:
+
+```sh
+node examples/members.js
+```
+
+There are still a lot more advanced features remaining.
+Check the [documentations](https://amekusa.github.io/cs-parser/1.1.0/) and feel free to modify [the sample data and the rule](examples/members.js) to test.
+
+## The ES6 way
+Instead of `require()`, you can use `import` to get the [Main](https://amekusa.github.io/cs-parser/1.1.0/Main.html) object.
 
 ```js
 import CSParser from 'cs-parser'
