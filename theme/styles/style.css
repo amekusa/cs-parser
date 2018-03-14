@@ -1,7 +1,7 @@
 @charset "utf-8";
 
 /**
- * The JSDoc style addon for the Minami theme (https://github.com/nijikokun/minami)
+ * The JSDoc style for CS Parser
  * @author Satoshi Soma (https://amekusa.com)
  */
 
@@ -48,11 +48,33 @@ h1.page-title + section > header > h2 {
 	display: none;
 }
 
+.social-links .icon {
+	font-size: 36px;
+	color: inherit;
+}
+.social-links .icon:hover,
+.social-links .icon:focus {
+	color: #0095dd;
+}
+.social-links .icon + .icon {
+	margin-left: .25em;
+}
+
 #main {
-	float: left;
+	float: left; /* This expands width to prevent tables overflowing */
 	width: auto;
+	min-width: 100%;
 	padding-bottom: 30px;
-	margin-left: 250px;
+	padding-left: 280px;
+	border-bottom: 1px solid #eee;
+}
+
+footer {
+	clear: both;
+	border-top: none;
+}
+footer > * + * {
+	margin-top: 15px;
 }
 
 #sidebar {
@@ -140,7 +162,7 @@ h4.name > .type-signature > a {
 		overflow: auto;
 	}
 	#main {
-		margin-left: 0;
+		min-width: 320px;
 		padding-left: 15px;
 		padding-right: 15px;
 	}
