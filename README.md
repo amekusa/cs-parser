@@ -1,4 +1,4 @@
-# [![Context Sensitive Parser](https://amekusa.github.io/cs-parser/1.1.0/images/logo-cs-parser@3x.png "Context Sensitive Parser")](https://github.com/amekusa/cs-parser)
+# [![Context Sensitive Parser](https://amekusa.github.io/cs-parser/1.2.0/images/logo-cs-parser@3x.png "Context Sensitive Parser")](https://github.com/amekusa/cs-parser)
 
 [![npm version](https://badge.fury.io/js/cs-parser.svg)](https://badge.fury.io/js/cs-parser) [![dependencies Status](https://david-dm.org/amekusa/cs-parser/status.svg)](https://david-dm.org/amekusa/cs-parser) [![Apache License 2.0](http://img.shields.io/badge/license-Apache_2.0-blue.svg?style=flat)](LICENSE)
 
@@ -20,8 +20,8 @@ Now you can access the APIs of CS Parser with `require()`.
 const csp = require('cs-parser')
 ```
 
-The `csp` is the [Main](https://amekusa.github.io/cs-parser/1.1.0/Main.html) object that provides a few basic methods.  
-Use `create` method to get a [Parser](https://amekusa.github.io/cs-parser/1.1.0/Parser.html) object.
+The `csp` is the [Main](https://amekusa.github.io/cs-parser/1.2.0/Main.html) object that provides a few basic methods.  
+Use `create` method to get a [Parser](https://amekusa.github.io/cs-parser/1.2.0/Parser.html) object.
 
 ```js
 let parser = csp.create()
@@ -38,7 +38,7 @@ parser.addRule({ /* Another rule definition */ })
 ### Defining a rule
 A rule definition is an object contains some specific properties.
 I will show you only a few essential ones here.  
-(If you want to see the full specs, see the [doc](https://amekusa.github.io/cs-parser/1.1.0/Rule.html#Rule).)
+(If you want to see the full specs, see the [doc](https://amekusa.github.io/cs-parser/1.2.0/Rule.html#Rule).)
 
 ```js
 parser.addRule({
@@ -276,10 +276,10 @@ node examples/members.js
 ```
 
 There are still a lot more advanced features remaining.
-Check the [documentations](https://amekusa.github.io/cs-parser/1.1.0/) and feel free to modify [the sample data and the rule](examples/members.js) to test.
+Check the [documentations](https://amekusa.github.io/cs-parser/1.2.0/) and feel free to modify [the sample data and the rule](examples/members.js) to test.
 
 ## The ES6 way
-Instead of `require()`, you can use `import` to get the [Main](https://amekusa.github.io/cs-parser/1.1.0/Main.html) object.
+Instead of `require()`, you can use `import` to get the [Main](https://amekusa.github.io/cs-parser/1.2.0/Main.html) object.
 
 ```js
 import CSParser from 'cs-parser'
@@ -287,7 +287,7 @@ let rule = CSParser.newRule({ ... })
 let parser = CSParser.create(rule)
 ```
 
-Or you can also import [Parser](https://amekusa.github.io/cs-parser/1.1.0/Parser.html) and [Rule](https://amekusa.github.io/cs-parser/1.1.0/Rule.html) classes directly.
+Or you can also import [Parser](https://amekusa.github.io/cs-parser/1.2.0/Parser.html) and [Rule](https://amekusa.github.io/cs-parser/1.2.0/Rule.html) classes directly.
 
 ```js
 import Parser from 'cs-parser/lib/Parser'
@@ -297,7 +297,7 @@ let parser = new Parser(rule)
 ```
 
 ## Links
-+ [Documentations](https://amekusa.github.io/cs-parser/1.1.0/)
++ [Documentations](https://amekusa.github.io/cs-parser/1.2.0/)
 + [GitHub](https://github.com/amekusa/cs-parser)
 
 Pull requests, issue reports, or any other feedbacks are very helpful for further development! :joy:
