@@ -42,7 +42,7 @@ class Parser {
 	/**
 	 * Parses the data specified as a string or Buffer.
 	 * After the parsing completed, returns the root context which contains
-	 * all the generated sub-contexts through the entire parsing.
+	 * all the generated sub-contexts through the entire parsing
 	 * @param {string|Buffer} Data The data to be parsed
 	 * @return {Context} The root context
 	 */
@@ -60,7 +60,7 @@ class Parser {
 	 * @param {object} Opt Streaming options
 	 * @see https://nodejs.org/api/fs.html#fs_fs_createreadstream_path_options
 	 * @return {Promise}
-	 * A Promise that resolves when the parsing complete.
+	 * A Promise that will resolve when the parsing completes.
 	 * You can get the root context as the 1st parameter of a callback
 	 * which you can pass to `.then()`
 	 */

@@ -99,7 +99,6 @@ class Rule extends Composite {
 		this._endsWithParent = Df.endsWithParent || null
 		this._splitter = Df.splitter || null
 		this._encoding = Df.encoding || INHERIT
-
 		this._onStart  = Df.onStart  || (Df.on && Df.on.start)  || Df.init  || null
 		this._onActive = Df.onActive || (Df.on && Df.on.active) || Df.parse || null
 		this._onEnd    = Df.onEnd    || (Df.on && Df.on.end)    || Df.fin   || null
