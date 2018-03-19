@@ -50,8 +50,8 @@ class ContextManager {
 		return this._history
 	}
 
-	set buffer(Bf) {
-		this._buffer = Bf
+	set buffer(X) {
+		this._buffer = X
 	}
 
 	/**

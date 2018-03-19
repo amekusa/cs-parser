@@ -100,10 +100,10 @@ class Context extends Composite {
 		return this._manager || (this.hasParent ? this.parent.manager : null)
 	}
 
-	set manager(Manager) {
+	set manager(X) {
 		if (this.hasParent) throw new Error(`Manager of a non-root context cannot be changed`)
 		if (this._manager) throw new Error(`Another manager is already set`)
-		this._manager = Manager
+		this._manager = X
 	}
 
 	/**
@@ -124,8 +124,8 @@ class Context extends Composite {
 		return this._nextState || this._state
 	}
 
-	set nextState(State) {
-		this._nextState = State
+	set nextState(X) {
+		this._nextState = X
 	}
 
 	/**
@@ -146,8 +146,8 @@ class Context extends Composite {
 		return this._data
 	}
 
-	set data(Value) {
-		this._data = Value
+	set data(X) {
+		this._data = X
 	}
 
 	/**
