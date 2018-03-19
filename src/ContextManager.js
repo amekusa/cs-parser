@@ -11,6 +11,7 @@ class ContextManager {
 		Cx.manager = this
 		this._root = Cx
 		this._current = null
+		this._history = []
 		this._buffer = null
 	}
 
@@ -24,15 +25,29 @@ class ContextManager {
 	}
 
 	/**
-	 * The current context
+	 * The current active context
 	 * @type {Context}
 	 */
 	get current() {
 		return this._current
 	}
 
-	set current(Cx) {
-		this._current = Cx
+	set current(X) {
+		if (X && !this._history.includes(X)) {
+			if (this._history.length)
+				X.prev = this._history[this._history.length - 1]
+			this._history.push(X)
+		}
+		this._current = X
+	}
+
+	/**
+	 * An array of contexts which have ever been activated
+	 * @type {Context[]}
+	 * @readonly
+	 */
+	get history() {
+		return this._history
 	}
 
 	set buffer(Bf) {
