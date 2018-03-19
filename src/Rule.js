@@ -17,6 +17,8 @@ class Rule extends Composite {
 	 * The property name for a nested definition must start with `$` (dollar sign)
 	 *
 	 * ###### Available Options:
+	 * @param {string} Df.name=''
+	 * The name of this rule. Only for debug purpose
 	 * @param {string|RegExp} Df.from
 	 * The pattern that indicates the begining point of this rule.
 	 * If the current chunk matched with this pattern,
@@ -93,6 +95,7 @@ class Rule extends Composite {
 	constructor(Df = null) {
 		super()
 		if (!Df) Df = {}
+		this._name = Df.name || null
 		this._from = Df.from || Df.start || null
 		this._to = Df.to || Df.end || null
 		this._isRecursive = Df.isRecursive || Df.recursive || Df.recurse || null
@@ -105,9 +108,10 @@ class Rule extends Composite {
 
 		// Sub rules
 		for (let i in Df) {
-			let m = i.match(/^\$/)
-			if (!m) continue
 			if (!Df[i]) continue
+			let m = i.match(/^\$(.*)$/)
+			if (!m) continue
+			if (!Df[i].name && m[1]) Df[i].name = m[1]
 			this.addChild(new Rule(Df[i]))
 		}
 	}
@@ -120,6 +124,19 @@ class Rule extends Composite {
 	 */
 	static get INHERIT() {
 		return INHERIT
+	}
+
+	/**
+	 * The name of this rule
+	 * @type {string}
+	 * @default ''
+	 */
+	get name() {
+		return this.get('_name', '')
+	}
+
+	set name(X) {
+		this.set('_name', X)
 	}
 
 	/**
