@@ -1,5 +1,4 @@
 import Context from './Context'
-import {ContextState} from './ContextState'
 
 /**
  * A ContextManager can control multiple contexts through the entire parsing

@@ -1,8 +1,14 @@
 import Composite from './Composite'
 import ContextManager from './ContextManager'
-import {ContextState} from './ContextState'
 import ResultSet from './ResultSet'
 import Rule from './Rule'
+
+const // Enums for state
+	STANDBY    = Symbol('STANDBY'),
+	ACTIVE     = Symbol('ACTIVE'),
+	BACKGROUND = Symbol('BACKGROUND'),
+	FINISHED   = Symbol('FINISHED'),
+	WASTED     = Symbol('WASTED')
 
 /**
  * A parsing context
@@ -18,11 +24,61 @@ class Context extends Composite {
 		super()
 		this._rule = Rl
 		this._manager = Manager
-		this._state = ContextState.STANDBY
+		this._state = STANDBY
 		this._nextState = null
 		this._results = null
 		this._data = {}
 		this._buffer = Buffer.alloc(0)
+	}
+
+	/**
+	 * An enum for {@link Context#state}
+	 * which means the context is waiting for being activated
+	 * @type {Symbol}
+	 * @readonly
+	 */
+	static get STANDBY() {
+		return STANDBY
+	}
+
+	/**
+	 * An enum for {@link Context#state}
+	 * which means the context is active
+	 * @type {Symbol}
+	 * @readonly
+	 */
+	static get ACTIVE() {
+		return ACTIVE
+	}
+
+	/**
+	 * An enum for {@link Context#state}.
+	 * When a sub-context gets activated, the parent context goes this state
+	 * @type {Symbol}
+	 * @readonly
+	 */
+	static get BACKGROUND() {
+		return BACKGROUND
+	}
+
+	/**
+	 * An enum for {@link Context#state}
+	 * which means the context has been deactivated
+	 * @type {Symbol}
+	 * @readonly
+	 */
+	static get FINISHED() {
+		return FINISHED
+	}
+
+	/**
+	 * An enum for {@link Context#state}
+	 * which means the context has no longer chance of getting activated
+	 * @type {Symbol}
+	 * @readonly
+	 */
+	static get WASTED() {
+		return WASTED
 	}
 
 	/**
@@ -51,7 +107,7 @@ class Context extends Composite {
 	/**
 	 * The current state
 	 * @type {Symbol}
-	 * @default ContextState.STANDBY
+	 * @default Context.STANDBY
 	 * @readonly
 	 */
 	get state() {
@@ -132,7 +188,7 @@ class Context extends Composite {
 			this._nextState = null
 
 			let manager = this.manager
-			if (manager && this.state == ContextState.ACTIVE)
+			if (manager && this.state == ACTIVE)
 				manager.current = this
 		}
 	}
@@ -147,7 +203,7 @@ class Context extends Composite {
 		let children = []
 		let wasted = []
 		for (let item of this._children) {
-			if (item.state == ContextState.WASTED) {
+			if (item.state == WASTED) {
 				wasted.push(item)
 				continue
 			}
@@ -170,14 +226,14 @@ class Context extends Composite {
 	 */
 	step(Byte) {
 		switch (this.state) {
-		case ContextState.STANDBY:
+		case STANDBY:
 			return this._step(Byte)
-		case ContextState.ACTIVE:
+		case ACTIVE:
 			if (
 				this._rule.endsWithParent &&
 				this.hasParent &&
 				this.parent.step(Byte) &&
-				this.parent.nextState == ContextState.FINISHED
+				this.parent.nextState == FINISHED
 			) return true // End with the parent
 			// Search a child to activate
 			var found = null
@@ -185,7 +241,7 @@ class Context extends Composite {
 				if (
 					!found &&
 					item.step(Byte) &&
-					item.nextState == ContextState.ACTIVE
+					item.nextState == ACTIVE
 				) {
 					found = item
 					break // Stop searching
@@ -197,12 +253,12 @@ class Context extends Composite {
 				return true
 			}
 			return this._step(Byte)
-		case ContextState.BACKGROUND:
+		case BACKGROUND:
 			if (
 				this._rule.endsWithParent &&
 				this.hasParent &&
 				this.parent.step(Byte) &&
-				this.parent.nextState == ContextState.FINISHED
+				this.parent.nextState == FINISHED
 			) return true // End with the parent
 			return this._step(Byte)
 		}
@@ -232,13 +288,13 @@ class Context extends Composite {
 		let manager = this.manager
 
 		switch (this._state) {
-		case ContextState.STANDBY:
+		case STANDBY:
 			var starts = this._rule.startsWith(Chunk)
 			if (starts || starts === 0) { // Starts
 				if (!this.start(Chunk, starts)) manager.buffer = this._buffer
 			}
 			return
-		case ContextState.ACTIVE:
+		case ACTIVE:
 			var ends = this._rule.endsWith(Chunk)
 			if (ends || ends === 0) { // Ends
 				if (!this.end(Chunk, ends)) manager.buffer = this._buffer
@@ -246,7 +302,7 @@ class Context extends Composite {
 			}
 			if (!this._rule.parse(this, Chunk)) manager.buffer = this._buffer
 			return
-		case ContextState.BACKGROUND:
+		case BACKGROUND:
 			var ends = this._rule.endsWith(Chunk)
 			if (ends || ends === 0) { // Ends
 				if (!this.end(Chunk, ends)) manager.buffer = this._buffer
@@ -259,14 +315,14 @@ class Context extends Composite {
 	 * Activates this context
 	 */
 	start(Chunk = null, Arg = null) {
-		if (this._state == ContextState.ACTIVE) {
+		if (this._state == ACTIVE) {
 			console.warn('Already active')
 			return false
 		}
-		this.nextState = ContextState.ACTIVE
+		this.nextState = ACTIVE
 		this._results = new ResultSet()
 		if (this.hasParent) {
-			this.parent.nextState = ContextState.BACKGROUND
+			this.parent.nextState = BACKGROUND
 			this.parent.results.add(this._results)
 		}
 		this.populate()
@@ -277,25 +333,25 @@ class Context extends Composite {
 	 * Deactivates this context
 	 */
 	end(Chunk = null, Arg = null) {
-		if (this._state == ContextState.FINISHED) {
+		if (this._state == FINISHED) {
 			console.warn('Already finished')
 			return false
 		}
 		// End all the sub-contexts
 		for (let item of this._children) {
-			if (item.state == ContextState.FINISHED) continue
+			if (item.state == FINISHED) continue
 			item.end()
 		}
 		switch (this._state) {
-		case ContextState.STANDBY:
-			this.nextState = ContextState.WASTED
+		case STANDBY:
+			this.nextState = WASTED
 			break
-		case ContextState.ACTIVE:
-		case ContextState.BACKGROUND:
-			this.nextState = ContextState.FINISHED
+		case ACTIVE:
+		case BACKGROUND:
+			this.nextState = FINISHED
 			if (this.hasParent) {
 				// The parent comes back to active
-				this.parent.nextState = ContextState.ACTIVE
+				this.parent.nextState = ACTIVE
 				// Clone itself
 				this.parent.addChild(new Context(this._rule))
 			}

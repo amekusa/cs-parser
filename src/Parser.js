@@ -1,6 +1,5 @@
 import ContextManager from './ContextManager'
 import Context from './Context'
-import {ContextState} from './ContextState'
 import Rule from './Rule'
 const fs = require('fs')
 
