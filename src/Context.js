@@ -227,7 +227,7 @@ class Context extends Composite {
 	step(Byte) {
 		switch (this.state) {
 		case STANDBY:
-			return this._step(Byte)
+			break
 		case ACTIVE:
 			if (
 				this._rule.endsWithParent &&
@@ -238,11 +238,7 @@ class Context extends Composite {
 			// Search a child to activate
 			var found = null
 			for (let item of this._children) {
-				if (
-					!found &&
-					item.step(Byte) &&
-					item.nextState == ACTIVE
-				) {
+				if (!found && item.step(Byte) && item.nextState == ACTIVE) {
 					found = item
 					break // Stop searching
 				}
@@ -252,7 +248,7 @@ class Context extends Composite {
 				for (let item of this._children) item.clearBuffer()
 				return true
 			}
-			return this._step(Byte)
+			break
 		case BACKGROUND:
 			if (
 				this._rule.endsWithParent &&
@@ -260,9 +256,11 @@ class Context extends Composite {
 				this.parent.step(Byte) &&
 				this.parent.nextState == FINISHED
 			) return true // End with the parent
-			return this._step(Byte)
+			break
+		default:
+			return false
 		}
-		return false
+		return this._step(Byte)
 	}
 
 	/**
@@ -293,21 +291,20 @@ class Context extends Composite {
 			if (starts || starts === 0) { // Starts
 				if (!this.start(Chunk, starts)) manager.buffer = this._buffer
 			}
-			return
+			break
 		case ACTIVE:
 			var ends = this._rule.endsWith(Chunk)
 			if (ends || ends === 0) { // Ends
 				if (!this.end(Chunk, ends)) manager.buffer = this._buffer
-				return
-			}
-			if (!this._rule.parse(this, Chunk)) manager.buffer = this._buffer
-			return
+			} else if (!this._rule.parse(this, Chunk))
+				manager.buffer = this._buffer
+			break
 		case BACKGROUND:
 			var ends = this._rule.endsWith(Chunk)
 			if (ends || ends === 0) { // Ends
 				if (!this.end(Chunk, ends)) manager.buffer = this._buffer
 			}
-			return
+			break
 		}
 	}
 
@@ -352,7 +349,6 @@ class Context extends Composite {
 			if (this.hasParent) {
 				// The parent comes back to active
 				this.parent.nextState = ACTIVE
-				// Clone itself
 				this.parent.addChild(new Context(this._rule))
 			}
 			return this._rule.fin(this, Chunk, Arg)
