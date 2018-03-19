@@ -381,6 +381,19 @@ class Context extends Composite {
 		}
 		return false
 	}
+
+	/**
+	 * Returns the outlined string for debug
+	 * @param {string} Indent='  ' The indentation string
+	 * @param {number} Level=0 The indentation level
+	 * @return {string} The outlined string
+	 */
+	outline(Indent = '  ', Level = 0) {
+		let r = Indent.repeat(Level) + (this._rule.name || 'anonymous')
+		for (let item of this._children)
+			r += '\n' + item.outline(Indent, Level + 1)
+		return r
+	}
 }
 
 export default Context
