@@ -29,6 +29,8 @@ class Context extends Composite {
 		this._results = null
 		this._data = {}
 		this._buffer = Buffer.alloc(0)
+		this._prev = null
+		this._next = null
 	}
 
 	/**
@@ -149,6 +151,32 @@ class Context extends Composite {
 	}
 
 	/**
+	 * The previous context
+	 * @type {Context}
+	 */
+	get prev() {
+		return this._prev
+	}
+
+	set prev(X) {
+		X._next = this
+		this._prev = X
+	}
+
+	/**
+	 * The next context
+	 * @type {Context}
+	 */
+	get next() {
+		return this._next
+	}
+
+	set next(X) {
+		X._prev = this
+		this._next = X
+	}
+
+	/**
 	 * @override
 	 * @param {Context} Cx The context to verify
 	 */
@@ -183,14 +211,12 @@ class Context extends Composite {
 		if (Recursive) {
 			for (let item of this._children) item.updateState(Recursive)
 		}
-		if (this._nextState) {
-			this._state = this._nextState
-			this._nextState = null
+		if (!this._nextState) return
+		this._state = this._nextState
+		this._nextState = null
 
-			let manager = this.manager
-			if (manager && this.state == ACTIVE)
-				manager.current = this
-		}
+		let manager = this.manager
+		if (manager && this._state == ACTIVE) manager.current = this
 	}
 
 	/**
