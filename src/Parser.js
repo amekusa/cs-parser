@@ -1,6 +1,5 @@
 import ContextManager from './ContextManager'
 import Context from './Context'
-import {ContextState} from './ContextState'
 import Rule from './Rule'
 const fs = require('fs')
 
@@ -14,6 +13,7 @@ class Parser {
 	constructor(Rl = null) {
 		let rule = Rl instanceof Rule ? Rl : new Rule(Rl)
 		this._rule = rule.from ? new Rule().addChild(rule) : rule
+		if (!this._rule.name) this._rule.name = 'root'
 		this._cm = null
 	}
 
