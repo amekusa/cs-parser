@@ -28,7 +28,7 @@ let parser = csp.create()
 ```
 
 Next, add some parsing rules to the parser with `parser.addRule`.
-Off course you can add any number of rules as you want.
+Of course you can add any number of rules as you want.
 
 ```js
 parser.addRule({ /* A rule definition */ })
@@ -61,7 +61,7 @@ parser.addRule({
 ```
 
 This rule will be activated when the current reading buffer matches with
-the pattern like `something {`. Simple isn' it?
+the pattern like `something {`. Simple isn't it?
 
 Now's the time to define how the rule actually works while it is active.  
 Let us introduce `init`, `parse`, `fin` callbacks.
