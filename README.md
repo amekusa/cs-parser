@@ -90,8 +90,10 @@ For the default, every rule processes the data **line-by-line**, And each line w
 So in other words, the `parse` callback will be executed **every time the parser reaches at a line-break**.
 
 #### Context?
-The **1st** parameter: `cx` is a “**context**” object which will be generated when the rule is activated.  
-With a context, you can store any data into `data` property like this:
+The **1st** parameter: `cx` is a “**context**” object which will be **generated when the rule is activated**.
+The relationship between a rule and a context is similar to **a class and its instance**.
+
+With a context, you can store any data into its `data` property like this:
 
 ```js
 init(cx, chunk, matches) {
