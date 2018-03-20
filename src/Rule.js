@@ -17,7 +17,7 @@ class Rule extends Composite {
 	 * The property name for a nested definition must start with `$` (dollar sign)
 	 *
 	 * ###### Available Options:
-	 * @param {string} Df.name=''
+	 * @param {string} Df.name
 	 * The name of this rule. Only for debug purpose
 	 * @param {string|RegExp} Df.from
 	 * The pattern that indicates the begining point of this rule.
@@ -100,7 +100,7 @@ class Rule extends Composite {
 	 * @param {string} Df.encoding=Rule.INHERIT
 	 * The encoding to use for converting the buffer to a chunk string.
 	 * Falls back to `'utf8'`
-	 * @param {object} Df.$*
+	 * @param {object} Df.$any
 	 * A sub-rule definition. The property name can be any string
 	 * but must start with `$` (dollar sign)
 	 */
