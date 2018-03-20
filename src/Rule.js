@@ -69,12 +69,24 @@ class Rule extends Composite {
 	 * If the `to` pattern is a RegExp, the regex matching results array
 	 * @param Df.fin Alias of `onEnd`
 	 *
+	 * @param {function} Df.onOutline
+	 * **Debug purpose only.**
+	 * You can customize the output of {@link Context#outline}
+	 * with this callback
+	 * ###### Must Return:
+	 * The output `string`
+	 * ###### Parameters:
+	 * @param {Context} Df.onOutline.cx The context to express
+	 * @param Df.express Alias of `onOutline`
+	 *
 	 * @param {object} Df.on
-	 * The container for the another aliases of `onStart`, `onActive`, `onEnd`
+	 * The container for the another aliases of
+	 * `onStart`, `onActive`, `onEnd`, `onOutline`
 	 * ###### Properties:
 	 * @param {function} Df.on.start Alias of `onStart`
 	 * @param {function} Df.on.active Alias of `onActive`
 	 * @param {function} Df.on.end Alias of `onEnd`
+	 * @param {function} Df.on.outline Alias of `onOutline`
 	 *
 	 * @param {boolean} Df.isRecursive=false Whether this rule is recursive
 	 * @param Df.recursive Alias of `isRecursive`
@@ -102,9 +114,10 @@ class Rule extends Composite {
 		this._endsWithParent = Df.endsWithParent || null
 		this._splitter = Df.splitter || null
 		this._encoding = Df.encoding || INHERIT
-		this._onStart  = Df.onStart  || (Df.on && Df.on.start)  || Df.init  || null
-		this._onActive = Df.onActive || (Df.on && Df.on.active) || Df.parse || null
-		this._onEnd    = Df.onEnd    || (Df.on && Df.on.end)    || Df.fin   || null
+		this._onStart   = Df.onStart   || (Df.on && Df.on.start)   || Df.init    || null
+		this._onActive  = Df.onActive  || (Df.on && Df.on.active)  || Df.parse   || null
+		this._onEnd     = Df.onEnd     || (Df.on && Df.on.end)     || Df.fin     || null
+		this._onOutline = Df.onOutline || (Df.on && Df.on.outline) || Df.express || null
 
 		// Sub rules
 		for (let i in Df) {
@@ -234,6 +247,20 @@ class Rule extends Composite {
 
 	set onEnd(X) {
 		this.set('_onEnd', X)
+	}
+
+	/**
+	 * **Debug purpose only.**
+	 * The callback which runs when {@link Context#outline} is called
+	 * @type {function}
+	 * @default null
+	 */
+	get onOutline() {
+		return this.get('_onOutline', null)
+	}
+
+	set onOutline(X) {
+		this.set('_onOutline', X)
 	}
 
 	/**
@@ -367,22 +394,25 @@ class Rule extends Composite {
 	 * + `'start'`: Occurs when the current chunk matched with {@link Rule#from}
 	 * + `'active'`: While this rule is active, occurs every time the parser reached at {@link Rule#splitter}
 	 * + `'end'`: Occurs when the current chunk matched with {@link Rule#to}
-
+	 * + `'outline'`: Occurs when {@link Context#outline} is called. **Debug purpose only**
 	 * @param {function} Fn
 	 * The event handler.
 	 * Returning `false` makes the parser read the current chunk again
 	 * ###### Parameters:
 	 * @param {Context} Fn.cx The current context
-	 * @param {string} Fn.chunk The current chunk
+	 * @param {string} Fn.chunk
+	 * The current chunk.<br>
+	 * **Only for `start`, `active` and `end`**
 	 * @param {number|string[]} Fn.matches
 	 * The matching result of {@link Rule#from}/{@link Rule#to}.<br>
-	 * **Only for `start` and `end` events**.
+	 * **Only for `start` and `end` events**
 	 */
 	on(Ev, Fn) {
 		switch (Ev) {
 		case 'start':
 		case 'active':
 		case 'end':
+		case 'outline':
 			this.set('_on' + Ev[0].toUpperCase() + Ev.slice(1), Fn)
 			break
 		default:
@@ -441,6 +471,15 @@ class Rule extends Composite {
 			if (typeof r == 'undefined') r = true
 		}
 		return r
+	}
+
+	/**
+	 * Expresses a context. **Debug purpose only.**
+	 * @param {Context} Cx The context to express
+	 * @return {string}
+	 */
+	express(Cx) {
+		return this.onOutline ? this.onOutline(Cx) : (this.name || 'anonymous')
 	}
 }
 

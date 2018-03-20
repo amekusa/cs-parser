@@ -389,7 +389,7 @@ class Context extends Composite {
 	 * @return {string} The outlined string
 	 */
 	outline(Indent = '  ', Level = 0) {
-		let r = Indent.repeat(Level) + (this._rule.name || 'anonymous')
+		let r = Indent.repeat(Level) + this._rule.express(this)
 		for (let item of this._children)
 			r += '\n' + item.outline(Indent, Level + 1)
 		return r
