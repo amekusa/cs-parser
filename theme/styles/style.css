@@ -5,6 +5,15 @@
  * @author Satoshi Soma (https://amekusa.com)
  */
 
+h1 + *,
+h2 + *,
+h3 + *,
+h4 + *,
+h5 + *,
+h6 + * {
+	margin-top: 0;
+}
+
 p:first-child {
 	margin-top: 0;
 }
@@ -31,10 +40,10 @@ h1.page-title {
 	position: sticky;
 	z-index: 1;
 	top: 0px;
-	padding-top: 13px;
-	padding-bottom: 13px;
+	padding-top: 13.5px;
+	padding-bottom: 12.5px;
 	background-color: rgba(255, 255, 255, .8);
-	font-size: 43px;
+	font-size: 44px;
 	font-family:
 		"American Typewriter",
 		"Courier New",
