@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Home | CS Parser</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <link type="text/css" rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav id="sidebar">
+    <h1 class="brand">
+        <a href="index.html" title="Home | CS Parser">
+            <img src="images/logo-cs-parser@3x.png" alt="Context Sensitive Parser">
+        </a>
+    </h1>
+    <ul>
+        <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Composite.html">Composite</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Composite.html#addChild">addChild</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Composite.html#addChildren">addChildren</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Composite.html#traverse">traverse</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Composite.html#verifyChild">verifyChild</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Context.html">Context</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#addChild">addChild</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#addChildren">addChildren</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#cleanupChildren">cleanupChildren</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#clearBuffer">clearBuffer</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#end">end</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#outline">outline</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#parseChunk">parseChunk</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#populate">populate</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#start">start</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#step">step</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#traverse">traverse</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#updateState">updateState</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Context.html#verifyChild">verifyChild</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ContextManager.html">ContextManager</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ContextManager.html#feed">feed</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Main.html">Main</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Main.html#create">create</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Main.html#newRule">newRule</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Parser.html">Parser</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Parser.html#addRule">addRule</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Parser.html#addRules">addRules</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Parser.html#onComplete">onComplete</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Parser.html#onStart">onStart</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Parser.html#parse">parse</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Parser.html#parseFile">parseFile</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="ResultSet.html">ResultSet</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ResultSet.html#add">add</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="ResultSet.html#traverse">traverse</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Rule.html">Rule</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#addChild">addChild</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#addChildren">addChildren</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#endsWith">endsWith</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#express">express</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#fin">fin</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#init">init</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#on">on</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#parse">parse</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#startsWith">startsWith</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#traverse">traverse</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Rule.html#verifyChild">verifyChild</a></span></li>
+    </ul>
+</nav>
+
+<main id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><h1><a href="https://github.com/amekusa/cs-parser"><img src="https://amekusa.github.io/cs-parser/1.3.0/images/logo-cs-parser@3x.png" alt="Context Sensitive Parser" title="Context Sensitive Parser"></a></h1><p><a href="https://badge.fury.io/js/cs-parser"><img src="https://badge.fury.io/js/cs-parser.svg" alt="npm version"></a> <a href="https://david-dm.org/amekusa/cs-parser"><img src="https://david-dm.org/amekusa/cs-parser/status.svg" alt="dependencies Status"></a> <a href="LICENSE"><img src="http://img.shields.io/badge/license-Apache_2.0-blue.svg?style=flat" alt="Apache License 2.0"></a></p>
+<h2>Write your own parser LIKE A BOSS</h2><p>CS Parser provides you the power to write parser for your code, data, or anything in any language, any format without hardcore coding.  </p>
+<p>You can write the best parser that exactly matches your need even in 120 lines or less.
+And it will also be clean, semantic, and completely readable! Let's take a short tour.</p>
+<p>At first, you need to install CS Parser via NPM.</p>
+<pre class="prettyprint source lang-sh"><code>npm i cs-parser --save</code></pre><p>Now you can access the APIs of CS Parser with <code>require()</code>.</p>
+<pre class="prettyprint source lang-js"><code>const csp = require('cs-parser')</code></pre><p>The <code>csp</code> is the <a href="https://amekusa.github.io/cs-parser/1.3.0/Main.html">Main</a> object that provides a few basic methods.<br>Use <code>create</code> method to get a <a href="https://amekusa.github.io/cs-parser/1.3.0/Parser.html">Parser</a> object.</p>
+<pre class="prettyprint source lang-js"><code>let parser = csp.create()</code></pre><p>Next, add some parsing rules to the parser with <code>parser.addRule</code>.
+Of course you can add any number of rules as you want.</p>
+<pre class="prettyprint source lang-js"><code>parser.addRule({ /* A rule definition */ })
+parser.addRule({ /* Another rule definition */ })</code></pre><h3>Defining a rule</h3><p>A rule definition is an object contains some specific properties.
+I will show you only a few essential ones here.<br>(If you want to see the full specs, see the <a href="https://amekusa.github.io/cs-parser/1.3.0/Rule.html#Rule">doc</a>.)</p>
+<pre class="prettyprint source lang-js"><code>parser.addRule({
+  from: '{',
+  to:   '}'
+})</code></pre><p>The options <code>from</code> &amp; <code>to</code> determines <strong>where the rule applies to</strong>.
+So the rule in the above will be activated when the parser reaches at <code>{</code>,<br>and will be deactivated when the parser reaches at <code>}</code>.</p>
+<p>You can also use <strong>regex</strong> like this:</p>
+<pre class="prettyprint source lang-js"><code>parser.addRule({
+  from: /(\w).* {/,
+  to:   '}'
+})</code></pre><p>This rule will be activated when the current reading buffer matches with
+the pattern like <code>something {</code>. Simple isn't it?</p>
+<p>Now's the time to define how the rule actually works while it is active.<br>Let us introduce <code>init</code>, <code>parse</code>, <code>fin</code> callbacks.</p>
+<pre class="prettyprint source lang-js"><code>parser.addRule({
+  from: /(\w).* {/,
+  to:   '}',
+  init(cx, chunk, matches) { ... },
+  parse(cx, chunk) { ... },
+  fin(cx, chunk, matches) { ... }
+})</code></pre><p>In short:</p>
+<ul>
+<li><code>init</code> will be called once when the rule is activated.</li>
+<li><code>parse</code> will be called for <strong>every chunk</strong> while the rule is active</li>
+<li><code>fin</code>  will be called once when the rule is deactivated.</li>
+</ul>
+<p>The <strong>3rd</strong> parameter: <code>matches</code> is optional that is passed an array of <strong>matching results</strong> of <code>from</code>/<code>to</code> if these are regex.</p>
+<h4>What is “chunk”?</h4><p>For the default, every rule processes the data <strong>line-by-line</strong>, And each line will be passed as a “chunk” to the <strong>2nd</strong> parameter.
+(This behavior is determined with <code>splitter</code> option. The default value is <code>\n</code>.)  </p>
+<p>So in other words, the <code>parse</code> callback will be executed <strong>every time the parser reaches at a line-break</strong>.</p>
+<h4>Context?</h4><p>The <strong>1st</strong> parameter: <code>cx</code> is a “<strong>context</strong>” object which will be <strong>generated when the rule is activated</strong>.
+The relationship between a rule and a context is similar to <strong>a class and its instance</strong>.</p>
+<p>With a context, you can store any data into its <code>data</code> property like this:</p>
+<pre class="prettyprint source lang-js"><code>init(cx, chunk, matches) {
+  // cx.data is a plain object
+  cx.data.name  = matches[1]
+  cx.data.lines = []
+  // You can also set another object
+  cx.data = {
+    name:  matches[1],
+    lines: []
+  }
+},</code></pre><p><code>cx</code> through <code>init</code>, <code>parse</code>, <code>fin</code> callbacks is guaranteed to be <strong>the same instance</strong>,
+so that you can use the data you stored into <code>data</code> property in another callback like this:</p>
+<pre class="prettyprint source lang-js"><code>parse(cx, chunk) {
+  cx.data.lines.push(chunk)
+},
+fin(cx) {
+  console.log('Block: ' + cx.data.name)
+  console.log('Body:')
+  for (let line of cx.data.lines) console.log(line)
+  console.log('Total Lines: ' + cx.data.lines.length)
+}</code></pre><h3>Let's parse!</h3><p>After you defined rules, start parsing with <code>parse</code> method of the parser object.</p>
+<pre class="prettyprint source lang-js"><code>let data = ' ... ' // Data to be parsed
+let cx = parser.parse(data)</code></pre><p>You can pass a string or a <code>Buffer</code> object for the parameter.
+<code>parse</code> method processes the data synchronously
+and returns <strong>the “root” context</strong> (explained later) when the process completes.</p>
+<p>There is another option: <code>parseFile</code> which parses another file content <strong>asynchronously</strong>.</p>
+<pre class="prettyprint source lang-js"><code>let url = ' ... '     // The URL of the file to be parsed
+parser.parseFile(url) // This returns a Promise object
+.then(cx => {         // cx is the root context
+  console.log('Parsing Completed!')
+})</code></pre><p><code>parseFile</code> returns a <code>Promise</code> object which will resolve when the process completes.</p>
+<h4>Working around the root context</h4><p>As the final result of parsing, the root context contains
+<strong>all the contexts</strong> which were generated through the entire process.</p>
+<p>To access to each context individually, pass a callback to <code>traverse</code> method of the root context.</p>
+<pre class="prettyprint source lang-js"><code>let cx = parser.parse(data)
+cx.traverse(each => {
+  console.log('Block: ' + each.data.name)
+})</code></pre><p>Every generated context is passed to the 1st parameter of the callback which you passed to <code>traverse</code>.</p>
+<h3>Demonstration</h3><p>Congraturations! You've learned the basics.
+Now I'll show you a small demonstration.</p>
+<p>Here is the sample data to be parsed.</p>
+<pre class="prettyprint source lang-js"><code>let data = `
+*** Sample Data ***
+Alice {
+  gender > female
+  age    > 24
+}
+Bill {
+  gender > male
+  age    > 32
+}
+Chase {
+  gender > male
+}
+Domon {
+  gender  > male
+  species > dormouse
+}
+`</code></pre><p>The parser and the rule:</p>
+<pre class="prettyprint source lang-js"><code>const csp = require('cs-parser')
+let parser = csp.create()
+
+parser.addRule({
+  name: 'member', // Debug purpose only
+  from: /(\w+) {/,
+  to:   '}',
+  init(cx, chunk, matches) {
+    // Prepare the data container
+    cx.data = {
+      name:   matches[1],
+      gender: 'unknown',
+      age:    'unknown',
+      errors: []
+    }
+  },
+  parse(cx, chunk) {
+    // Store properties
+    let matches = chunk.match(/(\w+) +> +(\w+)/)
+    if (matches) {
+      let prop  = matches[1]
+      let value = matches[2]
+      if (cx.data[prop]) cx.data[prop] = value
+      else cx.data.errors.push('Invalid Data: ' + prop)
+    }
+  },
+  fin(cx) {
+    // Print errors
+    let errors = cx.data.errors
+    if (errors.length) {
+      console.error(errors.length + ' errors in ' + cx.data.name)
+      for (let error of errors) console.error(error)
+    }
+  }
+})</code></pre><p>Do parsing and print the results.</p>
+<pre class="prettyprint source lang-js"><code>let cx = parser.parse(data)
+let i = 0
+cx.traverse(each => {
+  if (!each.data.name) return
+  i++
+  console.log('\nMember #' + i + ': ' + each.data.name)
+  console.log('--------------------')
+  console.log('   Gender: ' + each.data.gender)
+  console.log('      Age: ' + each.data.age)
+})</code></pre><p>The whole output:</p>
+<pre class="prettyprint source lang-sh"><code>1 errors in Domon
+Invalid Data: species
+
+Member #1: Alice
+--------------------
+   Gender: female
+      Age: 24
+
+Member #2: Bill
+--------------------
+   Gender: male
+      Age: 32
+
+Member #3: Chase
+--------------------
+   Gender: male
+      Age: unknown
+
+Member #4: Domon
+--------------------
+   Gender: male
+      Age: unknown</code></pre><p>Thats's it!<br>You can run this demonstration on your console by this command:</p>
+<pre class="prettyprint source lang-sh"><code>node examples/members.js</code></pre><p>There are still a lot more advanced features remaining.
+Check the <a href="https://amekusa.github.io/cs-parser/1.3.0/">documentations</a> and feel free to modify <a href="examples/members.js">the sample data and the rule</a> to test.</p>
+<h2>How do I debug my parser?</h2><p><code>outline</code>, the one of methods of <a href="https://amekusa.github.io/cs-parser/1.3.0/Context.html">Context</a> outputs <strong>the outline of the tree structure</strong> of a context and the all its sub-contexts.</p>
+<p>This is helpful for ensuring whether your parser has correctly analyzed the structure of the data. Let's see the outline of the result of the demonstration.</p>
+<pre class="prettyprint source lang-js"><code>let cx = parser.parse(data)
+console.log(cx.outline())</code></pre><p>The output:</p>
+<pre class="prettyprint source lang-sh"><code>root
+  member
+  member
+  member
+  member</code></pre><p>What you can get from this outline is:
+4 contexts have been generated by the rule named <code>member</code>.</p>
+<p>To get more specific information from <code>outline</code>,
+you can customize the expression of each context with <code>express</code> callback.</p>
+<pre class="prettyprint source lang-js"><code>parser.addRule({
+  name: 'member', // Debug purpose only
+  from: /(\w+) {/,
+  to:   '}',
+  init(cx, chunk, matches) {
+    // Prepare the data container
+    cx.data = {
+      name:   matches[1],
+      gender: 'unknown',
+      age:    'unknown',
+      errors: []
+    }
+  },
+  ...
+  express(cx) {
+    return 'member: ' + cx.data.name
+  }
+})
+
+let cx = parser.parse(data)
+console.log(cx.outline())</code></pre><p>The output:</p>
+<pre class="prettyprint source lang-sh"><code>root
+  member: Alice
+  member: Bill
+  member: Chase
+  member: Domon</code></pre><p>Now you can get much better outline!</p>
+<h2>The ES6 way</h2><p>Instead of <code>require()</code>, you can use <code>import</code> to get the <a href="https://amekusa.github.io/cs-parser/1.3.0/Main.html">Main</a> object.</p>
+<pre class="prettyprint source lang-js"><code>import CSParser from 'cs-parser'
+let rule = CSParser.newRule({ ... })
+let parser = CSParser.create(rule)</code></pre><p>Or you can also import <a href="https://amekusa.github.io/cs-parser/1.3.0/Parser.html">Parser</a> and <a href="https://amekusa.github.io/cs-parser/1.3.0/Rule.html">Rule</a> classes directly.</p>
+<pre class="prettyprint source lang-js"><code>import Parser from 'cs-parser/lib/Parser'
+import Rule   from 'cs-parser/lib/Rule'
+let rule = new Rule({ ... })
+let parser = new Parser(rule)</code></pre><h2>Links</h2><ul>
+<li><a href="https://amekusa.github.io/cs-parser/1.3.0/">Documentations</a></li>
+<li><a href="https://github.com/amekusa/cs-parser">GitHub</a></li>
+</ul>
+<p>Pull requests, issue reports, or any other feedbacks are very helpful for further development! :joy:</p>
+<hr>
+<p>&copy; 2018 Satoshi Soma (<a href="https://amekusa.com">amekusa.com</a>)<br>CS Parser is licensed under the Apache License, Version 2.0  </p></article>
+    </section>
+
+
+
+
+
+
+</main>
+
+<footer>
+    <div class="social-links">
+      <a title="cs-parser@github" href="https://github.com/amekusa/cs-parser" class="icon ion-social-octocat"></a>
+      <a title="cs-parser@npm" href="https://www.npmjs.com/package/cs-parser" class="icon ion-social-nodejs"></a>
+    </div>
+    
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
