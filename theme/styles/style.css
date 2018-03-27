@@ -42,7 +42,13 @@ h1.page-title {
 	top: 0px;
 	padding-top: 13.5px;
 	padding-bottom: 12.5px;
+	border-bottom: 1px solid rgba(255, 255, 255, .5);
+	box-shadow: 0 0 4px rgba(0, 0, 0, .2);
 	background-color: rgba(255, 255, 255, .8);
+	background-image: linear-gradient(
+		rgba(255, 255, 255, 1),
+		rgba(255, 255, 255, .0)
+	);
 	font-size: 44px;
 	font-family:
 		"American Typewriter",
@@ -73,9 +79,17 @@ h1.page-title + section > header > h2 {
 	float: left; /* This expands width to prevent tables overflowing */
 	width: auto;
 	min-width: 100%;
+	padding-left: 250px;
+	padding-right: 0;
 	padding-bottom: 30px;
-	padding-left: 280px;
 	border-bottom: 1px solid #eee;
+}
+#main > * {
+	padding-left: 30px;
+	padding-right: 30px;
+}
+#main .readme {
+	margin-top: 30px;
 }
 
 footer {
