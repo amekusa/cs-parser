@@ -152,8 +152,8 @@ footer > * + * {
 h4.name {
 	color: hotpink;
 	/* Anchor offset */
-	padding-top: 60px;
-	margin-top: -60px;
+	padding-top: 75px;
+	margin-top: -75px;
 }
 h4.name > .type-signature > a {
 	opacity: .5;
