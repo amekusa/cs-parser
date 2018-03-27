@@ -2,6 +2,21 @@
 
 [![npm version](https://badge.fury.io/js/cs-parser.svg)](https://badge.fury.io/js/cs-parser) [![dependencies Status](https://david-dm.org/amekusa/cs-parser/status.svg)](https://david-dm.org/amekusa/cs-parser) [![Apache License 2.0](http://img.shields.io/badge/license-Apache_2.0-blue.svg?style=flat)](LICENSE)
 
+<!-- TOC depthFrom:2 depthTo:3 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [Write your own parser LIKE A BOSS](#write-your-own-parser-like-a-boss)
+	- [Defining a rule](#defining-a-rule)
+	- [Let's parse!](#lets-parse)
+	- [Demonstration](#demonstration)
+- [How do I debug my parser?](#how-do-i-debug-my-parser)
+- [The ES6 way](#the-es6-way)
+- [Links](#links)
+
+<!-- /TOC -->
+
+---
+
+<span id="write-your-own-parser-like-a-boss"></span>
 ## Write your own parser LIKE A BOSS
 CS Parser provides you the power to write parser for your code, data, or anything in any language, any format without hardcore coding.  
 
@@ -35,6 +50,7 @@ parser.addRule({ /* A rule definition */ })
 parser.addRule({ /* Another rule definition */ })
 ```
 
+<span id="defining-a-rule"></span>
 ### Defining a rule
 A rule definition is an object contains some specific properties.
 I will show you only a few essential ones here.  
@@ -123,6 +139,7 @@ fin(cx) {
 }
 ```
 
+<span id="lets-parse"></span>
 ### Let's parse!
 After you defined rules, start parsing with `parse` method of the parser object.
 
@@ -162,6 +179,7 @@ cx.traverse(each => {
 
 Every generated context is passed to the 1st parameter of the callback which you passed to `traverse`.
 
+<span id="demonstration"></span>
 ### Demonstration
 Congraturations! You've learned the basics.
 Now I'll show you a small demonstration.
@@ -281,6 +299,7 @@ node examples/members.js
 There are still a lot more advanced features remaining.
 Check the [documentations](https://amekusa.github.io/cs-parser/1.3.0/) and feel free to modify [the sample data and the rule](examples/members.js) to test.
 
+<span id="how-do-i-debug-my-parser"></span>
 ## How do I debug my parser?
 `outline`, the one of methods of [Context](https://amekusa.github.io/cs-parser/1.3.0/Context.html) outputs **the outline of the tree structure** of a context and the all its sub-contexts.
 
@@ -343,6 +362,7 @@ root
 
 Now you can get much better outline!
 
+<span id="the-es6-way"></span>
 ## The ES6 way
 Instead of `require()`, you can use `import` to get the [Main](https://amekusa.github.io/cs-parser/1.3.0/Main.html) object.
 
@@ -361,6 +381,7 @@ let rule = new Rule({ ... })
 let parser = new Parser(rule)
 ```
 
+<span id="links"></span>
 ## Links
 + [Documentations](https://amekusa.github.io/cs-parser/1.3.0/)
 + [GitHub](https://github.com/amekusa/cs-parser)
