@@ -237,7 +237,7 @@ class Context extends Composite {
 				wasted = wasted.concat(item.cleanupChildren(Recursive))
 			children.push(item)
 		}
-		if (children.length) this._children = children
+		this._children = children
 		return wasted
 	}
 
