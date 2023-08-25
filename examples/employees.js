@@ -63,9 +63,9 @@ parser.addRule({
 		// Print errors
 		let errors = cx.data.errors
 		if (errors.length) {
-			console.error(errors.length + ' errors in ' + cx.data.name)
+			console.log(errors.length + ' errors found in ' + cx.data.name)
 			for (let err of errors) {
-				console.error(err)
+				console.log(err)
 			}
 		}
 	}
@@ -83,3 +83,32 @@ result.traverse(each => {
 		console.log('   Age: ' + each.data.age)
 	}
 })
+
+let EXPECTED_OUTPUT = `
+1 errors found in Dolly
+invalid property: species
+
+Employee #1: Alice
+--------------------
+   Sex: female
+   Age: 24
+
+Employee #2: Bob
+--------------------
+   Sex: male
+   Age: 32
+
+Employee #3: Charlie
+--------------------
+   Sex: male
+   Age: unknown
+
+Employee #4: Dolly
+--------------------
+   Sex: female
+   Age: unknown
+
+`
+
+// Only for testing
+export { EXPECTED_OUTPUT };
