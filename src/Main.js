@@ -1,5 +1,5 @@
-import Parser from './Parser'
-import Rule from './Rule'
+import Parser from './Parser.js'
+import Rule from './Rule.js'
 
 /**
  * The main API provider

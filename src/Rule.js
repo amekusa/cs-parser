@@ -1,5 +1,5 @@
-import Composite from './Composite'
-import Context from './Context'
+import Composite from './Composite.js'
+import Context from './Context.js'
 
 const INHERIT = Symbol('INHERIT')
 

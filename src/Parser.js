@@ -1,6 +1,6 @@
-import ContextManager from './ContextManager'
-import Context from './Context'
-import Rule from './Rule'
+import ContextManager from './ContextManager.js'
+import Context from './Context.js'
+import Rule from './Rule.js'
 import fs from 'node:fs';
 
 /**
