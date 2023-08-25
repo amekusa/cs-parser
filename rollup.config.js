@@ -10,12 +10,12 @@ export default {
 	input: 'src/main.js',
 	output: [
 		{
-			file: 'dist/import/bundle.js',
+			file: 'dist/import/bundle.mjs',
 			format: 'es',
 			...output
 		},
 		{
-			file: 'dist/require/bundle.js',
+			file: 'dist/require/bundle.cjs',
 			format: 'cjs',
 			...output
 		},
