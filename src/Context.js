@@ -1,7 +1,5 @@
 import Composite from './Composite.js'
-import ContextManager from './ContextManager.js'
 import ResultSet from './ResultSet.js'
-import Rule from './Rule.js'
 
 const // Enums for state
 	STANDBY    = Symbol('STANDBY'),
