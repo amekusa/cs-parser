@@ -2,7 +2,7 @@ import Parser from './Parser'
 import Rule from './Rule'
 
 /**
- * The main API provider that the user can get with `require('cs-parser')`
+ * The main API provider
  */
 class Main {
 	/**
@@ -13,7 +13,6 @@ class Main {
 	create(Rl) {
 		return new Parser(Rl)
 	}
-
 	/**
 	 * Creates a Rule instance
 	 * @param {object} Df The rule definition
