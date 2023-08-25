@@ -1,7 +1,7 @@
 import ContextManager from './ContextManager'
 import Context from './Context'
 import Rule from './Rule'
-const fs = require('fs')
+import fs from 'node:fs';
 
 /**
  * Context sensitive parser
