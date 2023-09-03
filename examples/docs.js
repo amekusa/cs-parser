@@ -1,41 +1,53 @@
-const csp = require('../lib')
-const fs = require('fs')
+import path from 'node:path'
+import csp from 'cs-parser'
 
+// Base dir
+let base = path.dirname(import.meta.url)
+
+// File to parse
+let file = `${base}/samples/GameObject.js`
+
+// Initialize the parser
 let parser = csp.create({
-	// The rule of doc block
+	// --- Rule definitions ---
+
+	// DocBlock context
 	$doc: {
 		start: /\/\*\*$/, // Starts with '/**'
 		end:   /\*\/$/,   //   Ends with '*/'
-		// Initialize Callback
-		// This is called when the parser reached at '/**'
+
+		// Context initializer
+		// - This is called when the parser reached at '/**'
+		// - 'cx' is a context object that persists throughout the parsing process
+		// - 'chunk' is the current line
+		// - 'matches' is the result of regex-matching of '$doc.start'
 		init(cx, chunk, matches) {
 			cx.results.add(`<section class="docblock">`)
 		},
-		// Parse Callback
-		// This is called for every line after init() untill fin().
-		// The current line is passed as 'chunk'
+
+		// Chunk parser
+		// - This is called for every line after init() untill fin().
+		// - The current line is passed as 'chunk'
 		parse(cx, chunk) {
-			let strip = chunk.match(/(\w.*)$/) // Strip indents
+			let strip = chunk.match(/(\w.*)$/) // Remove indentations
 			cx.results.add('  ' + strip[1])
 		},
-		// Finalize Callback
-		// This is called when the parser reached at '*/'
+
+		// Context finalizer
+		// - This is called when the parser reached at '*/'
 		fin(cx, chunk, matches) {  // Finalize
 			cx.results.add(`</section>`)
 		},
 
-		// The rule of @param
-		// This is so a sub-rule of doc block in the above
-		//   that it only be applied in doc blocks.
-		// The name of sub-rule must start with '$'
+		// '@param' context
+		// - This is a sub-rule of '$doc' which only can take effect inside '$doc' context
+		// - The name of sub-rule must start with '$'
 		$param: {
 			start: /@param {(\w+)} (\w+)/, // Starts with '@param {type} name'
 			end:   /@\w+/,                 // Ends with any other keyword that starts with '@'
-			endsWithParent: true, // This means that this rule also ends with doc block
-			// Initialize Callback
-			// 'cx' is the context object that can hold any data
-			//   during the period of this rule working.
-			// 'matches' is the result of regex matching of the 'start' specified in the above
+			endsWithParent: true, // This means that this rule also ends with '$doc.end'
+
+			// Context initializer
 			init(cx, chunk, matches) {
 				cx.data = {
 					type: matches[1], // Save the parameter type
@@ -43,13 +55,14 @@ let parser = csp.create({
 				}
 				cx.results.add(`  <div class="param">`)
 			},
-			// Parse Callback
-			// 'cx' is the same instance as the one which has been passed to 'init()'
+
+			// Chunk parser
 			parse(cx, chunk) {
 				let strip = chunk.match(/(\w.*)$/) // Strip indents
 				cx.results.add('    ' + strip[1])
 			},
-			// Finalize Callback
+
+			// Context finalizer
 			fin(cx, chunk, matches) {
 				cx.results.add([
 					`    <dl class="specs">`,
@@ -60,17 +73,18 @@ let parser = csp.create({
 					`    </dl>`,
 					`  </div>`
 				])
-				return false // Returning false makes the parser read the same chunk twice
+				return false // Returning false makes the parser read the current chunk twice
 			}
 		},
 
-		// The rule of @example
-		// This is another sub-rule of doc block
+		// '@example' context
+		// - This is another sub-rule of '$doc'
 		$example: {
-			start: /@example (.+)/, // Starts with '* @example title'
-			end:   /@\w+/,          //   Ends with any other keyword that starts with '@'
-			endsWithParent: true, // This means that this rule also ends with doc block
-			// Initialize Callback
+			start: /@example (.+)/, // Starts with '@example (word)'
+			end:   /@\w+/,          // Ends with any other keyword that starts with '@'
+			endsWithParent: true, // This means that this rule also ends with '$doc.end'
+
+			// Context initializer
 			init(cx, chunk, matches) {
 				cx.data = {
 					title: matches[1]
@@ -79,25 +93,28 @@ let parser = csp.create({
 					.add(`  <section class="example">`)
 					.add(`    <h1>${cx.data.title}</h1>`)
 			},
-			// Parse Callback
+
+			// Chunk parser
 			parse(cx, chunk) {
 				let strip = chunk.match(/(\w.*)$/) // Strip indents
 				cx.results.add('    ' + strip[1])
 			},
-			// Finalize Callback
+
+			// Context finalizer
 			fin(cx, chunk, matches) {
 				cx.results.add(`  </section>`)
 				return false
 			},
 
-			// The rule of code example
-			// This rule formats a fenced code block as <pre><code>...</pre></code>
-			// This is a sub-rule of @example
+			// "Example code" context
+			// - This is a sub-rule of '$example'
+			// - This rule converts a code-fenced block (```) as <pre><code>...</pre></code>
 			$code: {
-				start: /`{3}(\w+)?/, // Starts with '```' (triple backticks)
-				                     // Also supports language notation like '```js'
-				end:   /`{3}$/,      // Ends with '```'
-				// Initialize Callback
+				start: /`{3}(\w+)?/, // Starts with ``` (triple backticks)
+				                     // Also supports language notation like ```js
+				end:   /`{3}$/,      // Ends with ```
+
+				// Context initializer
 				init(cx, chunk, matches) {
 					cx.data = {
 						lang: matches[1] || 'unknown'
@@ -106,12 +123,14 @@ let parser = csp.create({
 						.add(`    <pre>`)
 						.add(`      <code class="lang-${cx.data.lang}">`)
 				},
-				// Parse Callback
+
+				// Chunk parser
 				parse(cx, chunk) {
 					let strip = chunk.match(/(\w.*)$/) // Strip indents
 					cx.results.add('        ' + strip[1])
 				},
-				// Finalize Callback
+
+				// Context finalizer
 				fin(cx, chunk, matches) {
 					cx.results
 						.add(`      </code>`)
@@ -123,10 +142,9 @@ let parser = csp.create({
 })
 
 // Read and parse a file asynchronously.
-parser.parseFile(__dirname + '/GameObject.js') // This returns a Promise object
-.then(function (cx) {
-	// 'cx' is the root context that contains all the sub-contexts
-	// which are generated through the parsing process
+parser.parseFile(new URL(file))
+.then(cx => {
+	// 'cx' is the root context that contains all the sub-contexts generated throughout the parsing process
 	cx.results.traverse(result => {
 		console.log(result)
 	})

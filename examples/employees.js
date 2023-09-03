@@ -1,4 +1,4 @@
-// Data to be parsed
+// Data to parse
 let data = `
 ---- Employees List ----
 Alice {
@@ -28,6 +28,10 @@ parser.addRule({
 	to:   '}',       //   Ends with '}'
 
 	// Context initializer
+	// - This is called when the parser reached at '(word) {'
+	// - 'cx' is a context object that persists throughout the parsing process
+	// - 'chunk' is the current line
+	// - 'matches' is the result of regex-matching of 'from'
 	init(cx, chunk, matches) {
 		// Prepare a data container for chunk parser
 		cx.data = {
@@ -40,6 +44,8 @@ parser.addRule({
 	},
 
 	// Chunk parser
+	// - This is called for every line after init() untill fin().
+	// - The current line is passed as 'chunk'
 	parse(cx, chunk) {
 		// Check if the current chunk (line) is something like: '(word1) > (word2)'
 		let matches = chunk.match(/(\w+) > +(\w+)/)
@@ -59,6 +65,7 @@ parser.addRule({
 	},
 
 	// Context finalizer
+	// - This is called when the parser reached at '}'
 	fin(cx) {
 		// Print errors
 		let errors = cx.data.errors
