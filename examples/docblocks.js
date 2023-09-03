@@ -146,10 +146,71 @@ let parser = csp.create({
 })
 
 // Read and parse a file asynchronously.
-parser.parseFile(new URL(file))
-.then(cx => {
-	// 'cx' is the root context that contains all the sub-contexts generated throughout the parsing process
-	cx.results.traverse(result => {
-		console.log(result)
-	})
+let cx = await parser.parseFile(new URL(file))
+
+// 'cx' is the root context that contains all the sub-contexts generated throughout the parsing process
+cx.results.traverse(result => {
+	console.log(result)
 })
+
+// Result
+let EXPECTED_OUTPUT = /*html*/`
+<section class="docblock">
+  Represents an object in the game
+</section>
+<section class="docblock">
+  Creates an instance with specific name and health
+  <div class="param">
+    The name of the object
+    <dl class="specs">
+      <dt>Type</dt>
+      <dd>string</dd>
+      <dt>Name</dt>
+      <dd>name</dd>
+    </dl>
+  </div>
+  <div class="param">
+    The health of the object
+    <dl class="specs">
+      <dt>Type</dt>
+      <dd>number</dd>
+      <dt>Name</dt>
+      <dd>health</dd>
+    </dl>
+  </div>
+</section>
+<section class="docblock">
+  Takes specific amount of damage
+  <div class="param">
+    Amount of damage to take
+    <dl class="specs">
+      <dt>Type</dt>
+      <dd>number</dd>
+      <dt>Name</dt>
+      <dd>amount</dd>
+    </dl>
+  </div>
+  <section class="example">
+    <h1>Attack a kobold</h1>
+    <pre>
+      <code class="lang-js">
+        var enemy = new GameObject('Kobold', 10)
+        enemy.takeDamage(5)
+        console.log('Health lefts ' + this.health)
+      </code>
+    </pre>
+  </section>
+  <section class="example">
+    <h1>Attack a rat and kill it</h1>
+    <pre>
+      <code class="lang-js">
+        var enemy = new GameObject('Rat', 3)
+        enemy.takeDamage(5)
+        console.log(this.name + ' must be dead')
+      </code>
+    </pre>
+  </section>
+</section>
+`
+
+export { EXPECTED_OUTPUT }

@@ -17,14 +17,15 @@ beforeEach(() => {
 describe('Examples', () => {
 	let examples = [
 		'employees',
+		'docblocks',
 	];
-	for (let example of examples) {
-		it(example, async () => {
-			let result = await import(`../examples/${example}.js`);
+	for (let item of examples) {
+		it(item, async () => {
+			let example = await import(`../examples/${item}.js`);
 			_console.log('---- OUTPUT ----');
 			_console.log(log.data);
 			_console.log('================');
-			assert.equal(log.data.trim(), result.EXPECTED_OUTPUT.trim());
+			assert.equal(log.data.trim(), example.EXPECTED_OUTPUT.trim());
 		});
 	}
 });

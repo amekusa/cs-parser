@@ -1,3 +1,5 @@
+import csp from 'cs-parser'
+
 // Data to parse
 let data = `
 ---- Employees List ----
@@ -19,7 +21,6 @@ Dolly {
 `
 
 // Initialize the parser
-import csp from 'cs-parser'
 let parser = csp.create()
 
 // Define the 1st rule
@@ -91,6 +92,7 @@ result.traverse(each => {
 	}
 })
 
+// Result
 let EXPECTED_OUTPUT = `
 1 errors found in Dolly
 invalid property: species
@@ -114,7 +116,6 @@ Employee #4: Dolly
 --------------------
    Sex: female
    Age: unknown
-
 `
 
 // Only for testing
