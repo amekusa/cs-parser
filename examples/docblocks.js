@@ -93,9 +93,10 @@ let parser = csp.create({
 				cx.data = {
 					title: matches[1]
 				}
-				cx.results
-					.add(`  <section class="example">`)
-					.add(`    <h1>${cx.data.title}</h1>`)
+				cx.results.add([
+					`  <section class="example">`,
+					`    <h1>${cx.data.title}</h1>`
+				])
 			},
 
 			// Chunk parser
@@ -123,9 +124,10 @@ let parser = csp.create({
 					cx.data = {
 						lang: matches[1] || 'unknown'
 					}
-					cx.results
-						.add(`    <pre>`)
-						.add(`      <code class="lang-${cx.data.lang}">`)
+					cx.results.add([
+						`    <pre>`,
+						`      <code class="lang-${cx.data.lang}">`
+					])
 				},
 
 				// Chunk parser
@@ -136,9 +138,10 @@ let parser = csp.create({
 
 				// Context finalizer
 				fin(cx, chunk, matches) {
-					cx.results
-						.add(`      </code>`)
-						.add(`    </pre>`)
+					cx.results.add([
+						`      </code>`,
+						`    </pre>`
+					])
 				}
 			}
 		}
