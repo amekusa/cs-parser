@@ -1,3 +1,7 @@
+/**
+ * Parsing a JavaScript code and format all the DocBlocks in it to a simple HTML
+ */
+
 import path from 'node:path'
 import csp from 'cs-parser'
 
