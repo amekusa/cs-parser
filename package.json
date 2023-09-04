@@ -8,16 +8,14 @@
     "require": "./dist/require/bundle.cjs"
   },
   "scripts": {
+    "setup": "npm i && develarms i",
     "test": "c8 mocha --enable-source-maps",
-    "test:examples": "node examples/",
-    "test:watch": "npm test -- --watch",
-    "codecov": "c8 report -r lcov && codecov",
-    "docs": "jsdoc -c .jsdoc.json",
-    "docs:clean": "rm -rf docs/cs-parser/$npm_package_version",
-    "docs:publish": "git subtree push --prefix docs/cs-parser origin gh-pages",
+    "codecov": "npm run test && c8 report --reporter=text-lcov > coverage.lcov && codecov",
+    "docs": "jsdoc -c .jsdoc.json && cd docs/$npm_package_name && ln -sfn $npm_package_version latest",
+    "docs:clean": "rm -rf docs/$npm_package_name/$npm_package_version && npm run docs",
+    "docs:publish": "git subtree push --prefix docs/$npm_package_name origin gh-pages",
     "build": "rollup -c",
-    "build:clean": "rm -rf dist && npm run build",
-    "prepublish": "npm run test && npm run docs && npm run build"
+    "build:clean": "rm -rf dist && npm run build"
   },
   "files": [
     "dist",
@@ -40,12 +38,14 @@
   "homepage": "https://github.com/amekusa/cs-parser#readme",
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.2.1",
-    "develarms": "^2.1.0"
+    "develarms": "^2.1.0",
+    "docolatte": "^3.5.0"
   },
   "develarms": {
     "c8": "^8.0.1",
     "mocha": "^10.2.0",
     "rollup": "^3.28.0",
-    "jsdoc": "^3.6.11"
+    "jsdoc": "^3.6.11",
+    "codecov": "^3.8.3"
   }
 }
