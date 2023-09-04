@@ -39,7 +39,7 @@
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.2.1",
     "develarms": "^2.1.0",
-    "docolatte": "^3.5.0"
+    "docolatte": "^3.5.1"
   },
   "develarms": {
     "c8": "^8.0.1",
