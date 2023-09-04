@@ -1,35 +1,47 @@
 {
-	"tags": {
-		"allowUnknownTags": true,
-		"dictionaries": ["jsdoc"]
-	},
-	"source": {
-		"include": ["src", "package.json", "README.md"],
-		"includePattern": ".js$",
-		"excludePattern": "(node_modules/|docs)"
-	},
-	"plugins": [
-		"plugins/markdown"
-	],
-	"opts": {
-		"destination": "./docs/",
-		"encoding": "utf8",
-		"private": false,
-		"recurse": true,
-		"template": "node_modules/minami"
-	},
-	"templates": {
-		"default": {
-			"layoutFile": "./theme/layout.tmpl",
-			"staticFiles": {
-				"include": [
-					"./theme"
-				],
-				"exclude": [
-					"./theme/layout.tmpl"
-				]
-			},
-			"includeDate": false
-		}
-	}
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc"]
+  },
+  "source": {
+    "include": ["src", "package.json", "README.md"],
+    "includePattern": ".js$",
+    "excludePattern": "(node_modules/|docs)"
+  },
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "opts": {
+    "destination": "./docs/",
+    "encoding": "utf8",
+    "private": false,
+    "recurse": true,
+    "template": "node_modules/docolatte"
+  },
+  "templates": {
+    "docolatte": {
+      "branding": {
+        "title": "CS Parser",
+        "link":  "https://github.com/amekusa/cs-parser/",
+        "icon":  "github"
+      },
+      "code": {
+        "theme": "atom-one-dark"
+      },
+      "meta": {
+        "title":       "CS Parser",
+        "description": "Context Sensitive Parser",
+        "keywords":    "parser, js, npm, dsl, library"
+      },
+      "home": {
+        "package": {
+          "hide": true
+        }
+      },
+      "footer": {
+        "copyright": "&copy; 2018 Satoshi Soma",
+        "license":   "Licensed under the Apache License 2.0"
+      }
+    }
+  }
 }
