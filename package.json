@@ -18,6 +18,8 @@
     "build:clean": "rm -rf dist && npm run build"
   },
   "files": [
+    "LICENSE",
+    "NOTICE",
     "dist",
     "src"
   ],
