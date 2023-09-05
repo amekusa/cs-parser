@@ -1,3 +1,10 @@
+/**
+ * Rollup Config
+ *
+ * Use with:
+ *   rollup -c .rollup.js
+ */
+
 import rNode from '@rollup/plugin-node-resolve';
 
 const output = {

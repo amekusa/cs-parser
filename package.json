@@ -14,7 +14,7 @@
     "docs": "jsdoc -c .jsdoc.json && cd docs/$npm_package_name && ln -sfn $npm_package_version latest",
     "docs:clean": "rm -rf docs/$npm_package_name/$npm_package_version && npm run docs",
     "docs:publish": "git subtree push --prefix docs/$npm_package_name origin gh-pages",
-    "build": "rollup -c",
+    "build": "rollup -c .rollup.js",
     "build:clean": "rm -rf dist && npm run build"
   },
   "files": [
