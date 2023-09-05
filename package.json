@@ -28,7 +28,10 @@
   "keywords": [
     "parser",
     "context",
-    "framework"
+    "dsl",
+    "language",
+    "data",
+    "format"
   ],
   "author": "Satoshi Soma (https://amekusa.com)",
   "license": "Apache-2.0",
