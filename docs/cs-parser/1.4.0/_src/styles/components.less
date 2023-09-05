@@ -1,0 +1,192 @@
+// general heading style
+.heading() {
+	.bl(.35em solid);
+	.pt(.1em);
+	.pl(.75em);
+	.lh(1);
+	font-family: @ff-head;
+	font-weight: normal;
+	text-transform: uppercase;
+	letter-spacing: .12em;
+}
+
+// scrollable table wrapper
+.table-wrap {
+	overflow: auto;
+
+	> table {
+		.table-wrap {
+			overflow: initial;
+		}
+	}
+}
+
+// wraps each '@example' code block
+.code-wrap {
+	.pos(relative);
+
+	&:hover {
+		.code-caption {
+			pointer-events: none; // click through
+			opacity: .25;
+		}
+	}
+	// @example <caption>...</caption>
+	.code-caption {
+		.block;
+		.pos-tr(0; 0; absolute);
+		.fs(@fs-m; 1.25);
+		.w-max(61.8%);
+		.pv(.45em); // .5em would slightly overlap the 2nd line of <PRE>
+		.ph(1em);
+		.round-tr(.5rem);
+		.round-bl(.5rem);
+		text-align: right;
+		@bg: #2d2d2d; // derived from: Tomorrow Night 80s
+		.bg-c(fade(darken(@bg, 10%), 61.8%));
+		color: white;
+		text-shadow: -.1em .1em .1em rgba(0, 0, 0, 1);
+		transition: opacity .25s ease-out;
+	}
+}
+
+// code highlighter
+.prettyprint {
+	.pos(relative);
+	.fs(@fs-s; 1.5);
+	font-family: @ff-code;
+	width: auto;
+	overflow: auto;
+	border-radius: .5rem;
+
+	._char { // for measuring char width
+		.pos-tl(0; 0; absolute);
+		opacity: 0;
+	}
+	code {
+		display: block;
+		.pv(.5em) !important;
+		.ph(1em);
+	}
+	.linenums {
+		.pos-tl(0; 0; absolute);
+
+		.linenum {
+			box-sizing: border-box;
+			opacity: .9;
+
+			&:first-child { .pt(.5em); }
+			&:last-child { .pb(.5em); }
+
+			a {
+				display: block;
+				.br(solid 1px);
+				text-align: right;
+				text-decoration: none;
+				color: inherit;
+				opacity: .35;
+
+				&:hover, &:focus {
+					opacity: .75;
+				}
+			}
+
+			&[data-selected] {
+
+				a {
+					opacity: 1;
+				}
+			}
+		}
+	}
+}
+
+.icon {
+	.pos(relative);
+	.iblock;
+
+	&.burger {
+		.dim(26px; 20px);
+
+		.top, .middle, .bottom {
+			display: block;
+			.pos-l(0; absolute);
+			.dim(26px; 4px);
+			border-radius: 2px;
+			.bg-c(black);
+		}
+		.top { top: 0 }
+		.middle { top: 8px }
+		.bottom { top: 16px }
+
+		&.animate {
+			.a(count; 1);
+
+			.top, .middle, .bottom {
+				transform: none;
+				transform-box: fill-box;
+				transform-origin: center;
+				.a(duration; .35s);
+				.a(curve; ease-out);
+				.a(count; inherit);
+				.a(fill-mode; forwards);
+			}
+			.top { .a(name; burger-top) }
+			.middle { .a(name; burger-middle) }
+			.bottom { .a(name; burger-bottom) }
+		}
+		@k1: 45%;
+		@k2: 66%;
+		@keyframes burger-top {
+			@{k1}, @{k2} { transform: translateY(8px) }
+			100% { transform: translateY(8px) rotateZ(45deg) }
+		}
+		@keyframes burger-middle {
+			@{k1}, @{k2} { transform: rotateZ(90deg) }
+			100% { transform: rotateZ(135deg) }
+		}
+		@keyframes burger-bottom {
+			@{k1} { transform: translateY(-8px); opacity: 1 }
+			@{k2} { transform: translateY(-8px); opacity: 0 }
+			100% { transform: translateY(-8px) rotateZ(45deg) }
+		}
+	}
+	&.magnifier {
+		@size: 1em;
+		@thickness: 1px;
+		@color: @c-ink;
+		.square(@size);
+
+		&::before,
+		&::after {
+			content: "";
+			.pos(absolute);
+			.block;
+			box-sizing: border-box;
+		}
+		// lense
+		&::before {
+			.pos-tl(0; 0);
+			.square(80%);
+			.b(@thickness solid @color);
+			border-radius: (@size / 2);
+		}
+		// handle
+		&::after {
+			.dim(@thickness; 40%);
+			.pos-br(0; (-@thickness / 2));
+			// transform-box: fill-box;
+			transform-origin: bottom right;
+			transform: translate(-@thickness, -@thickness) rotateZ(-45deg);
+			.bg-c(@color);
+		}
+	}
+	// feather icons (github.com/feathericons/feather)
+	&.feather {
+		stroke: currentColor;
+		stroke-width: 2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		fill: none;
+	}
+}

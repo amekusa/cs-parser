@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    
+    <title>Source: Rule.js | CS Parser</title>
+    
+    <meta name="description" content="Context Sensitive Parser">
+    
+    <meta name="keywords" content="parser, js, npm, dsl, library">
+    
+    
+    <link rel="icon" title="dummy" href="data:image/x-icon;base64,AA">
+    
+    
+    <script src="scripts/docolatte.min.js"></script>
+    
+    
+    <link type="text/css" rel="stylesheet" href="styles/simplebar.min.css">
+    
+    <link type="text/css" rel="stylesheet" href="styles/hljs/atom-one-dark.css">
+    
+    <link type="text/css" rel="stylesheet" href="styles/docolatte.min.css">
+    
+    <noscript>
+        <style>
+            [data-ready] {
+                visibility: visible !important;
+            }
+        </style>
+    </noscript>
+    
+</head>
+<body>
+<div class="page">
+
+    <header class="masthead">
+        <div class="branding">
+            
+            <a class="link" href="https://github.com/amekusa/cs-parser/">
+                <svg class="icon feather"><use xlink:href="assets/feather-sprite.svg#github"/></svg>
+            </a>
+            
+            <a class="title" href="index.html">CS Parser</a>
+        </div>
+        <div class="topbar">
+            <h1 class="page-title">
+                <a href="#">Source: Rule.js</a>
+            </h1>
+        </div>
+    </header>
+
+    <div class="primary has-footer">
+        <main>
+            
+
+
+
+    
+<article class="src">
+    <pre class="prettyprint source linenums lang-js"><span class="_char">_</span><code>import Composite from './Composite.js'
+
+const INHERIT = Symbol('INHERIT')
+
+/**
+ * A nestable parsing rule
+ * @extends Composite
+ */
+class Rule extends Composite {
+	/**
+	 * Creates a rule instance with the options in the specified object.
+	 * @param {object} Df=null
+	 * The rule definition object that contains the options as its properties.
+	 * Definition objects can be **nested**.
+	 * A nested definition is interpreted as a **sub-rule**.
+	 * The property name for a nested definition must start with `$` (dollar sign)
+	 *
+	 * ###### Available Options:
+	 * @param {string} Df.name
+	 * The name of this rule. Only for debug purpose
+	 * @param {string|RegExp} Df.from
+	 * The pattern that indicates the begining point of this rule.
+	 * If the current chunk matched with this pattern,
+	 * this rule will be activated, and the new context will start parsing
+	 * from the next chunk
+	 * @param Df.start
+	 * Alias of `from`
+	 * @param {string|RegExp} Df.to
+	 * The pattern that indicates the end point of this rule.
+	 * If the current chunk matched with this pattern,
+	 * this rule will be deactivated, and the current context will be finalized
+	 * @param Df.end Alias of `to`
+	 *
+	 * @param {function} Df.onStart
+	 * The callback which is called when this rule gets activated.&lt;br>
+	 * If this returns `false`, the {@link Parser} will read the current chunk
+	 * again
+	 * ###### Parameters:
+	 * @param {Context} Df.onStart.cx The current context
+	 * @param {string} Df.onStart.chunk
+	 * The current chunk which has matched with `from`
+	 * @param {number|string[]} Df.onStart.matches
+	 * If the `from` pattern is a string, the index of the matched string
+	 * in the chunk.&lt;br>
+	 * If the `from` pattern is a RegExp, the regex matching results array
+	 * @param Df.init Alias of `onStart`
+	 *
+	 * @param {function} Df.onActive
+	 * The callback which is called for every single chunk.&lt;br>
+	 * If this returns `false`, the {@link Parser} will read the current chunk
+	 * again
+	 * ###### Parameters:
+	 * @param {Context} Df.onActive.cx The current context
+	 * @param {string} Df.onActive.chunk The current chunk
+	 * @param Df.parse Alias of `onActive`
+	 *
+	 * @param {function} Df.onEnd
+	 * The callback which is called when this rule gets deactivated.
+	 * If this returns `false`, the {@link Parser} will read the current chunk
+	 * again
+	 * ###### Parameters:
+	 * @param {Context} Df.onEnd.cx The current context
+	 * @param {string} Df.onEnd.chunk
+	 * The current chunk which has matched with `to`
+	 * @param {number|string[]} Df.onEnd.matches
+	 * If the `to` pattern is a string, the index of the matched string
+	 * in the chunk.&lt;br>
+	 * If the `to` pattern is a RegExp, the regex matching results array
+	 * @param Df.fin Alias of `onEnd`
+	 *
+	 * @param {function} Df.onOutline
+	 * **Debug purpose only.**
+	 * You can customize the output of {@link Context#outline}
+	 * with this callback
+	 * ###### Must Return:
+	 * The output `string`
+	 * ###### Parameters:
+	 * @param {Context} Df.onOutline.cx The context to express
+	 * @param Df.express Alias of `onOutline`
+	 *
+	 * @param {object} Df.on
+	 * The container for the another aliases of
+	 * `onStart`, `onActive`, `onEnd`, `onOutline`
+	 * ###### Properties:
+	 * @param {function} Df.on.start Alias of `onStart`
+	 * @param {function} Df.on.active Alias of `onActive`
+	 * @param {function} Df.on.end Alias of `onEnd`
+	 * @param {function} Df.on.outline Alias of `onOutline`
+	 *
+	 * @param {boolean} Df.isRecursive=false Whether this rule is recursive
+	 * @param Df.recursive Alias of `isRecursive`
+	 * @param Df.recurse Alias of `isRecursive`
+	 * @param {boolean} Df.endsWithParent=false
+	 * If `true`, the parent rule can end even when this rule is active
+	 * @param {string|RegExp} Df.splitter='\n'
+	 * The chunk splitter. When the {@link Parser} reached at
+	 * the chunk splitter, the substring from the previous chunk splitter
+	 * is passed to the rule as a chunk. The default splitter is a line-break
+	 * @param {string} Df.encoding=Rule.INHERIT
+	 * The encoding to use for converting the buffer to a chunk string.
+	 * Falls back to `'utf8'`
+	 * @param {object} Df.$any
+	 * A sub-rule definition. The property name can be any string
+	 * but must start with `$` (dollar sign)
+	 */
+	constructor(Df = null) {
+		super()
+		if (!Df) Df = {}
+		this._name = Df.name || null
+		this._from = Df.from || Df.start || null
+		this._to = Df.to || Df.end || null
+		this._isRecursive = Df.isRecursive || Df.recursive || Df.recurse || null
+		this._endsWithParent = Df.endsWithParent || null
+		this._splitter = Df.splitter || null
+		this._encoding = Df.encoding || INHERIT
+		this._onStart   = Df.onStart   || (Df.on &amp;&amp; Df.on.start)   || Df.init    || null
+		this._onActive  = Df.onActive  || (Df.on &amp;&amp; Df.on.active)  || Df.parse   || null
+		this._onEnd     = Df.onEnd     || (Df.on &amp;&amp; Df.on.end)     || Df.fin     || null
+		this._onOutline = Df.onOutline || (Df.on &amp;&amp; Df.on.outline) || Df.express || null
+
+		// Sub rules
+		for (let i in Df) {
+			if (!Df[i]) continue
+			let m = i.match(/^\$(.*)$/)
+			if (!m) continue
+			if (!Df[i].name &amp;&amp; m[1]) Df[i].name = m[1]
+			this.addChild(new Rule(Df[i]))
+		}
+	}
+
+	/**
+	 * The enum for rule properties,
+	 * which means the actual property value inherits from the parent rule
+	 * @type {Symbol}
+	 * @const
+	 */
+	static get INHERIT() {
+		return INHERIT
+	}
+
+	/**
+	 * The name of this rule
+	 * @type {string}
+	 * @default ''
+	 */
+	get name() {
+		return this.get('_name', '')
+	}
+
+	set name(X) {
+		this.set('_name', X)
+	}
+
+	/**
+	 * The start pattern
+	 * @type {RegExp}
+	 * @default null
+	 */
+	get from() {
+		return this.get('_from', null)
+	}
+
+	set from(X) {
+		this.set('_from', X)
+	}
+
+	/**
+	 * The start pattern
+	 * @deprecated Use {@link Rule#from} instead
+	 * @type {RegExp}
+	 * @default null
+	 */
+	get start() {
+		console.warn(`rule.start is deprecated. Use rule.from instead`)
+		return this.from
+	}
+
+	set start(X) {
+		console.warn(`rule.start is deprecated. Use rule.from instead`)
+		this.from = X
+	}
+
+	/**
+	 * The end pattern
+	 * @type {RegExp}
+	 * @default null
+	 */
+	get to() {
+		return this.get('_to', null)
+	}
+
+	set to(X) {
+		this.set('_to', X)
+	}
+
+	/**
+	 * The end pattern
+	 * @deprecated Use {@link Rule#to} instead
+	 * @type {RegExp}
+	 * @default null
+	 */
+	get end() {
+		console.warn(`rule.end is deprecated. Use rule.to instead`)
+		return this.to
+	}
+
+	set end(X) {
+		console.warn(`rule.end is deprecated. Use rule.to instead`)
+		this.to = X
+	}
+
+	/**
+	 * The event handler which is called when this rule is activated
+	 * @type {function}
+	 * @default null
+	 */
+	get onStart() {
+		return this.get('_onStart', null)
+	}
+
+	set onStart(X) {
+		this.set('_onStart', X)
+	}
+
+	/**
+	 * The event handler which is called every time
+	 * the parser reached at {@link Rule#splitter}
+	 * @type {function}
+	 * @default null
+	 */
+	get onActive() {
+		return this.get('_onActive', null)
+	}
+
+	set onActive(X) {
+		this.set('_onActive', X)
+	}
+	/**
+	 * The event handler which is called when this rule is deactivated
+	 * @type {function}
+	 * @default null
+	 */
+	get onEnd() {
+		return this.get('_onEnd', null)
+	}
+
+	set onEnd(X) {
+		this.set('_onEnd', X)
+	}
+
+	/**
+	 * **Debug purpose only.**
+	 * The callback which runs when {@link Context#outline} is called
+	 * @type {function}
+	 * @default null
+	 */
+	get onOutline() {
+		return this.get('_onOutline', null)
+	}
+
+	set onOutline(X) {
+		this.set('_onOutline', X)
+	}
+
+	/**
+	 * Whether this rule is recursive
+	 * @type {boolean}
+	 * @default false
+	 */
+	get isRecursive() {
+		return this.get('_isRecursive', false)
+	}
+
+	set isRecursive(X) {
+		this.set('_isRecursive', X)
+	}
+
+	/**
+	 * Whether the current context can also be ended by the parent context rule
+	 * @type {boolean}
+	 * @default false
+	 */
+	get endsWithParent() {
+		return this.get('_endsWithParent', false)
+	}
+
+	set endsWithParent(X) {
+		this.set('_endsWithParent', X)
+	}
+
+	/**
+	 * The chunk splitter
+	 * @type {string|RegExp}
+	 * @default '\n'
+	 */
+	get splitter() {
+		return this.get('_splitter', '\n')
+	}
+
+	set splitter(X) {
+		this.set('_splitter', X)
+	}
+
+	/**
+	 * The encoding to decode buffers. Falls back to `'utf8'`
+	 * @type {string}
+	 * @default Rule.INHERIT
+	 */
+	get encoding() {
+		return this.get('_encoding', 'utf8')
+	}
+
+	set encoding(X) {
+		this.set('_encoding', X)
+	}
+
+	/**
+	 * @param {string} Name The name of the property to get
+	 * @param {mixed} Fallback The value which the property falls back to
+	 * @param {boolean} Inherits=true Whether or not to inherit the parent's value
+	 * @return {mixed}
+	 * @private
+	 */
+	get(Name, Fallback, Inherits = true) {
+		let prop = this[Name]
+		return Inherits &amp;&amp; prop == INHERIT ? (
+			this.hasParent ?
+			this.parent.get(Name, Fallback, Inherits) : Fallback
+		) : (prop == null ? Fallback : prop)
+	}
+
+	/**
+	 * @param {string} Name The name of the property to set
+	 * @param {mixed} Value The value to set to the property
+	 * @private
+	 */
+	set(Name, Value) {
+		if (this[Name] != null)
+			throw new Error(`The property cannot be changed`)
+		this[Name] = Value
+	}
+
+	/**
+	 * Performs matching the specified chunk with the start pattern
+	 * @param {string} Chunk The chunk to match
+	 * @return {mixed} The matching result
+	 */
+	startsWith(Chunk) {
+		return Rule.checkEnclosure(Chunk, this.from)
+	}
+
+	/**
+	 * Performs matching the specified chunk with the end pattern
+	 * @param {string} Chunk The chunk to match
+	 * @return {mixed} The matching result
+	 */
+	endsWith(Chunk) {
+		return Rule.checkEnclosure(Chunk, this.to)
+	}
+
+	/**
+	 * @private
+	 * @param {string} Chunk
+	 * @param {boolean|string|function|RegExp|mixed[]} Cond Condition
+	 * @return {mixed}
+	 */
+	static checkEnclosure(Chunk, Cond) {
+		if (!Cond) return false
+		switch (typeof Cond) {
+		case 'boolean':
+			return true
+		case 'string':
+			let idx = Chunk.indexOf(Cond)
+			return idx &lt; 0 ? false : idx
+		case 'function':
+			return Cond(Chunk)
+		}
+		if (Cond instanceof RegExp) return Chunk.match(Cond)
+		if (Array.isArray(Cond)) {
+			for (let item of Cond) {
+				let r = Rule.checkEnclosure(Chunk, item)
+				if (r) return r
+			}
+		}
+		return false
+	}
+
+	/**
+	 * Sets an event handler
+	 * @param {string} Ev
+	 * The event identifier
+	 * ###### Available Events:
+	 * + `'start'`: Occurs when the current chunk matched with {@link Rule#from}
+	 * + `'active'`: While this rule is active, occurs every time the parser reached at {@link Rule#splitter}
+	 * + `'end'`: Occurs when the current chunk matched with {@link Rule#to}
+	 * + `'outline'`: Occurs when {@link Context#outline} is called. **Debug purpose only**
+	 * @param {function} Fn
+	 * The event handler.
+	 * Returning `false` makes the parser read the current chunk again
+	 * ###### Parameters:
+	 * @param {Context} Fn.cx The current context
+	 * @param {string} Fn.chunk
+	 * The current chunk.&lt;br>
+	 * **Only for `start`, `active` and `end`**
+	 * @param {number|string[]} Fn.matches
+	 * The matching result of {@link Rule#from}/{@link Rule#to}.&lt;br>
+	 * **Only for `start` and `end` events**
+	 */
+	on(Ev, Fn) {
+		switch (Ev) {
+		case 'start':
+		case 'active':
+		case 'end':
+		case 'outline':
+			this.set('_on' + Ev[0].toUpperCase() + Ev.slice(1), Fn)
+			break
+		default:
+			throw new Error('No such event')
+		}
+	}
+
+	/**
+	 * Initializes a context
+	 * @param {Context} Cx The context to initialize
+	 * @param {string} Chunk='' The chunk that matched with the `start` condition
+	 * @param {string[]} MatchResult=null The matching result of the `start` condition
+	 * @return {boolean}
+	 * The result of `init` callback.
+	 * If `init` is not specified, `true` will be returned
+	 */
+	init(Cx, Chunk = '', MatchResult = null) {
+		let r = true // Goes next chunk
+		if (this.onStart) {
+			r = this.onStart(Cx, Chunk, MatchResult)
+			if (typeof r == 'undefined') r = true
+		}
+		return r
+	}
+
+	/**
+	 * Finalizes a context
+	 * @param {Context} Cx The context to finalize
+	 * @param {string} Chunk='' The chunk that matched with the `end` condition
+	 * @param {string[]} MatchResult=null The maching result of the `end` condition
+	 * @return {boolean}
+	 * Result of `fin` callback.
+	 * If `fin` is not specified, `true` will be returned
+	 */
+	fin(Cx, Chunk = '', MatchResult = null) {
+		let r = true // Goes next chunk
+		if (this.onEnd) {
+			r = this.onEnd(Cx, Chunk, MatchResult)
+			if (typeof r == 'undefined') r = true
+		}
+		return r
+	}
+
+	/**
+	 * Parses a chunk
+	 * @param {Context} Cx The current context
+	 * @param {string} Chunk='' The chunk to parse
+	 * @return {boolean}
+	 * The result of `parse` callback.
+	 * If `parse` is not specified, `true` will be returned
+	 */
+	parse(Cx, Chunk = '') {
+		let r = true // Goes next chunk
+		if (this.onActive) {
+			r = this.onActive(Cx, Chunk)
+			if (typeof r == 'undefined') r = true
+		}
+		return r
+	}
+
+	/**
+	 * Expresses a context. **Debug purpose only.**
+	 * @param {Context} Cx The context to express
+	 * @return {string}
+	 */
+	express(Cx) {
+		return this.onOutline ? this.onOutline(Cx) : (this.name || 'anonymous')
+	}
+}
+
+export default Rule
+</code></pre>
+</article>
+
+
+
+
+
+        </main>
+        
+        <footer class="colophon">
+            
+            <p class="copyright">&copy; 2018 Satoshi Soma</p>
+            
+            
+            <p class="license">Licensed under the Apache License 2.0</p>
+            
+            
+            <p class="generator">
+                Documentation generated by <a rel="external" href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a><wbr>
+                using <a rel="external" href="https://github.com/amekusa/docolatte">Docolatte</a> theme
+                
+                <wbr>on <time datetime="2023-09-05T18:54:56.461Z">Tue, 05 Sep 2023 18:54:56 GMT</time>
+                
+            </p>
+            
+        </footer>
+        
+    </div>
+
+    <input id="docolatte-sidebar-toggle" type="checkbox">
+    <label class="overlay" for="docolatte-sidebar-toggle"></label>
+    <label class="menu-button" for="docolatte-sidebar-toggle">
+        <div class="shape">
+            <i class="icon burger">
+                <span class="top"></span>
+                <span class="middle"></span>
+                <span class="bottom"></span>
+            </i>
+        </div>
+    </label>
+
+    <div class="sidebar">
+        <div class="toc" data-ready="0">
+            <div class="search-box">
+	<input class="search" type="text" placeholder="type to search…"><i class="icon magnifier"></i>
+	<ol class="suggestions"></ol>
+	<div class="hint hidden not-for-mobile">
+		<p><b>Hint:</b> You don't need to click on the search box to input.</p>
+		<p class="more">Just start typing your words at <strong>any time</strong> to search for it.</p>
+	</div>
+</div>
+<nav><h3>Classes</h3><ul><li><a href="Composite.html">Composite</a><ul class="methods"><li><a href="Composite.html#addChild">addChild</a></li><li><a href="Composite.html#addChildren">addChildren</a></li><li><a href="Composite.html#traverse">traverse</a></li><li><a href="Composite.html#verifyChild">verifyChild</a></li></ul></li><li><a href="Context.html">Context</a><ul class="methods"><li><a href="Context.html#addChild">addChild</a></li><li><a href="Context.html#addChildren">addChildren</a></li><li><a href="Context.html#cleanupChildren">cleanupChildren</a></li><li><a href="Context.html#clearBuffer">clearBuffer</a></li><li><a href="Context.html#end">end</a></li><li><a href="Context.html#outline">outline</a></li><li><a href="Context.html#parseChunk">parseChunk</a></li><li><a href="Context.html#populate">populate</a></li><li><a href="Context.html#start">start</a></li><li><a href="Context.html#step">step</a></li><li><a href="Context.html#traverse">traverse</a></li><li><a href="Context.html#updateState">updateState</a></li><li><a href="Context.html#verifyChild">verifyChild</a></li></ul></li><li><a href="ContextManager.html">ContextManager</a><ul class="methods"><li><a href="ContextManager.html#feed">feed</a></li></ul></li><li><a href="Main.html">Main</a><ul class="methods"><li><a href="Main.html#create">create</a></li><li><a href="Main.html#newRule">newRule</a></li></ul></li><li><a href="Parser.html">Parser</a><ul class="methods"><li><a href="Parser.html#addRule">addRule</a></li><li><a href="Parser.html#addRules">addRules</a></li><li><a href="Parser.html#onComplete">onComplete</a></li><li><a href="Parser.html#onStart">onStart</a></li><li><a href="Parser.html#parse">parse</a></li><li><a href="Parser.html#parseFile">parseFile</a></li></ul></li><li><a href="ResultSet.html">ResultSet</a><ul class="methods"><li><a href="ResultSet.html#add">add</a></li><li><a href="ResultSet.html#traverse">traverse</a></li></ul></li><li><a href="Rule.html">Rule</a><ul class="methods"><li><a href="Rule.html#addChild">addChild</a></li><li><a href="Rule.html#addChildren">addChildren</a></li><li><a href="Rule.html#endsWith">endsWith</a></li><li><a href="Rule.html#express">express</a></li><li><a href="Rule.html#fin">fin</a></li><li><a href="Rule.html#init">init</a></li><li><a href="Rule.html#on">on</a></li><li><a href="Rule.html#parse">parse</a></li><li><a href="Rule.html#startsWith">startsWith</a></li><li><a href="Rule.html#traverse">traverse</a></li><li><a href="Rule.html#verifyChild">verifyChild</a></li></ul></li></ul></nav>
+        </div>
+    </div>
+</div>
+
+<script id="docolatte-search-list" type="application/json">[{"url":"Composite.html#addChild","name":"addChild","longname":"Composite#addChild","description":"<p>Adds a child composite</p>"},{"url":"Composite.html#addChildren","name":"addChildren","longname":"Composite#addChildren","description":"<p>Adds multiple child composites</p>"},{"url":"Composite.html#ancestors","name":"ancestors","longname":"Composite#ancestors","description":"<p>The ancestor composites ordered by closest to furthest</p>"},{"url":"Composite.html#hasChild","name":"hasChild","longname":"Composite#hasChild","description":"<p>Whether this has one or more child composites</p>"},{"url":"Composite.html#hasParent","name":"hasParent","longname":"Composite#hasParent","description":"<p>Whether this has parent composite</p>"},{"url":"Composite.html#length","name":"length","longname":"Composite#length","description":"<p>The number of child composites</p>"},{"url":"Composite.html#parent","name":"parent","longname":"Composite#parent","description":"<p>The parent composite</p>"},{"url":"Composite.html#root","name":"root","longname":"Composite#root","description":"<p>The root of composition</p>"},{"url":"Composite.html#traverse","name":"traverse","longname":"Composite#traverse","description":"<p>Performs tree traversal</p>"},{"url":"Composite.html#verifyChild","name":"verifyChild","longname":"Composite#verifyChild","description":"<p>Determines whether the specified composite can be added as a child</p>"},{"url":"Context.html#.ACTIVE","name":"ACTIVE","longname":"Context.ACTIVE","description":"<p>An enum for {@link Context#state}\nwhich means the context is active</p>"},{"url":"Context.html#.BACKGROUND","name":"BACKGROUND","longname":"Context.BACKGROUND","description":"<p>An enum for {@link Context#state}.\nWhen a sub-context gets activated, the parent context goes this state</p>"},{"url":"Context.html#.FINISHED","name":"FINISHED","longname":"Context.FINISHED","description":"<p>An enum for {@link Context#state}\nwhich means the context has been deactivated</p>"},{"url":"Context.html#.STANDBY","name":"STANDBY","longname":"Context.STANDBY","description":"<p>An enum for {@link Context#state}\nwhich means the context is waiting for being activated</p>"},{"url":"Context.html#.WASTED","name":"WASTED","longname":"Context.WASTED","description":"<p>An enum for {@link Context#state}\nwhich means the context has no longer chance of getting activated</p>"},{"url":"Context.html#addChild","name":"addChild","longname":"Context#addChild","description":"<p>Adds a child composite</p>"},{"url":"Context.html#addChildren","name":"addChildren","longname":"Context#addChildren","description":"<p>Adds multiple child composites</p>"},{"url":"Context.html#ancestors","name":"ancestors","longname":"Context#ancestors","description":"<p>The ancestor composites ordered by closest to furthest</p>"},{"url":"Context.html#cleanupChildren","name":"cleanupChildren","longname":"Context#cleanupChildren","description":"<p>Removes all the unnecessary children</p>"},{"url":"Context.html#clearBuffer","name":"clearBuffer","longname":"Context#clearBuffer","description":"<p>Clears internal reading buffer</p>"},{"url":"Context.html#data","name":"data","longname":"Context#data","description":"<p>The data object</p>"},{"url":"Context.html#end","name":"end","longname":"Context#end","description":"<p>Deactivates this context</p>"},{"url":"Context.html#hasChild","name":"hasChild","longname":"Context#hasChild","description":"<p>Whether this has one or more child composites</p>"},{"url":"Context.html#hasParent","name":"hasParent","longname":"Context#hasParent","description":"<p>Whether this has parent composite</p>"},{"url":"Context.html#length","name":"length","longname":"Context#length","description":"<p>The number of child composites</p>"},{"url":"Context.html#manager","name":"manager","longname":"Context#manager","description":"<p>The manager that is controlling this context</p>"},{"url":"Context.html#next","name":"next","longname":"Context#next","description":"<p>The next context</p>"},{"url":"Context.html#nextState","name":"nextState","longname":"Context#nextState","description":"<p>The next state which this context is about to change to</p>"},{"url":"Context.html#outline","name":"outline","longname":"Context#outline","description":"<p>Returns the outlined string for debug</p>"},{"url":"Context.html#parent","name":"parent","longname":"Context#parent","description":"<p>The parent composite</p>"},{"url":"Context.html#parseChunk","name":"parseChunk","longname":"Context#parseChunk","description":"<p>Applies the rule to a chunk</p>"},{"url":"Context.html#populate","name":"populate","longname":"Context#populate","description":"<p>Populates sub-contexts</p>"},{"url":"Context.html#prev","name":"prev","longname":"Context#prev","description":"<p>The previous context</p>"},{"url":"Context.html#results","name":"results","longname":"Context#results","description":"<p>The parsing results</p>"},{"url":"Context.html#root","name":"root","longname":"Context#root","description":"<p>The root of composition</p>"},{"url":"Context.html#rule","name":"rule","longname":"Context#rule","description":"<p>The rule that determines the behavior of this context</p>"},{"url":"Context.html#start","name":"start","longname":"Context#start","description":"<p>Activates this context</p>"},{"url":"Context.html#state","name":"state","longname":"Context#state","description":"<p>The current state</p>"},{"url":"Context.html#step","name":"step","longname":"Context#step","description":"<p>Pushes a single byte into the internal reading buffer.\nAnd if the buffer reached at the chunk splitter (default: '\\n'),\npasses the buffer to <code>parseChunk()</code>.</p>"},{"url":"Context.html#traverse","name":"traverse","longname":"Context#traverse","description":"<p>Performs tree traversal</p>"},{"url":"Context.html#updateState","name":"updateState","longname":"Context#updateState","description":"<p>Updates the state</p>"},{"url":"Context.html#verifyChild","name":"verifyChild","longname":"Context#verifyChild"},{"url":"ContextManager.html#current","name":"current","longname":"ContextManager#current","description":"<p>The current active context</p>"},{"url":"ContextManager.html#feed","name":"feed","longname":"ContextManager#feed","description":"<p>Feeds a buffer to all the appropriate contexts\ndepending on the current context</p>"},{"url":"ContextManager.html#history","name":"history","longname":"ContextManager#history","description":"<p>An array of contexts which have ever been activated</p>"},{"url":"ContextManager.html#root","name":"root","longname":"ContextManager#root","description":"<p>The root context</p>"},{"url":"Main.html#create","name":"create","longname":"Main#create","description":"<p>Creates a Parser instance</p>"},{"url":"Main.html#newRule","name":"newRule","longname":"Main#newRule","description":"<p>Creates a Rule instance</p>"},{"url":"Parser.html#addRule","name":"addRule","longname":"Parser#addRule","description":"<p>Adds a new rule</p>"},{"url":"Parser.html#addRules","name":"addRules","longname":"Parser#addRules","description":"<p>Adds multiple new rules</p>"},{"url":"Parser.html#onComplete","name":"onComplete","longname":"Parser#onComplete"},{"url":"Parser.html#onStart","name":"onStart","longname":"Parser#onStart"},{"url":"Parser.html#parse","name":"parse","longname":"Parser#parse","description":"<p>Parses the data specified as a string or Buffer.\nAfter the parsing completed, returns the root context which contains\nall the generated sub-contexts through the entire parsing</p>"},{"url":"Parser.html#parseFile","name":"parseFile","longname":"Parser#parseFile","description":"<p>Parses a file asynchronously</p>"},{"url":"ResultSet.html#add","name":"add","longname":"ResultSet#add","description":"<p>Saves the provided data as a parsing result.\nYou can pass an array as multiple results</p>"},{"url":"ResultSet.html#traverse","name":"traverse","longname":"ResultSet#traverse","description":"<p>Performs traversal</p>"},{"url":"Rule.html#.INHERIT","name":"INHERIT","longname":"Rule.INHERIT","description":"<p>The enum for rule properties,\nwhich means the actual property value inherits from the parent rule</p>"},{"url":"Rule.html#addChild","name":"addChild","longname":"Rule#addChild","description":"<p>Adds a child composite</p>"},{"url":"Rule.html#addChildren","name":"addChildren","longname":"Rule#addChildren","description":"<p>Adds multiple child composites</p>"},{"url":"Rule.html#ancestors","name":"ancestors","longname":"Rule#ancestors","description":"<p>The ancestor composites ordered by closest to furthest</p>"},{"url":"Rule.html#encoding","name":"encoding","longname":"Rule#encoding","description":"<p>The encoding to decode buffers. Falls back to <code>'utf8'</code></p>"},{"url":"Rule.html#end","name":"end","longname":"Rule#end","description":"<p>The end pattern</p>"},{"url":"Rule.html#endsWith","name":"endsWith","longname":"Rule#endsWith","description":"<p>Performs matching the specified chunk with the end pattern</p>"},{"url":"Rule.html#endsWithParent","name":"endsWithParent","longname":"Rule#endsWithParent","description":"<p>Whether the current context can also be ended by the parent context rule</p>"},{"url":"Rule.html#express","name":"express","longname":"Rule#express","description":"<p>Expresses a context. <strong>Debug purpose only.</strong></p>"},{"url":"Rule.html#fin","name":"fin","longname":"Rule#fin","description":"<p>Finalizes a context</p>"},{"url":"Rule.html#from","name":"from","longname":"Rule#from","description":"<p>The start pattern</p>"},{"url":"Rule.html#hasChild","name":"hasChild","longname":"Rule#hasChild","description":"<p>Whether this has one or more child composites</p>"},{"url":"Rule.html#hasParent","name":"hasParent","longname":"Rule#hasParent","description":"<p>Whether this has parent composite</p>"},{"url":"Rule.html#init","name":"init","longname":"Rule#init","description":"<p>Initializes a context</p>"},{"url":"Rule.html#isRecursive","name":"isRecursive","longname":"Rule#isRecursive","description":"<p>Whether this rule is recursive</p>"},{"url":"Rule.html#length","name":"length","longname":"Rule#length","description":"<p>The number of child composites</p>"},{"url":"Rule.html#name","name":"name","longname":"Rule#name","description":"<p>The name of this rule</p>"},{"url":"Rule.html#on","name":"on","longname":"Rule#on","description":"<p>Sets an event handler</p>"},{"url":"Rule.html#onActive","name":"onActive","longname":"Rule#onActive","description":"<p>The event handler which is called every time\nthe parser reached at {@link Rule#splitter}</p>"},{"url":"Rule.html#onEnd","name":"onEnd","longname":"Rule#onEnd","description":"<p>The event handler which is called when this rule is deactivated</p>"},{"url":"Rule.html#onOutline","name":"onOutline","longname":"Rule#onOutline","description":"<p><strong>Debug purpose only.</strong>\nThe callback which runs when {@link Context#outline} is called</p>"},{"url":"Rule.html#onStart","name":"onStart","longname":"Rule#onStart","description":"<p>The event handler which is called when this rule is activated</p>"},{"url":"Rule.html#parent","name":"parent","longname":"Rule#parent","description":"<p>The parent composite</p>"},{"url":"Rule.html#parse","name":"parse","longname":"Rule#parse","description":"<p>Parses a chunk</p>"},{"url":"Rule.html#root","name":"root","longname":"Rule#root","description":"<p>The root of composition</p>"},{"url":"Rule.html#splitter","name":"splitter","longname":"Rule#splitter","description":"<p>The chunk splitter</p>"},{"url":"Rule.html#start","name":"start","longname":"Rule#start","description":"<p>The start pattern</p>"},{"url":"Rule.html#startsWith","name":"startsWith","longname":"Rule#startsWith","description":"<p>Performs matching the specified chunk with the start pattern</p>"},{"url":"Rule.html#to","name":"to","longname":"Rule#to","description":"<p>The end pattern</p>"},{"url":"Rule.html#traverse","name":"traverse","longname":"Rule#traverse","description":"<p>Performs tree traversal</p>"},{"url":"Rule.html#verifyChild","name":"verifyChild","longname":"Rule#verifyChild","description":"<p>Determines whether the specified composite can be added as a child</p>"},{"url":"Composite.html","name":"Composite","longname":"Composite","classdesc":"<p>The base class which provides the implementation of the Composite design pattern.\nA composite object can form a tree-like structure, the nodes or leaves of which are also composites</p>"},{"url":"Context.html","name":"Context","longname":"Context","classdesc":"<p>A parsing context</p>"},{"url":"ContextManager.html","name":"ContextManager","longname":"ContextManager","classdesc":"<p>A ContextManager can control multiple contexts through the entire parsing</p>"},{"url":"Main.html","name":"Main","longname":"Main","classdesc":"<p>The main API provider</p>"},{"url":"Parser.html","name":"Parser","longname":"Parser","classdesc":"<p>Context sensitive parser</p>"},{"url":"ResultSet.html","name":"ResultSet","longname":"ResultSet","classdesc":"<p>A container that stores parse results</p>"},{"url":"Rule.html","name":"Rule","longname":"Rule","classdesc":"<p>A nestable parsing rule</p>","description":"<p>Creates a rule instance with the options in the specified object.</p>"}]</script>
+<script id="docolatte-search-index" type="application/json">{"keys":[{"path":["name"],"id":"name","weight":10,"src":"name"},{"path":["longname"],"id":"longname","weight":9,"src":"longname"},{"path":["classdesc"],"id":"classdesc","weight":6,"src":"classdesc"},{"path":["description"],"id":"description","weight":6,"src":"description"},{"path":["examples"],"id":"examples","weight":1,"src":"examples"}],"records":[{"i":0,"$":{"0":{"v":"addChild","n":1},"1":{"v":"Composite#addChild","n":1},"3":{"v":"<p>Adds a child composite</p>","n":0.5}}},{"i":1,"$":{"0":{"v":"addChildren","n":1},"1":{"v":"Composite#addChildren","n":1},"3":{"v":"<p>Adds multiple child composites</p>","n":0.5}}},{"i":2,"$":{"0":{"v":"ancestors","n":1},"1":{"v":"Composite#ancestors","n":1},"3":{"v":"<p>The ancestor composites ordered by closest to furthest</p>","n":0.354}}},{"i":3,"$":{"0":{"v":"hasChild","n":1},"1":{"v":"Composite#hasChild","n":1},"3":{"v":"<p>Whether this has one or more child composites</p>","n":0.354}}},{"i":4,"$":{"0":{"v":"hasParent","n":1},"1":{"v":"Composite#hasParent","n":1},"3":{"v":"<p>Whether this has parent composite</p>","n":0.447}}},{"i":5,"$":{"0":{"v":"length","n":1},"1":{"v":"Composite#length","n":1},"3":{"v":"<p>The number of child composites</p>","n":0.447}}},{"i":6,"$":{"0":{"v":"parent","n":1},"1":{"v":"Composite#parent","n":1},"3":{"v":"<p>The parent composite</p>","n":0.577}}},{"i":7,"$":{"0":{"v":"root","n":1},"1":{"v":"Composite#root","n":1},"3":{"v":"<p>The root of composition</p>","n":0.5}}},{"i":8,"$":{"0":{"v":"traverse","n":1},"1":{"v":"Composite#traverse","n":1},"3":{"v":"<p>Performs tree traversal</p>","n":0.577}}},{"i":9,"$":{"0":{"v":"verifyChild","n":1},"1":{"v":"Composite#verifyChild","n":1},"3":{"v":"<p>Determines whether the specified composite can be added as a child</p>","n":0.302}}},{"i":10,"$":{"0":{"v":"ACTIVE","n":1},"1":{"v":"Context.ACTIVE","n":1},"3":{"v":"<p>An enum for {@link Context#state}\nwhich means the context is active</p>","n":0.316}}},{"i":11,"$":{"0":{"v":"BACKGROUND","n":1},"1":{"v":"Context.BACKGROUND","n":1},"3":{"v":"<p>An enum for {@link Context#state}.\nWhen a sub-context gets activated, the parent context goes this state</p>","n":0.258}}},{"i":12,"$":{"0":{"v":"FINISHED","n":1},"1":{"v":"Context.FINISHED","n":1},"3":{"v":"<p>An enum for {@link Context#state}\nwhich means the context has been deactivated</p>","n":0.302}}},{"i":13,"$":{"0":{"v":"STANDBY","n":1},"1":{"v":"Context.STANDBY","n":1},"3":{"v":"<p>An enum for {@link Context#state}\nwhich means the context is waiting for being activated</p>","n":0.277}}},{"i":14,"$":{"0":{"v":"WASTED","n":1},"1":{"v":"Context.WASTED","n":1},"3":{"v":"<p>An enum for {@link Context#state}\nwhich means the context has no longer chance of getting activated</p>","n":0.258}}},{"i":15,"$":{"0":{"v":"addChild","n":1},"1":{"v":"Context#addChild","n":1},"3":{"v":"<p>Adds a child composite</p>","n":0.5}}},{"i":16,"$":{"0":{"v":"addChildren","n":1},"1":{"v":"Context#addChildren","n":1},"3":{"v":"<p>Adds multiple child composites</p>","n":0.5}}},{"i":17,"$":{"0":{"v":"ancestors","n":1},"1":{"v":"Context#ancestors","n":1},"3":{"v":"<p>The ancestor composites ordered by closest to furthest</p>","n":0.354}}},{"i":18,"$":{"0":{"v":"cleanupChildren","n":1},"1":{"v":"Context#cleanupChildren","n":1},"3":{"v":"<p>Removes all the unnecessary children</p>","n":0.447}}},{"i":19,"$":{"0":{"v":"clearBuffer","n":1},"1":{"v":"Context#clearBuffer","n":1},"3":{"v":"<p>Clears internal reading buffer</p>","n":0.5}}},{"i":20,"$":{"0":{"v":"data","n":1},"1":{"v":"Context#data","n":1},"3":{"v":"<p>The data object</p>","n":0.577}}},{"i":21,"$":{"0":{"v":"end","n":1},"1":{"v":"Context#end","n":1},"3":{"v":"<p>Deactivates this context</p>","n":0.577}}},{"i":22,"$":{"0":{"v":"hasChild","n":1},"1":{"v":"Context#hasChild","n":1},"3":{"v":"<p>Whether this has one or more child composites</p>","n":0.354}}},{"i":23,"$":{"0":{"v":"hasParent","n":1},"1":{"v":"Context#hasParent","n":1},"3":{"v":"<p>Whether this has parent composite</p>","n":0.447}}},{"i":24,"$":{"0":{"v":"length","n":1},"1":{"v":"Context#length","n":1},"3":{"v":"<p>The number of child composites</p>","n":0.447}}},{"i":25,"$":{"0":{"v":"manager","n":1},"1":{"v":"Context#manager","n":1},"3":{"v":"<p>The manager that is controlling this context</p>","n":0.378}}},{"i":26,"$":{"0":{"v":"next","n":1},"1":{"v":"Context#next","n":1},"3":{"v":"<p>The next context</p>","n":0.577}}},{"i":27,"$":{"0":{"v":"nextState","n":1},"1":{"v":"Context#nextState","n":1},"3":{"v":"<p>The next state which this context is about to change to</p>","n":0.302}}},{"i":28,"$":{"0":{"v":"outline","n":1},"1":{"v":"Context#outline","n":1},"3":{"v":"<p>Returns the outlined string for debug</p>","n":0.408}}},{"i":29,"$":{"0":{"v":"parent","n":1},"1":{"v":"Context#parent","n":1},"3":{"v":"<p>The parent composite</p>","n":0.577}}},{"i":30,"$":{"0":{"v":"parseChunk","n":1},"1":{"v":"Context#parseChunk","n":1},"3":{"v":"<p>Applies the rule to a chunk</p>","n":0.408}}},{"i":31,"$":{"0":{"v":"populate","n":1},"1":{"v":"Context#populate","n":1},"3":{"v":"<p>Populates sub-contexts</p>","n":0.707}}},{"i":32,"$":{"0":{"v":"prev","n":1},"1":{"v":"Context#prev","n":1},"3":{"v":"<p>The previous context</p>","n":0.577}}},{"i":33,"$":{"0":{"v":"results","n":1},"1":{"v":"Context#results","n":1},"3":{"v":"<p>The parsing results</p>","n":0.577}}},{"i":34,"$":{"0":{"v":"root","n":1},"1":{"v":"Context#root","n":1},"3":{"v":"<p>The root of composition</p>","n":0.5}}},{"i":35,"$":{"0":{"v":"rule","n":1},"1":{"v":"Context#rule","n":1},"3":{"v":"<p>The rule that determines the behavior of this context</p>","n":0.333}}},{"i":36,"$":{"0":{"v":"start","n":1},"1":{"v":"Context#start","n":1},"3":{"v":"<p>Activates this context</p>","n":0.577}}},{"i":37,"$":{"0":{"v":"state","n":1},"1":{"v":"Context#state","n":1},"3":{"v":"<p>The current state</p>","n":0.577}}},{"i":38,"$":{"0":{"v":"step","n":1},"1":{"v":"Context#step","n":1},"3":{"v":"<p>Pushes a single byte into the internal reading buffer.\nAnd if the buffer reached at the chunk splitter (default: '\\n'),\npasses the buffer to <code>parseChunk()</code>.</p>","n":0.209}}},{"i":39,"$":{"0":{"v":"traverse","n":1},"1":{"v":"Context#traverse","n":1},"3":{"v":"<p>Performs tree traversal</p>","n":0.577}}},{"i":40,"$":{"0":{"v":"updateState","n":1},"1":{"v":"Context#updateState","n":1},"3":{"v":"<p>Updates the state</p>","n":0.577}}},{"i":41,"$":{"0":{"v":"verifyChild","n":1},"1":{"v":"Context#verifyChild","n":1}}},{"i":42,"$":{"0":{"v":"current","n":1},"1":{"v":"ContextManager#current","n":1},"3":{"v":"<p>The current active context</p>","n":0.5}}},{"i":43,"$":{"0":{"v":"feed","n":1},"1":{"v":"ContextManager#feed","n":1},"3":{"v":"<p>Feeds a buffer to all the appropriate contexts\ndepending on the current context</p>","n":0.289}}},{"i":44,"$":{"0":{"v":"history","n":1},"1":{"v":"ContextManager#history","n":1},"3":{"v":"<p>An array of contexts which have ever been activated</p>","n":0.333}}},{"i":45,"$":{"0":{"v":"root","n":1},"1":{"v":"ContextManager#root","n":1},"3":{"v":"<p>The root context</p>","n":0.577}}},{"i":46,"$":{"0":{"v":"create","n":1},"1":{"v":"Main#create","n":1},"3":{"v":"<p>Creates a Parser instance</p>","n":0.5}}},{"i":47,"$":{"0":{"v":"newRule","n":1},"1":{"v":"Main#newRule","n":1},"3":{"v":"<p>Creates a Rule instance</p>","n":0.5}}},{"i":48,"$":{"0":{"v":"addRule","n":1},"1":{"v":"Parser#addRule","n":1},"3":{"v":"<p>Adds a new rule</p>","n":0.5}}},{"i":49,"$":{"0":{"v":"addRules","n":1},"1":{"v":"Parser#addRules","n":1},"3":{"v":"<p>Adds multiple new rules</p>","n":0.5}}},{"i":50,"$":{"0":{"v":"onComplete","n":1},"1":{"v":"Parser#onComplete","n":1}}},{"i":51,"$":{"0":{"v":"onStart","n":1},"1":{"v":"Parser#onStart","n":1}}},{"i":52,"$":{"0":{"v":"parse","n":1},"1":{"v":"Parser#parse","n":1},"3":{"v":"<p>Parses the data specified as a string or Buffer.\nAfter the parsing completed, returns the root context which contains\nall the generated sub-contexts through the entire parsing</p>","n":0.2}}},{"i":53,"$":{"0":{"v":"parseFile","n":1},"1":{"v":"Parser#parseFile","n":1},"3":{"v":"<p>Parses a file asynchronously</p>","n":0.5}}},{"i":54,"$":{"0":{"v":"add","n":1},"1":{"v":"ResultSet#add","n":1},"3":{"v":"<p>Saves the provided data as a parsing result.\nYou can pass an array as multiple results</p>","n":0.258}}},{"i":55,"$":{"0":{"v":"traverse","n":1},"1":{"v":"ResultSet#traverse","n":1},"3":{"v":"<p>Performs traversal</p>","n":0.707}}},{"i":56,"$":{"0":{"v":"INHERIT","n":1},"1":{"v":"Rule.INHERIT","n":1},"3":{"v":"<p>The enum for rule properties,\nwhich means the actual property value inherits from the parent rule</p>","n":0.258}}},{"i":57,"$":{"0":{"v":"addChild","n":1},"1":{"v":"Rule#addChild","n":1},"3":{"v":"<p>Adds a child composite</p>","n":0.5}}},{"i":58,"$":{"0":{"v":"addChildren","n":1},"1":{"v":"Rule#addChildren","n":1},"3":{"v":"<p>Adds multiple child composites</p>","n":0.5}}},{"i":59,"$":{"0":{"v":"ancestors","n":1},"1":{"v":"Rule#ancestors","n":1},"3":{"v":"<p>The ancestor composites ordered by closest to furthest</p>","n":0.354}}},{"i":60,"$":{"0":{"v":"encoding","n":1},"1":{"v":"Rule#encoding","n":1},"3":{"v":"<p>The encoding to decode buffers. Falls back to <code>'utf8'</code></p>","n":0.333}}},{"i":61,"$":{"0":{"v":"end","n":1},"1":{"v":"Rule#end","n":1},"3":{"v":"<p>The end pattern</p>","n":0.577}}},{"i":62,"$":{"0":{"v":"endsWith","n":1},"1":{"v":"Rule#endsWith","n":1},"3":{"v":"<p>Performs matching the specified chunk with the end pattern</p>","n":0.333}}},{"i":63,"$":{"0":{"v":"endsWithParent","n":1},"1":{"v":"Rule#endsWithParent","n":1},"3":{"v":"<p>Whether the current context can also be ended by the parent context rule</p>","n":0.277}}},{"i":64,"$":{"0":{"v":"express","n":1},"1":{"v":"Rule#express","n":1},"3":{"v":"<p>Expresses a context. <strong>Debug purpose only.</strong></p>","n":0.408}}},{"i":65,"$":{"0":{"v":"fin","n":1},"1":{"v":"Rule#fin","n":1},"3":{"v":"<p>Finalizes a context</p>","n":0.577}}},{"i":66,"$":{"0":{"v":"from","n":1},"1":{"v":"Rule#from","n":1},"3":{"v":"<p>The start pattern</p>","n":0.577}}},{"i":67,"$":{"0":{"v":"hasChild","n":1},"1":{"v":"Rule#hasChild","n":1},"3":{"v":"<p>Whether this has one or more child composites</p>","n":0.354}}},{"i":68,"$":{"0":{"v":"hasParent","n":1},"1":{"v":"Rule#hasParent","n":1},"3":{"v":"<p>Whether this has parent composite</p>","n":0.447}}},{"i":69,"$":{"0":{"v":"init","n":1},"1":{"v":"Rule#init","n":1},"3":{"v":"<p>Initializes a context</p>","n":0.577}}},{"i":70,"$":{"0":{"v":"isRecursive","n":1},"1":{"v":"Rule#isRecursive","n":1},"3":{"v":"<p>Whether this rule is recursive</p>","n":0.447}}},{"i":71,"$":{"0":{"v":"length","n":1},"1":{"v":"Rule#length","n":1},"3":{"v":"<p>The number of child composites</p>","n":0.447}}},{"i":72,"$":{"0":{"v":"name","n":1},"1":{"v":"Rule#name","n":1},"3":{"v":"<p>The name of this rule</p>","n":0.447}}},{"i":73,"$":{"0":{"v":"on","n":1},"1":{"v":"Rule#on","n":1},"3":{"v":"<p>Sets an event handler</p>","n":0.5}}},{"i":74,"$":{"0":{"v":"onActive","n":1},"1":{"v":"Rule#onActive","n":1},"3":{"v":"<p>The event handler which is called every time\nthe parser reached at {@link Rule#splitter}</p>","n":0.277}}},{"i":75,"$":{"0":{"v":"onEnd","n":1},"1":{"v":"Rule#onEnd","n":1},"3":{"v":"<p>The event handler which is called when this rule is deactivated</p>","n":0.302}}},{"i":76,"$":{"0":{"v":"onOutline","n":1},"1":{"v":"Rule#onOutline","n":1},"3":{"v":"<p><strong>Debug purpose only.</strong>\nThe callback which runs when {@link Context#outline} is called</p>","n":0.302}}},{"i":77,"$":{"0":{"v":"onStart","n":1},"1":{"v":"Rule#onStart","n":1},"3":{"v":"<p>The event handler which is called when this rule is activated</p>","n":0.302}}},{"i":78,"$":{"0":{"v":"parent","n":1},"1":{"v":"Rule#parent","n":1},"3":{"v":"<p>The parent composite</p>","n":0.577}}},{"i":79,"$":{"0":{"v":"parse","n":1},"1":{"v":"Rule#parse","n":1},"3":{"v":"<p>Parses a chunk</p>","n":0.577}}},{"i":80,"$":{"0":{"v":"root","n":1},"1":{"v":"Rule#root","n":1},"3":{"v":"<p>The root of composition</p>","n":0.5}}},{"i":81,"$":{"0":{"v":"splitter","n":1},"1":{"v":"Rule#splitter","n":1},"3":{"v":"<p>The chunk splitter</p>","n":0.577}}},{"i":82,"$":{"0":{"v":"start","n":1},"1":{"v":"Rule#start","n":1},"3":{"v":"<p>The start pattern</p>","n":0.577}}},{"i":83,"$":{"0":{"v":"startsWith","n":1},"1":{"v":"Rule#startsWith","n":1},"3":{"v":"<p>Performs matching the specified chunk with the start pattern</p>","n":0.333}}},{"i":84,"$":{"0":{"v":"to","n":1},"1":{"v":"Rule#to","n":1},"3":{"v":"<p>The end pattern</p>","n":0.577}}},{"i":85,"$":{"0":{"v":"traverse","n":1},"1":{"v":"Rule#traverse","n":1},"3":{"v":"<p>Performs tree traversal</p>","n":0.577}}},{"i":86,"$":{"0":{"v":"verifyChild","n":1},"1":{"v":"Rule#verifyChild","n":1},"3":{"v":"<p>Determines whether the specified composite can be added as a child</p>","n":0.302}}},{"i":87,"$":{"0":{"v":"Composite","n":1},"1":{"v":"Composite","n":1},"2":{"v":"<p>The base class which provides the implementation of the Composite design pattern.\nA composite object can form a tree-like structure, the nodes or leaves of which are also composites</p>","n":0.189}}},{"i":88,"$":{"0":{"v":"Context","n":1},"1":{"v":"Context","n":1},"2":{"v":"<p>A parsing context</p>","n":0.577}}},{"i":89,"$":{"0":{"v":"ContextManager","n":1},"1":{"v":"ContextManager","n":1},"2":{"v":"<p>A ContextManager can control multiple contexts through the entire parsing</p>","n":0.316}}},{"i":90,"$":{"0":{"v":"Main","n":1},"1":{"v":"Main","n":1},"2":{"v":"<p>The main API provider</p>","n":0.5}}},{"i":91,"$":{"0":{"v":"Parser","n":1},"1":{"v":"Parser","n":1},"2":{"v":"<p>Context sensitive parser</p>","n":0.577}}},{"i":92,"$":{"0":{"v":"ResultSet","n":1},"1":{"v":"ResultSet","n":1},"2":{"v":"<p>A container that stores parse results</p>","n":0.408}}},{"i":93,"$":{"0":{"v":"Rule","n":1},"1":{"v":"Rule","n":1},"2":{"v":"<p>A nestable parsing rule</p>","n":0.5},"3":{"v":"<p>Creates a rule instance with the options in the specified object.</p>","n":0.302}}}]}</script>
+<script id="docolatte-search-options" type="application/json">{"keys":[{"name":"name","weight":10},{"name":"longname","weight":9},{"name":"classdesc","weight":6},{"name":"description","weight":6},{"name":"examples","weight":1}]}</script>
+
+<script>
+    var _SEARCH = {
+        list: document.getElementById('docolatte-search-list').innerHTML,
+        index: document.getElementById('docolatte-search-index').innerHTML,
+        options: document.getElementById('docolatte-search-options').innerHTML
+    };
+</script>
+
+</body>
+</html>
