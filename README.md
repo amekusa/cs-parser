@@ -2,59 +2,76 @@
 
 [![npm version](https://badge.fury.io/js/cs-parser.svg)](https://badge.fury.io/js/cs-parser) [![dependencies Status](https://david-dm.org/amekusa/cs-parser/status.svg)](https://david-dm.org/amekusa/cs-parser) [![Apache License 2.0](http://img.shields.io/badge/license-Apache_2.0-blue.svg?style=flat)](LICENSE)
 
-<!-- TOC depthFrom:2 depthTo:3 withLinks:1 updateOnSave:1 orderedList:0 -->
-
-- [Write your own parser LIKE A BOSS](#write-your-own-parser-like-a-boss)
-	- [Defining a rule](#defining-a-rule)
-	- [Let's parse!](#lets-parse)
-	- [Demonstration](#demonstration)
-- [How do I debug my parser?](#how-do-i-debug-my-parser)
-- [The ES6 way](#the-es6-way)
-- [Links](#links)
-
-<!-- /TOC -->
-
 ---
 
-<span id="write-your-own-parser-like-a-boss"></span>
-## Write your own parser LIKE A BOSS
-CS Parser provides you the power to write parser for your code, data, or anything in any language, any format without hardcore coding.  
 
-You can write the best parser that exactly matches your need even in 120 lines or less.
-And it will also be clean, semantic, and completely readable! Let's take a short tour.
+## Write Your Own Parser
+CSParser gives you the power to easily write a parser for your code or data in any language or any format.
+It also can help you to develop your own languages or data formats.
 
-At first, you need to install CS Parser via NPM.
+The mechanics of CSParser is pretty simple and straightforward.
+If you have a basic knowledge of JavaScript, you can write a clean and readable parser for your specific needs even in like 120 lines or less with the help of the APIs that CSParser provides, which are very easy to use.
+
+
+## Getting Started
+First, you have to install `cs-parser` via `npm`.
 
 ```sh
-npm i cs-parser --save
+npm i cs-parser
 ```
 
-Now you can access the APIs of CS Parser with `require()`.
+Next, `import` (ESM) or `require` (CJS) it in your JS.
 
 ```js
+// ES Module
+import csp from 'cs-parser'
+
+// CommonJS
 const csp = require('cs-parser')
 ```
 
-The `csp` is the [Main](https://amekusa.github.io/cs-parser/1.3.0/Main.html) object that provides a few basic methods.  
-Use `create` method to get a [Parser](https://amekusa.github.io/cs-parser/1.3.0/Parser.html) object.
+Then, call `create` method to get a [Parser](https://amekusa.github.io/cs-parser/latest/Parser.html) object which is the main API provider.
 
 ```js
 let parser = csp.create()
 ```
 
-Next, add some parsing rules to the parser with `parser.addRule`.
-Of course you can add any number of rules as you want.
 
+## Examples
+Before we proceed to explain the basics, here are some quick, working examples if you want to take a look first:
+- [examples/employees.js](https://github.com/amekusa/cs-parser/blob/master/examples/employees.js)
+- [examples/docblocks.js](https://github.com/amekusa/cs-parser/blob/master/examples/docblocks.js)
+
+
+## Basics
+The workflow is as follows:
+
+#### 1. Define rules with `addRule` method.
 ```js
-parser.addRule({ /* A rule definition */ })
-parser.addRule({ /* Another rule definition */ })
+parser.addRule({ /* 1st rule definition */ })
+parser.addRule({ /* 2nd rule definition */ })
+  // You can add rules as many as you want.
 ```
 
-<span id="defining-a-rule"></span>
-### Defining a rule
-A rule definition is an object contains some specific properties.
-I will show you only a few essential ones here.  
-(If you want to see the full specs, see the [doc](https://amekusa.github.io/cs-parser/1.3.0/Rule.html#Rule).)
+#### 2. Parse data with `parse` or `parseFile` methods.
+```js
+// For data as a string
+let results = parser.parse(data)
+
+// For data in a file
+let results = await parser.parseFile('file/to/parse')
+```
+
+#### 3. Use the results, scanning with `traverse` method.
+```js
+results.traverse(each => {
+  console.log(each.data)
+})
+```
+
+
+## Defining a rule
+A rule definition that you pass to `addRule()` has to be an object that should have some specific properties and methods.
 
 ```js
 parser.addRule({
@@ -63,11 +80,12 @@ parser.addRule({
 })
 ```
 
-The options `from` & `to` determines **where the rule applies to**.
-So the rule in the above will be activated when the parser reaches at `{`,  
-and will be deactivated when the parser reaches at `}`.
+`from` and `to` properties determine **where the rule applies to in data**.
+So the above rule means:
+- Activate this rule if the parser reached at `{`
+- Deactivate this rule if the parser reached at `}`
 
-You can also use **regex** like this:
+You can also use regex like this:
 
 ```js
 parser.addRule({
@@ -77,10 +95,10 @@ parser.addRule({
 ```
 
 This rule will be activated when the current reading buffer matches with
-the pattern like `something {`. Simple isn't it?
+the pattern like: `something {` .
 
-Now's the time to define how the rule actually works while it is active.  
-Let us introduce `init`, `parse`, `fin` callbacks.
+### Callback methods
+A rule has to have at least one of `init`, `parse`, and `fin` callback methods.
 
 ```js
 parser.addRule({
@@ -92,40 +110,38 @@ parser.addRule({
 })
 ```
 
-In short:
-+ `init` will be called once when the rule is activated.
-+ `parse` will be called for **every chunk** while the rule is active
-+ `fin`  will be called once when the rule is deactivated.
+- `init` will be called once when the rule is activated.
+- `parse` will be called for **every chunk** when the rule is active.
+- `fin`  will be called once when the rule is deactivated.
 
-The **3rd** parameter: `matches` is optional that is passed an array of **matching results** of `from`/`to` if these are regex.
+The 1st parameter `cx` is **a context object** (explained later) that is currently associated with this rule.<br>
+The 2nd parameter `chunk` is **the current chunk** (explained later) of data that the parser has just processed at the time.<br>
+The 3rd parameter of `init` / `fin` is optional, that are **results of regex matching** of `from` / `to` if they are regex.
 
-#### What is “chunk”?
-For the default, every rule processes the data **line-by-line**, And each line will be passed as a “chunk” to the **2nd** parameter.
-(This behavior is determined with `splitter` option. The default value is `\n`.)  
+#### Chunk
+By default, the parser processes the data **line-by-line**, and each line is passed to the 2nd parameter of the callback methods as "chunk". However, you can change this behavior if you want to, by setting `splitter` property to any string other than `\n` (linebreak) which is the default value.
 
-So in other words, the `parse` callback will be executed **every time the parser reaches at a line-break**.
+#### Context object
+When a rule got activated, the parser generates a context object for it and also adds it to the context stack.
+The rule can manipulate the associated context object with its callback methods however you want.
+It can be said that the relationship between a rule and a context object is similar to the one between **a class and its instance**.
 
-#### Context?
-The **1st** parameter: `cx` is a “**context**” object which will be **generated when the rule is activated**.
-The relationship between a rule and a context is similar to **a class and its instance**.
-
-With a context, you can store any data into its `data` property like this:
+For convenience, a context object has `data` property which is just a plain object, so you can store any kinds of data in it, like this:
 
 ```js
 init(cx, chunk, matches) {
-  // cx.data is a plain object
   cx.data.name  = matches[1]
   cx.data.lines = []
-  // You can also set another object
+
+  // Or you can just reassign a new value
   cx.data = {
     name:  matches[1],
     lines: []
   }
-},
+}
 ```
 
-`cx` through `init`, `parse`, `fin` callbacks is guaranteed to be **the same instance**,
-so that you can use the data you stored into `data` property in another callback like this:
+Via their 1st parameter, `init`, `parse`, and `fin` methods can share the same instance of context object, like this:
 
 ```js
 parse(cx, chunk) {
@@ -133,14 +149,11 @@ parse(cx, chunk) {
 },
 fin(cx) {
   console.log('Block: ' + cx.data.name)
-  console.log('Body:')
-  for (let line of cx.data.lines) console.log(line)
   console.log('Total Lines: ' + cx.data.lines.length)
 }
 ```
 
-<span id="lets-parse"></span>
-### Let's parse!
+## Let's parse!
 After you defined rules, start parsing with `parse` method of the parser object.
 
 ```js
@@ -289,7 +302,7 @@ Member #4: Domon
       Age: unknown
 ```
 
-Thats's it!  
+Thats's it!
 You can run this demonstration on your console by this command:
 
 ```sh
@@ -388,7 +401,9 @@ let parser = new Parser(rule)
 
 Pull requests, issue reports, or any other feedbacks are very helpful for further development! :joy:
 
+<!--TRUNCATE:START-->
 ---
 
-&copy; 2018 Satoshi Soma ([amekusa.com](https://amekusa.com))  
-CS Parser is licensed under the Apache License, Version 2.0  
+&copy; 2018 Satoshi Soma ([amekusa.com](https://amekusa.com))
+CS Parser is licensed under the Apache License, Version 2.0
+<!--TRUNCATE:END-->
