@@ -2,6 +2,22 @@
 
 [![npm version](https://badge.fury.io/js/cs-parser.svg)](https://badge.fury.io/js/cs-parser) [![dependencies Status](https://david-dm.org/amekusa/cs-parser/status.svg)](https://david-dm.org/amekusa/cs-parser) [![Apache License 2.0](http://img.shields.io/badge/license-Apache_2.0-blue.svg?style=flat)](LICENSE)
 
+<!-- TOC depthfrom:2 depthto:3 -->
+
+- [Write Your Own Parser](#write-your-own-parser)
+- [Getting Started](#getting-started)
+- [Examples](#examples)
+- [Basics](#basics)
+- [Defining a rule](#defining-a-rule)
+    - [Callback methods](#callback-methods)
+- [Let's parse!](#lets-parse)
+    - [Root context](#root-context)
+    - [Basic example](#basic-example)
+- [How do I debug my parser?](#how-do-i-debug-my-parser)
+- [Links](#links)
+
+<!-- /TOC -->
+
 ---
 
 
