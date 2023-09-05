@@ -6,11 +6,11 @@
 
 
 ## Write Your Own Parser
-CSParser gives you the power to easily write a parser for your code or data in any language or any format.
+CS Parser gives you the power to easily write a parser for your code or data in any language or any format.
 It also can help you to develop your own languages or data formats.
 
-The mechanics of CSParser is pretty simple and straightforward.
-If you have a basic knowledge of JavaScript, you can write a clean and readable parser for your specific needs even in like 120 lines or less with the help of the APIs that CSParser provides, which are very easy to use.
+The mechanics of CS Parser is pretty simple and straightforward.
+If you have a basic knowledge of JavaScript, you can write a clean and readable parser for your specific needs even in like 120 lines or less with the help of the APIs that CS Parser provides, which are very easy to use.
 
 
 ## Getting Started
@@ -153,253 +153,128 @@ fin(cx) {
 }
 ```
 
+
 ## Let's parse!
-After you defined rules, start parsing with `parse` method of the parser object.
+Having done with defining rules, we explain how to actually parse data and use the results in this section.
+
+If you have a data as a string or a `Buffer` object, pass it to `parse()` method.
 
 ```js
-let data = ' ... ' // Data to be parsed
-let cx = parser.parse(data)
+let data = '...' // Data to parse
+let results = parser.parse(data)
 ```
 
-You can pass a string or a `Buffer` object for the parameter.
-`parse` method processes the data synchronously
-and returns **the “root” context** (explained later) when the process completes.
+As a result, it returns **the "root" context** (explained later) which contains all the contexts that were generated throughout the entire parsing process.
 
-There is another option: `parseFile` which parses another file content **asynchronously**.
+There is another option: `parseFile()`, which parses the content of other file asynchronously.
 
 ```js
-let url = ' ... '     // The URL of the file to be parsed
-parser.parseFile(url) // This returns a Promise object
-.then(cx => {         // cx is the root context
-  console.log('Parsing Completed!')
-})
+let results = await parser.parseFile('path/to/file')
 ```
 
-`parseFile` returns a `Promise` object which will resolve when the process completes.
+Since its process is implemented as in a *streaming* manner, it is recommended over `parse()` method if the data is large.
 
-#### Working around the root context
-As the final result of parsing, the root context contains
-**all the contexts** which were generated through the entire process.
+### Root context
+Root context is a top-level context object that contains all the context objects generated throughout the entire parsing process.
 
 To access to each context individually, pass a callback to `traverse` method of the root context.
 
 ```js
-let cx = parser.parse(data)
-cx.traverse(each => {
+let results = parser.parse(data)
+results.traverse(each => {
   console.log('Block: ' + each.data.name)
 })
 ```
 
-Every generated context is passed to the 1st parameter of the callback which you passed to `traverse`.
+Each context is passed to the 1st parameter of the callback you passed.
 
-<span id="demonstration"></span>
-### Demonstration
-Congraturations! You've learned the basics.
-Now I'll show you a small demonstration.
-
-Here is the sample data to be parsed.
-
-```js
-let data = `
-*** Sample Data ***
-Alice {
-  gender > female
-  age    > 24
-}
-Bill {
-  gender > male
-  age    > 32
-}
-Chase {
-  gender > male
-}
-Domon {
-  gender  > male
-  species > dormouse
-}
-`
-```
-
-The parser and the rule:
-
-```js
-const csp = require('cs-parser')
-let parser = csp.create()
-
-parser.addRule({
-  name: 'member', // Debug purpose only
-  from: /(\w+) {/,
-  to:   '}',
-  init(cx, chunk, matches) {
-    // Prepare the data container
-    cx.data = {
-      name:   matches[1],
-      gender: 'unknown',
-      age:    'unknown',
-      errors: []
-    }
-  },
-  parse(cx, chunk) {
-    // Store properties
-    let matches = chunk.match(/(\w+) +> +(\w+)/)
-    if (matches) {
-      let prop  = matches[1]
-      let value = matches[2]
-      if (cx.data[prop]) cx.data[prop] = value
-      else cx.data.errors.push('Invalid Data: ' + prop)
-    }
-  },
-  fin(cx) {
-    // Print errors
-    let errors = cx.data.errors
-    if (errors.length) {
-      console.error(errors.length + ' errors in ' + cx.data.name)
-      for (let error of errors) console.error(error)
-    }
-  }
-})
-```
-
-Do parsing and print the results.
-
-```js
-let cx = parser.parse(data)
-let i = 0
-cx.traverse(each => {
-  if (!each.data.name) return
-  i++
-  console.log('\nMember #' + i + ': ' + each.data.name)
-  console.log('--------------------')
-  console.log('   Gender: ' + each.data.gender)
-  console.log('      Age: ' + each.data.age)
-})
-```
-
-The whole output:
+### Basic example
+Now it's a good time to take a closer look at the 1st example: [employees.js](https://github.com/amekusa/cs-parser/blob/master/examples/employees.js).<br>
+We also recommend to download the file (or clone this repo) and see it running with `node`, and do some experiments by yourself.
 
 ```sh
-1 errors in Domon
-Invalid Data: species
-
-Member #1: Alice
---------------------
-   Gender: female
-      Age: 24
-
-Member #2: Bill
---------------------
-   Gender: male
-      Age: 32
-
-Member #3: Chase
---------------------
-   Gender: male
-      Age: unknown
-
-Member #4: Domon
---------------------
-   Gender: male
-      Age: unknown
+node employees.js
 ```
 
-Thats's it!
-You can run this demonstration on your console by this command:
+There are more advanced features that we cannot covered in this README.<br>
+If you are interested, see this example: [docblocks.js](https://github.com/amekusa/cs-parser/blob/master/examples/docblocks.js)<br>
+Also please check the [full documentations](https://amekusa.github.io/cs-parser/latest/).
 
-```sh
-node examples/members.js
-```
 
-There are still a lot more advanced features remaining.
-Check the [documentations](https://amekusa.github.io/cs-parser/1.3.0/) and feel free to modify [the sample data and the rule](examples/members.js) to test.
-
-<span id="how-do-i-debug-my-parser"></span>
 ## How do I debug my parser?
-`outline`, the one of methods of [Context](https://amekusa.github.io/cs-parser/1.3.0/Context.html) outputs **the outline of the tree structure** of a context and the all its sub-contexts.
+Use `outline()` method of [Context](https://amekusa.github.io/cs-parser/latest/Context.html) that outputs the outline of the structure of a context and all the sub-contexts of it.
 
-This is helpful for ensuring whether your parser has correctly analyzed the structure of the data. Let's see the outline of the result of the demonstration.
+This would be helpful to ensure if your parser correctly analyzed the structure of the data. Let's see the outline of the result of [employees.js](https://github.com/amekusa/cs-parser/blob/master/examples/employees.js).
 
 ```js
-let cx = parser.parse(data)
-console.log(cx.outline())
+let result = parser.parse(data)
+console.debug(result.outline())
 ```
 
 The output:
 
 ```sh
 root
-  member
-  member
-  member
-  member
+  anonymous
+  anonymous
+  anonymous
+  anonymous
 ```
 
-What you can get from this outline is:
-4 contexts have been generated by the rule named `member`.
+The reason it shows `anonymous` is, the rule associated with them doesn't have `name` property.
 
-To get more specific information from `outline`,
-you can customize the expression of each context with `express` callback.
+Let's add `name: 'employee',` to the rule, and see the difference of `outline()`.
 
 ```js
 parser.addRule({
-  name: 'member', // Debug purpose only
-  from: /(\w+) {/,
-  to:   '}',
-  init(cx, chunk, matches) {
-    // Prepare the data container
-    cx.data = {
-      name:   matches[1],
-      gender: 'unknown',
-      age:    'unknown',
-      errors: []
-    }
-  },
-  ...
-  express(cx) {
-    return 'member: ' + cx.data.name
-  }
-})
-
-let cx = parser.parse(data)
-console.log(cx.outline())
+	name: 'employee', // <-Added
+	from: /(\w+) {/, // Starts with '(word) {'
+	to:   '}',       //   Ends with '}'
+...
 ```
 
 The output:
 
 ```sh
 root
-  member: Alice
-  member: Bill
-  member: Chase
-  member: Domon
+  employee
+  employee
+  employee
+  employee
+```
+
+It's somewhat better. But you can improve this output even more.
+
+With `express` callback, you can totally customize how a context is expressed by `outline()`.
+
+```js
+parser.addRule({
+	from: /(\w+) {/, // Starts with '(word) {'
+	to:   '}',       //   Ends with '}'
+	...
+	express(cx) { // <-Added
+		return 'employee: ' + cx.data.name
+	}
+})
+```
+
+The output:
+
+```sh
+root
+  employee: Alice
+  employee: Bob
+  employee: Charlie
+  employee: Dolly
 ```
 
 Now you can get much better outline!
 
-<span id="the-es6-way"></span>
-## The ES6 way
-Instead of `require()`, you can use `import` to get the [Main](https://amekusa.github.io/cs-parser/1.3.0/Main.html) object.
 
-```js
-import CSParser from 'cs-parser'
-let rule = CSParser.newRule({ ... })
-let parser = CSParser.create(rule)
-```
-
-Or you can also import [Parser](https://amekusa.github.io/cs-parser/1.3.0/Parser.html) and [Rule](https://amekusa.github.io/cs-parser/1.3.0/Rule.html) classes directly.
-
-```js
-import Parser from 'cs-parser/lib/Parser'
-import Rule   from 'cs-parser/lib/Rule'
-let rule = new Rule({ ... })
-let parser = new Parser(rule)
-```
-
-<span id="links"></span>
 ## Links
-+ [Documentations](https://amekusa.github.io/cs-parser/1.3.0/)
++ [Documentations](https://amekusa.github.io/cs-parser/latest/)
 + [GitHub](https://github.com/amekusa/cs-parser)
 
-Pull requests, issue reports, or any other feedbacks are very helpful for further development! :joy:
 
 <!--TRUNCATE:START-->
 ---
