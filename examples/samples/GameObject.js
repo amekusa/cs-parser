@@ -24,13 +24,13 @@ class GameObject {
 	 * ```js
 	 * var enemy = new GameObject('Kobold', 10)
 	 * enemy.takeDamage(5)
-	 * console.log(`Health lefts ${this.health}`)
+	 * console.log('Health lefts ' + this.health)
 	 * ```
 	 * @example Attack a rat and kill it
 	 * ```js
 	 * var enemy = new GameObject('Rat', 3)
 	 * enemy.takeDamage(5)
-	 * console.log(`${this.name} must be dead`)
+	 * console.log(this.name + ' must be dead')
 	 * ```
 	 */
 	takeDamage(amount) {

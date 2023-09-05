@@ -1,7 +1,5 @@
-import Composite from './Composite'
-import ContextManager from './ContextManager'
-import ResultSet from './ResultSet'
-import Rule from './Rule'
+import Composite from './Composite.js'
+import ResultSet from './ResultSet.js'
 
 const // Enums for state
 	STANDBY    = Symbol('STANDBY'),
@@ -37,7 +35,7 @@ class Context extends Composite {
 	 * An enum for {@link Context#state}
 	 * which means the context is waiting for being activated
 	 * @type {Symbol}
-	 * @readonly
+	 * @const
 	 */
 	static get STANDBY() {
 		return STANDBY
@@ -47,7 +45,7 @@ class Context extends Composite {
 	 * An enum for {@link Context#state}
 	 * which means the context is active
 	 * @type {Symbol}
-	 * @readonly
+	 * @const
 	 */
 	static get ACTIVE() {
 		return ACTIVE
@@ -57,7 +55,7 @@ class Context extends Composite {
 	 * An enum for {@link Context#state}.
 	 * When a sub-context gets activated, the parent context goes this state
 	 * @type {Symbol}
-	 * @readonly
+	 * @const
 	 */
 	static get BACKGROUND() {
 		return BACKGROUND
@@ -67,7 +65,7 @@ class Context extends Composite {
 	 * An enum for {@link Context#state}
 	 * which means the context has been deactivated
 	 * @type {Symbol}
-	 * @readonly
+	 * @const
 	 */
 	static get FINISHED() {
 		return FINISHED
@@ -77,7 +75,7 @@ class Context extends Composite {
 	 * An enum for {@link Context#state}
 	 * which means the context has no longer chance of getting activated
 	 * @type {Symbol}
-	 * @readonly
+	 * @const
 	 */
 	static get WASTED() {
 		return WASTED
@@ -237,7 +235,7 @@ class Context extends Composite {
 				wasted = wasted.concat(item.cleanupChildren(Recursive))
 			children.push(item)
 		}
-		if (children.length) this._children = children
+		this._children = children
 		return wasted
 	}
 
@@ -384,7 +382,7 @@ class Context extends Composite {
 
 	/**
 	 * Returns the outlined string for debug
-	 * @param {string} Indent='  ' The indentation string
+	 * @param {string} Indent=2-spaces The indentation string
 	 * @param {number} Level=0 The indentation level
 	 * @return {string} The outlined string
 	 */

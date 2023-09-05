@@ -1,7 +1,7 @@
-import ContextManager from './ContextManager'
-import Context from './Context'
-import Rule from './Rule'
-const fs = require('fs')
+import ContextManager from './ContextManager.js'
+import Context from './Context.js'
+import Rule from './Rule.js'
+import fs from 'node:fs';
 
 /**
  * Context sensitive parser

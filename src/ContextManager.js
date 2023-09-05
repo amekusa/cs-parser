@@ -1,5 +1,3 @@
-import Context from './Context'
-
 /**
  * A ContextManager can control multiple contexts through the entire parsing
  */
