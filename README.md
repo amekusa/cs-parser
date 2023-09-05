@@ -1,6 +1,6 @@
 # [![CS Parser](https://raw.githubusercontent.com/amekusa/cs-parser/master/logo.png "Context Sensitive Parser")](https://github.com/amekusa/cs-parser)
 
-[![npm version](https://badge.fury.io/js/cs-parser.svg)](https://badge.fury.io/js/cs-parser) [![dependencies Status](https://david-dm.org/amekusa/cs-parser/status.svg)](https://david-dm.org/amekusa/cs-parser) [![Apache License 2.0](http://img.shields.io/badge/license-Apache_2.0-blue.svg?style=flat)](LICENSE)
+[![npm version](https://badge.fury.io/js/cs-parser.svg)](https://badge.fury.io/js/cs-parser) [![Apache License 2.0](http://img.shields.io/badge/license-Apache_2.0-blue.svg?style=flat)](LICENSE)
 
 <!-- TOC depthfrom:2 depthto:3 -->
 
