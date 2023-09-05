@@ -39,7 +39,7 @@ let parser = csp.create({
 
 		// Context finalizer
 		// - This is called when the parser reached at '*/'
-		fin(cx, chunk, matches) {  // Finalize
+		fin(cx, chunk, matches) {
 			cx.results.add(`</section>`)
 		},
 
