@@ -11,9 +11,9 @@
     "setup": "npm i && develarms i",
     "test": "c8 mocha --enable-source-maps",
     "codecov": "npm run test && c8 report --reporter=text-lcov > coverage.lcov && codecov",
-    "docs": "jsdoc -c .jsdoc.json && cd docs/$npm_package_name && ln -sfn $npm_package_version latest",
-    "docs:clean": "rm -rf docs/$npm_package_name/$npm_package_version && npm run docs",
-    "docs:publish": "git subtree push --prefix docs/$npm_package_name origin gh-pages",
+    "docs": "jsdoc -c .jsdoc.json && cd docs/cs-parser && ln -sfn $npm_package_version latest",
+    "docs:clean": "rm -rf docs/cs-parser/$npm_package_version && npm run docs",
+    "docs:publish": "git subtree push --prefix docs/cs-parser origin gh-pages",
     "build": "rollup -c .rollup.js",
     "build:clean": "rm -rf dist && npm run build"
   },
