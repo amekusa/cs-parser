@@ -22,11 +22,11 @@
 
 
 ## Write Your Own Parser
-CS Parser gives you the power to easily write a parser for your code or data in any language or any format.
+CS Parser is a tiny JS framework that gives you the power to easily write a parser for code in any language or data in any format.
 It also can help you to develop your own languages or data formats.
 
-The mechanics of CS Parser is pretty simple and straightforward.
-If you have a basic knowledge of JavaScript, you can write a clean and readable parser for your specific needs even in like 120 lines or less with the help of the APIs that CS Parser provides, which are very easy to use.
+Since the mechanics of CS Parser is pretty simple and straightforward, its APIs are very easy to learn and use.
+With the help of them, and if you have a basic knowledge of JavaScript, you can write a clean and readable parser for your specific needs without extensive coding.
 
 
 ## Getting Started
@@ -54,7 +54,7 @@ let parser = csp.create()
 
 
 ## Examples
-Before we proceed to explain the basics, here are some quick, working examples if you want to take a look first:
+Before we proceed to explain the basics, here are some working examples if you want to take a quick look first:
 - [examples/employees.js](https://github.com/amekusa/cs-parser/blob/master/examples/employees.js)
 - [examples/docblocks.js](https://github.com/amekusa/cs-parser/blob/master/examples/docblocks.js)
 
@@ -87,7 +87,7 @@ results.traverse(each => {
 
 
 ## Defining a rule
-A rule definition that you pass to `addRule()` has to be an object that should have some specific properties and methods.
+A rule definition that you pass to `addRule()` has to be an object with some specific properties and methods.
 
 ```js
 parser.addRule({
@@ -135,10 +135,10 @@ The 2nd parameter `chunk` is **the current chunk** (explained later) of data tha
 The 3rd parameter of `init` / `fin` is optional, that are **results of regex matching** of `from` / `to` if they are regex.
 
 #### Chunk
-By default, the parser processes the data **line-by-line**, and each line is passed to the 2nd parameter of the callback methods as "chunk". However, you can change this behavior if you want to, by setting `splitter` property to any string other than `\n` (linebreak) which is the default value.
+By default, the parser processes the data **line-by-line**, and each line is passed to the 2nd parameter of the callback methods as "chunk". However, you can change this behavior if you want to, by setting `splitter` property to any string other than `\n` (linebreak).
 
 #### Context object
-When a rule got activated, the parser generates a context object for it and also adds it to the context stack.
+When a rule got activated, the parser generates a context object for it and also adds it to the context stack (the root context).
 The rule can manipulate the associated context object with its callback methods however you want.
 It can be said that the relationship between a rule and a context object is similar to the one between **a class and its instance**.
 
@@ -157,7 +157,7 @@ init(cx, chunk, matches) {
 }
 ```
 
-Via their 1st parameter, `init`, `parse`, and `fin` methods can share the same instance of context object, like this:
+Via their 1st parameter, `init`, `parse`, and `fin` callback methods can share the same instance of context object, like this:
 
 ```js
 parse(cx, chunk) {
@@ -171,7 +171,7 @@ fin(cx) {
 
 
 ## Let's parse!
-Having done with defining rules, we explain how to actually parse data and use the results in this section.
+Once you've done with defining all the necessary rules, it's time to actually parse data and use the results for your purpose.
 
 If you have a data as a string or a `Buffer` object, pass it to `parse()` method.
 
@@ -185,7 +185,13 @@ As a result, it returns **the "root" context** (explained later) which contains 
 There is another option: `parseFile()`, which parses the content of other file asynchronously.
 
 ```js
+// With 'await'
 let results = await parser.parseFile('path/to/file')
+
+// Or in the 'Promise' way
+parser.parseFile('path/to/file').then(results => {
+  ...
+});
 ```
 
 Since its process is implemented as in a *streaming* manner, it is recommended over `parse()` method if the data is large.
@@ -205,14 +211,14 @@ results.traverse(each => {
 Each context is passed to the 1st parameter of the callback you passed.
 
 ### Basic example
-Now it's a good time to take a closer look at the 1st example: [employees.js](https://github.com/amekusa/cs-parser/blob/master/examples/employees.js).<br>
+Now it's a good time for you to take a closer look at the 1st example: [employees.js](https://github.com/amekusa/cs-parser/blob/master/examples/employees.js).<br>
 We also recommend to download the file (or clone this repo) and see it running with `node`, and do some experiments by yourself.
 
 ```sh
 node employees.js
 ```
 
-There are more advanced features that we cannot covered in this README.<br>
+There are more cool features like **nesting contexts**, which we cannot cover in this README because it would be too long.<br>
 If you are interested, see this example: [docblocks.js](https://github.com/amekusa/cs-parser/blob/master/examples/docblocks.js)<br>
 Also please check the [full documentations](https://amekusa.github.io/cs-parser/latest/).
 
